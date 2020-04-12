@@ -6,10 +6,10 @@ import json
 import xmltodict
 import logging
 import traceback
-
-from http import HTTPStatus
-from ws4py.client.threadedclient import WebSocketClient
 from datetime import datetime, timedelta
+from http import HTTPStatus
+
+from ws4py.client.threadedclient import WebSocketClient
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -268,7 +268,7 @@ class SkyQRemote:
                 self.epgData = resp.json()["schedule"][0]
                 self.lastEpgUrl = epgUrl
 
-    def _getProgrammeFromEpg(self, sid, queryDate, timefromepoch):
+    def getProgrammeFromEpg(self, sid, queryDate, timeFromEpoch):
         self.getEpgData(sid, queryDate)
         if len(self.epgData["events"]) == 0:
             _LOGGER.warning(
@@ -280,7 +280,7 @@ class SkyQRemote:
             programme = next(
                 p
                 for p in self.epgData["events"]
-                if p["st"] <= timefromepoch and p["st"] + p["d"] >= timefromepoch
+                if p["st"] <= timeFromEpoch and p["st"] + p["d"] >= timeFromEpoch
             )
             return programme
 
@@ -293,9 +293,9 @@ class SkyQRemote:
             queryDate = datetime.utcnow()
             epoch = datetime.utcfromtimestamp(0)
             timefromepoch = int((queryDate - epoch).total_seconds())
-            programme = self._getProgrammeFromEpg(sid, queryDate, timefromepoch)
+            programme = self.getProgrammeFromEpg(sid, queryDate, timefromepoch)
             if programme == PAST_END_OF_EPG:
-                programme = self._getProgrammeFromEpg(
+                programme = self.getProgrammeFromEpg(
                     sid, datetime.utcnow() + timedelta(days=1), timefromepoch
                 )
             result.update({"title": programme["t"]})
@@ -367,7 +367,7 @@ class SkyQRemote:
 
     def getCurrentState(self):
         if self.powerStatus() == "Off":
-            return "Off"
+            return self.SKY_STATE_OFF
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
@@ -385,7 +385,7 @@ class SkyQRemote:
                         "E0010 - Invalid command: {self._host} : {0}".format(item)
                     )
                     break
-                self.sendCommand(self.commands[item.casefold()])
+                self._sendCommand(self.commands[item.casefold()])
                 time.sleep(0.5)
         else:
             if sequence not in self.commands:
@@ -393,9 +393,9 @@ class SkyQRemote:
                     "E0020 - Invalid command: {self._host} : {0}".format(sequence)
                 )
             else:
-                self.sendCommand(self.commands[sequence])
+                self._sendCommand(self.commands[sequence])
 
-    def sendCommand(self, code):
+    def _sendCommand(self, code):
         commandBytes = bytearray(
             [4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16]
         )
