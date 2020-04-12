@@ -143,7 +143,7 @@ Will return a JSON object with an array of events:
 Note that the end of a day, the programme may appear on the next day's schedule. timeFromEpoch is teh number of seconds from the start of 1970.
 
 ```
-app = self.client.getProgrammeFromEpg(sid, querydate, timeFromEpoch)
+programme = self.client.getProgrammeFromEpg(sid, querydate, timeFromEpoch)
 ```
 
 Will return a JSON object such as below:
@@ -183,7 +183,7 @@ Will return a JSON object such as below:
 ### Get current live TV programme
 
 ```
-app = self.client.getCurrentLiveTVProgramme(sid)
+currentTV = self.client.getCurrentLiveTVProgramme(sid)
 ```
 
 Will return a JSON object such as below:
@@ -195,4 +195,57 @@ Will return a JSON object such as below:
    'episode':1,
    'imageUrl':'https://images.metadata.sky.com/pd-image/50d6b29f-35ac-49e3-b00d-9cf2718990c7/16-9/1788'
 }
+```
+
+### Send key press
+
+```
+self.client.press(sequence)
+```
+
+Allows the sending of a sequence of key presses which are submitted at 1/2 second intervals
+
+Valid values are:
+```
+power 
+select 
+backup 
+dismiss 
+channelup 
+channeldown 
+interactive 
+sidebar 
+help 
+services 
+search 
+tvguide 
+home 
+i 
+text 
+up 
+down 
+left 
+right 
+red 
+green 
+yellow 
+blue 
+0 
+1 
+2 
+3 
+4
+5 
+6 
+7 
+8 
+9,
+play 
+pause 
+stop 
+record 
+fastforward 
+rewind 
+boxoffice 
+sky 
 ```
