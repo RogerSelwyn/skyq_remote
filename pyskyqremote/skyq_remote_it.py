@@ -6,8 +6,8 @@ PAST_END_OF_EPG = "past end of epg"
 RESPONSE_OK = 200
 
 SCHEDULE_URL = "https://apid.sky.it/gtv/v1/events?from={1}&to={2}&pageSize=50&pageNum=0&env=DTH&channels={0}"
-LIVE_IMAGE_URL = "http://ethaneurope.it.imageservice.sky.com{0}"
-PVR_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9/1788"
+LIVE_IMAGE_URL = "http://ethaneurope.it.imageservice.sky.com/pd-image/{0}/16-9"
+PVR_IMAGE_URL = "http://ethaneurope.it.imageservice.sky.com/pd-image/{0}/16-9"
 CHANNEL_URL = "https://apid.sky.it/gtv/v1/channels?env=DTH"
 CHANNEL_IMAGE_URL = (
     "http://ethaneurope.it.imageservice.sky.com/pd-logo/skychb_{0}{1}/600/600"
@@ -53,7 +53,7 @@ class SkyQCountry:
             result = {"title": None, "season": None, "episode": None, "imageUrl": None}
             cid = None
             for channel in self._channellist:
-                if channel["number"] == channelno:
+                if str(channel["number"]) == str(channelno):
                     cid = channel["id"]
             queryDate = datetime.utcnow()
             programme = self.getProgrammeFromEpgIt(cid, queryDate)
@@ -69,13 +69,9 @@ class SkyQCountry:
             if "seasonNumber" in programme["content"]:
                 if programme["content"]["seasonNumber"] > 0:
                     result.update({"season": programme["content"]["seasonNumber"]})
-            if "imagesMap" in programme["content"]:
-                for image in programme["content"]["imagesMap"]:
-                    if image["key"] == "background":
-                        backgroundImg = str(image["img"]["url"])
-                        result.update(
-                            {"imageUrl": LIVE_IMAGE_URL.format(backgroundImg)}
-                        )
+            if "uuid" in programme["content"]:
+                programmeuuid = str(programme["content"]["uuid"])
+                result.update({"imageUrl": LIVE_IMAGE_URL.format(programmeuuid)})
             else:
                 _LOGGER.info(
                     f"I0020 - No imagesMap: {self._host} : {sid} : {programme}"
@@ -97,4 +93,6 @@ class SkyQCountry:
             if resp.status_code == RESPONSE_OK:
                 self.epgData = resp.json()[resultNode]
                 self._lastEpgUrl = epgUrl
+            else:
+                self.epgData = None
         return self.epgData

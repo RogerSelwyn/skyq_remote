@@ -42,7 +42,6 @@ REST_RECORDING_DETAILS = "pvr/details/{0}"
 
 # Generic Constants
 DEFAULT_ENCODING = "utf-8"
-RESPONSE_OK = 200
 
 # Sky specific constants
 CURRENT_URI = "CurrentURI"
@@ -50,8 +49,6 @@ CURRENT_TRANSPORT_STATE = "CurrentTransportState"
 
 PVR = "pvr"
 XSI = "xsi"
-
-PAST_END_OF_EPG = "past end of epg"
 
 
 class SkyQRemote:
@@ -120,7 +117,7 @@ class SkyQRemote:
         self._jsonport = jsonport
         url_index = 0
         self._soapControlURL = None
-        while self._soapControlURL is None and url_index < 3:
+        while self._soapControlURL is None and url_index < 50:
             self._soapControlURL = self._getSoapControlURL(url_index)["url"]
             url_index += 1
         self._lastEpgUrl = None
@@ -298,11 +295,10 @@ class SkyQRemote:
                     )
                     channel = channelNode["t"]
                     channelno = channelNode["c"]
-
                     if self._country == "test":
-                        sid = 477
-                        channelno = 108
-                        channel = "Sky Uno HD"
+                        sid = 74
+                        channelno = "120"
+                        channel = "Sky Arte HD"
 
                     result.update({"sid": sid, "live": True})
                     result.update({"channel": channel})

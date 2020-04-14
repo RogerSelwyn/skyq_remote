@@ -6,8 +6,8 @@ PAST_END_OF_EPG = "past end of epg"
 RESPONSE_OK = 200
 
 SCHEDULE_URL = "http://awk.epgsky.com/hawk/linear/schedule/{1}/{0}"
-LIVE_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9/1788"
-PVR_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9/1788"
+LIVE_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9"
+PVR_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9"
 CHANNEL_IMAGE_URL = "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb{0}.png"
 
 _LOGGER = logging.getLogger(__name__)
@@ -75,4 +75,6 @@ class SkyQCountry:
             if resp.status_code == RESPONSE_OK:
                 self.epgData = resp.json()[resultNode]
                 self._lastEpgUrl = epgUrl
+            else:
+                self.epgData = None
         return self.epgData

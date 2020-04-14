@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-from skyq_remote import SkyQRemote
+from pyskyqremote.skyq_remote import SkyQRemote
 import requests
 import sys
+
 
 # Run ./bash_sky.py <sky_box_ip>
 # example: ./bash_sky_test.py 192.168.0.9
