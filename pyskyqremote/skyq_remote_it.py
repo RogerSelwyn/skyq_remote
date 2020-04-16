@@ -29,6 +29,7 @@ class SkyQCountry:
     def getProgrammeFromEpgIt(self, cid, queryDate):
         queryDateFrom = queryDate.strftime("%Y-%m-%dT00:00:00Z")
         queryDateTo = queryDate.strftime("%Y-%m-%dT23:59:59Z")
+        currentTime = datetime.utcnow()
         self.getEpgData(cid, "events", queryDateFrom, queryDateTo)
         if len(self.epgData) == 0:
             _LOGGER.warning(
@@ -40,8 +41,9 @@ class SkyQCountry:
             programme = next(
                 p
                 for p in self.epgData
-                if datetime.strptime(p["starttime"], "%Y-%m-%dT%H:%M:%SZ") <= queryDate
-                and datetime.strptime(p["endtime"], "%Y-%m-%dT%H:%M:%SZ") >= queryDate
+                if datetime.strptime(p["starttime"], "%Y-%m-%dT%H:%M:%SZ")
+                <= currentTime
+                and datetime.strptime(p["endtime"], "%Y-%m-%dT%H:%M:%SZ") >= currentTime
             )
             return programme
 
@@ -78,7 +80,9 @@ class SkyQCountry:
                 )
             return result
         except Exception as err:
-            _LOGGER.exception(f"X0030IT - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(
+                f"X0030UK - Error occurred: {self._host} : {sid} : {channelno} : {err}"
+            )
             return result
 
     def _getChannels(self):

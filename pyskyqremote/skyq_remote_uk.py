@@ -8,7 +8,7 @@ RESPONSE_OK = 200
 SCHEDULE_URL = "http://awk.epgsky.com/hawk/linear/schedule/{1}/{0}"
 LIVE_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9"
 PVR_IMAGE_URL = "https://images.metadata.sky.com/pd-image/{0}/16-9"
-CHANNEL_IMAGE_URL = "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb{0}.png"
+CHANNEL_IMAGE_URL = "https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb{0}.png"  # also at https://epgstatic.sky.com/...
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class SkyQCountry:
 
     def getProgrammeFromEpg(self, sid, queryDate):
         epoch = datetime.utcfromtimestamp(0)
-        timeFromEpoch = int((queryDate - epoch).total_seconds())
+        timeFromEpoch = int((datetime.utcnow() - epoch).total_seconds())
         queryDateStr = queryDate.strftime("%Y%m%d")
         self.getEpgData(sid, "schedule", queryDateStr)
         if len(self.epgData[0]["events"]) == 0:
@@ -65,7 +65,9 @@ class SkyQCountry:
                 )
             return result
         except Exception as err:
-            _LOGGER.exception(f"X0030UK - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(
+                f"X0030UK - Error occurred: {self._host} : {sid} : {channelno} : {err}"
+            )
             return result
 
     def getEpgData(self, queryChannel, resultNode, queryFromDate, queryToDate=None):
