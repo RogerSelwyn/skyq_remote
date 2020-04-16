@@ -72,7 +72,7 @@ Will return a JSON object such as below:
 }
 ```
 
-### Get EPG information *(Not current available)*
+### Get EPG information *(Not currently available)*
 
 ```
 epg = self.client.getEpgData(sid, queryDate)
@@ -144,7 +144,7 @@ Will return a JSON object with an array of events:
 }
 ```
 
-### Get programme at a point in time on a day *(Not current available)*
+### Get programme at a point in time on a day *(Not currently available)*
 
 Note that at the end of a day, the programme may appear on the next day's schedule. timeFromEpoch is teh number of seconds from the start of 1970.
 
