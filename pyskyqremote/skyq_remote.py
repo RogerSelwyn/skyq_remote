@@ -49,6 +49,7 @@ CURRENT_TRANSPORT_STATE = "CurrentTransportState"
 
 PVR = "pvr"
 XSI = "xsi"
+PAST_END_OF_EPG = "past end of epg"
 
 
 class SkyQRemote:
@@ -123,11 +124,11 @@ class SkyQRemote:
         self._lastEpgUrl = None
 
         if self._country == "uk":
-            from pyskyqremote.skyq_remote_uk import SkyQCountry
+            from pyskyqremote.country.remote_uk import SkyQCountry
         elif self._country == "it":
-            from pyskyqremote.skyq_remote_it import SkyQCountry
+            from pyskyqremote.country.remote_it import SkyQCountry
         elif self._country == "test":
-            from pyskyqremote.skyq_remote_it import SkyQCountry
+            from pyskyqremote.country.remote_it import SkyQCountry
         else:
             _LOGGER.exception(
                 f"X0999 - Invalid country: {self._host} : {self._country}"
@@ -268,8 +269,41 @@ class SkyQRemote:
             _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
             return "Off"
 
+    def getProgrammeFromEpg(self, sid, channelno, epgDate, queryDate):
+        epgData = self._clientCountry.getEpgData(sid, channelno, epgDate)
+        if epgData is None:
+            return None
+
+        try:
+            programme = next(
+                p
+                for p in epgData
+                if p["starttime"] <= queryDate and p["endtime"] >= queryDate
+            )
+            return programme
+
+        except StopIteration:
+            return PAST_END_OF_EPG
+
     def getCurrentLiveTVProgramme(self, sid, channelno):
-        return self._clientCountry.getCurrentLiveTVProgramme(sid, channelno)
+        try:
+            result = {"title": None, "season": None, "episode": None, "imageUrl": None}
+            queryDate = datetime.utcnow()
+            programme = self.getProgrammeFromEpg(sid, channelno, queryDate, queryDate)
+            if programme == PAST_END_OF_EPG:
+                programme = self.getProgrammeFromEpg(
+                    sid, channelno, queryDate + timedelta(days=1), queryDate
+                )
+            result.update({"title": programme["title"]})
+            result.update({"episode": programme["episode"]})
+            result.update({"season": programme["season"]})
+            result.update({"imageUrl": programme["imageUrl"]})
+            return result
+        except Exception as err:
+            _LOGGER.exception(
+                f"X0030 - Error occurred: {self._host} : {sid} : {channelno} : {err}"
+            )
+            return result
 
     def getCurrentMedia(self):
         result = {
