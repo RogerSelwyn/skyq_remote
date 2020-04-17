@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from pyskyqremote.skyq_remote import SkyQRemote
 import requests
 import sys
+from datetime import datetime
 
+from pyskyqremote.skyq_remote import SkyQRemote
 
 # Run ./bash_sky.py <sky_box_ip>
 # example: ./bash_sky_test.py 192.168.0.9
@@ -19,8 +20,13 @@ print("----------- Current Media")
 currentMedia = sky.getCurrentMedia()
 print(currentMedia)
 if currentMedia["live"]:
+    queryDate = datetime.utcnow()
+    # print("----------- Today's EPG")
+    # print(sky.getEpgData(currentMedia["sid"], queryDate))
+    print("----------- Programme from Epg - Now")
+    print(sky.getProgrammeFromEpg(currentMedia["sid"], queryDate, queryDate))
     print("----------- Current Live TV")
-    print(sky.getCurrentLiveTVProgramme(currentMedia["sid"], currentMedia["channelno"]))
+    print(sky.getCurrentLiveTVProgramme(currentMedia["sid"]))
 
 print("----------- Active Application")
 print(str(sky.getActiveApplication()))

@@ -134,6 +134,7 @@ class SkyQRemote:
             )
 
         self._remoteCountry = SkyQCountry(self._host)
+        self._channels = self._http_json(REST_CHANNEL_LIST)
 
     def powerStatus(self) -> str:
         if self._soapControlURL is None:
@@ -189,7 +190,6 @@ class SkyQRemote:
     def getCurrentMedia(self):
         result = {
             "channel": None,
-            "channelno": None,
             "imageUrl": None,
             "title": None,
             "season": None,
@@ -204,20 +204,13 @@ class SkyQRemote:
                 if XSI in currentURI:
                     # Live content
                     sid = int(currentURI[6:], 16)
-                    channels = self._http_json(REST_CHANNEL_LIST)
-                    channelNode = next(
-                        s for s in channels["services"] if s["sid"] == str(sid)
-                    )
-                    channel = channelNode["t"]
-                    channelno = channelNode["c"]
+
                     if self._country == "test":
                         sid = 74
-                        channelno = "120"
-                        channel = "Sky Arte HD"
 
+                    channel = self._getChannelNode(sid)["channel"]
                     result.update({"sid": sid, "live": True})
                     result.update({"channel": channel})
-                    result.update({"channelno": channelno})
                     chid = "".join(e for e in channel.casefold() if e.isalnum())
                     result.update({"imageUrl": self._buildCloudFrontUrl(sid, chid)})
                 elif PVR in currentURI:
@@ -245,11 +238,12 @@ class SkyQRemote:
                         result.update({"imageUrl": imageUrl})
         return result
 
-    def getEpgData(self, sid, channelno, epgDate):
+    def getEpgData(self, sid, epgDate):
+        channelno = self._getChannelNode(sid)["channelno"]
         return self._remoteCountry.getEpgData(sid, channelno, epgDate)
 
-    def getProgrammeFromEpg(self, sid, channelno, epgDate, queryDate):
-        epgData = self.getEpgData(sid, channelno, epgDate)
+    def getProgrammeFromEpg(self, sid, epgDate, queryDate):
+        epgData = self.getEpgData(sid, epgDate)
         if epgData is None:
             return None
 
@@ -264,14 +258,14 @@ class SkyQRemote:
         except StopIteration:
             return PAST_END_OF_EPG
 
-    def getCurrentLiveTVProgramme(self, sid, channelno):
+    def getCurrentLiveTVProgramme(self, sid):
         try:
             result = {"title": None, "season": None, "episode": None, "imageUrl": None}
             queryDate = datetime.utcnow()
-            programme = self.getProgrammeFromEpg(sid, channelno, queryDate, queryDate)
+            programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
             if programme == PAST_END_OF_EPG:
                 programme = self.getProgrammeFromEpg(
-                    sid, channelno, queryDate + timedelta(days=1), queryDate
+                    sid, queryDate + timedelta(days=1), queryDate
                 )
             result.update({"title": programme["title"]})
             result.update({"episode": programme["episode"]})
@@ -279,9 +273,7 @@ class SkyQRemote:
             result.update({"imageUrl": programme["imageUrl"]})
             return result
         except Exception as err:
-            _LOGGER.exception(
-                f"X0030 - Error occurred: {self._host} : {sid} : {channelno} : {err}"
-            )
+            _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
             return result
 
     def press(self, sequence):
@@ -445,6 +437,17 @@ class SkyQRemote:
     def _buildCloudFrontUrl(self, sid, chid):
         channel_image_url = self._remoteCountry.channel_image_url
         return channel_image_url.format(sid, chid)
+
+    def _getChannelNode(self, sid):
+        if self._country == "test":
+            return {"channel": "Sky Arte HD", "channelno": "120"}
+
+        channelNode = next(
+            s for s in self._channels["services"] if s["sid"] == str(sid)
+        )
+        channel = channelNode["t"]
+        channelno = channelNode["c"]
+        return {"channel": channel, "channelno": channelno}
 
 
 class SkyWebSocket(WebSocketClient):

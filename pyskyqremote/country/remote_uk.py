@@ -23,9 +23,9 @@ class SkyQCountry:
         self._lastEpgUrl = None
         self._host = host
 
-    def getEpgData(self, querySID, queryChannel, epgDate):
+    def getEpgData(self, sid, channelno, epgDate):
         epgDateStr = epgDate.strftime("%Y%m%d")
-        epgUrl = SCHEDULE_URL.format(querySID, epgDateStr)
+        epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
         epgData = None
         if self._lastEpgUrl is None or self._lastEpgUrl != epgUrl:
             resp = requests.get(epgUrl)

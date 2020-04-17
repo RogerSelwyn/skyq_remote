@@ -29,13 +29,13 @@ class SkyQCountry:
 
         self._getChannels()
 
-    def getEpgData(self, querySID, queryChannel, epgDate):
+    def getEpgData(self, sid, channelno, epgDate):
         queryDateFrom = epgDate.strftime("%Y-%m-%dT00:00:00Z")
         queryDateTo = epgDate.strftime("%Y-%m-%dT23:59:59Z")
 
         cid = None
         for channel in self._channellist:
-            if str(channel["number"]) == str(queryChannel):
+            if str(channel["number"]) == str(channelno):
                 cid = channel["id"]
 
         epgData = None
