@@ -126,7 +126,7 @@ Will return a dictionary object such as below:
 }
 ```
 
-### Get current live TV programme
+### Get current live TV programme on a channel
 
 ```
 currentTV = self.client.getCurrentLiveTVProgramme(sid)
