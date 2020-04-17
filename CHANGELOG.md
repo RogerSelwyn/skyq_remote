@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.4 (17/04/2020)
+- [Added init.py](https://github.com/RogerSelwyn/skyq_remote/commit/00d5ff14f50e2aaec31d69605d68c74278e0e10a) - @RogerSelwyn
+
 ## v0.2.3 (17/04/2020)
 - [Inluded Readme in pypi package](https://github.com/RogerSelwyn/skyq_remote/commit/157876bdfa3409428363d093ec8352c69af840af) - @RogerSelwyn
 - [Remove passthrough of channelno](https://github.com/RogerSelwyn/skyq_remote/commit/3716fe7e86d73b1fbc79ef14aed062b75eafaa8e) - @RogerSelwyn
