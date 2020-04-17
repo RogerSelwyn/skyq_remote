@@ -121,7 +121,6 @@ class SkyQRemote:
         while self._soapControlURL is None and url_index < 50:
             self._soapControlURL = self._getSoapControlURL(url_index)["url"]
             url_index += 1
-        self._lastEpgUrl = None
 
         if self._country == "uk":
             from pyskyqremote.country.remote_uk import SkyQCountry
@@ -134,9 +133,176 @@ class SkyQRemote:
                 f"X0999 - Invalid country: {self._host} : {self._country}"
             )
 
-        self._clientCountry = SkyQCountry(self._host)
+        self._remoteCountry = SkyQCountry(self._host)
 
-    def http_json(self, path, headers=None) -> str:
+    def powerStatus(self) -> str:
+        if self._soapControlURL is None:
+            return "Powered Off"
+        try:
+            output = self._http_json(self.REST_PATH_INFO)
+            if "activeStandby" in output and output["activeStandby"] is False:
+                return "On"
+            return "Off"
+        except (
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ReadTimeout,
+        ):
+            return "Off"
+        except (requests.exceptions.ConnectionError):
+            _LOGGER.info(
+                f"I0010 - Device has control URL but connection request failed: {self._host}"
+            )
+            return "Off"
+        except Exception as err:
+            _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
+            return "Off"
+
+    def getCurrentState(self):
+        if self.powerStatus() == "Off":
+            return self.SKY_STATE_OFF
+        response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
+        if response is not None:
+            state = response[CURRENT_TRANSPORT_STATE]
+            if state == self.SKY_STATE_PLAYING:
+                return self.SKY_STATE_PLAYING
+            if state == self.SKY_STATE_PAUSED:
+                return self.SKY_STATE_PAUSED
+        return self.SKY_STATE_OFF
+
+    def getActiveApplication(self):
+        try:
+            result = self.APP_EPG
+            apps = self._callSkyWebSocket(WS_CURRENT_APPS)
+            if apps is None:
+                return result
+            app = next(
+                a for a in apps["apps"] if a["status"] == self.APP_STATUS_VISIBLE
+            )["appId"]
+
+            # app = "com.roku"
+            result = app
+
+            return result
+        except Exception:
+            return result
+
+    def getCurrentMedia(self):
+        result = {
+            "channel": None,
+            "channelno": None,
+            "imageUrl": None,
+            "title": None,
+            "season": None,
+            "episode": None,
+            "sid": None,
+            "live": False,
+        }
+        response = self._callSkySOAPService(UPNP_GET_MEDIA_INFO)
+        if response is not None:
+            currentURI = response[CURRENT_URI]
+            if currentURI is not None:
+                if XSI in currentURI:
+                    # Live content
+                    sid = int(currentURI[6:], 16)
+                    channels = self._http_json(REST_CHANNEL_LIST)
+                    channelNode = next(
+                        s for s in channels["services"] if s["sid"] == str(sid)
+                    )
+                    channel = channelNode["t"]
+                    channelno = channelNode["c"]
+                    if self._country == "test":
+                        sid = 74
+                        channelno = "120"
+                        channel = "Sky Arte HD"
+
+                    result.update({"sid": sid, "live": True})
+                    result.update({"channel": channel})
+                    result.update({"channelno": channelno})
+                    chid = "".join(e for e in channel.casefold() if e.isalnum())
+                    result.update({"imageUrl": self._buildCloudFrontUrl(sid, chid)})
+                elif PVR in currentURI:
+                    # Recorded content
+                    pvrId = "P" + currentURI[11:]
+                    recording = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
+                    result.update({"channel": recording["details"]["cn"]})
+                    result.update({"title": recording["details"]["t"]})
+                    if (
+                        "seasonnumber" in recording["details"]
+                        and "episodenumber" in recording["details"]
+                    ):
+                        result.update({"season": recording["details"]["seasonnumber"]})
+                        result.update(
+                            {"episode": recording["details"]["episodenumber"]}
+                        )
+                    if "programmeuuid" in recording["details"]:
+                        programmeuuid = recording["details"]["programmeuuid"]
+                        imageUrl = self._remoteCountry.pvr_image_url.format(
+                            str(programmeuuid)
+                        )
+                        if "osid" in recording["details"]:
+                            osid = recording["details"]["osid"]
+                            imageUrl += "?sid=" + str(osid)
+                        result.update({"imageUrl": imageUrl})
+        return result
+
+    def getEpgData(self, sid, channelno, epgDate):
+        return self._remoteCountry.getEpgData(sid, channelno, epgDate)
+
+    def getProgrammeFromEpg(self, sid, channelno, epgDate, queryDate):
+        epgData = self.getEpgData(sid, channelno, epgDate)
+        if epgData is None:
+            return None
+
+        try:
+            programme = next(
+                p
+                for p in epgData
+                if p["starttime"] <= queryDate and p["endtime"] >= queryDate
+            )
+            return programme
+
+        except StopIteration:
+            return PAST_END_OF_EPG
+
+    def getCurrentLiveTVProgramme(self, sid, channelno):
+        try:
+            result = {"title": None, "season": None, "episode": None, "imageUrl": None}
+            queryDate = datetime.utcnow()
+            programme = self.getProgrammeFromEpg(sid, channelno, queryDate, queryDate)
+            if programme == PAST_END_OF_EPG:
+                programme = self.getProgrammeFromEpg(
+                    sid, channelno, queryDate + timedelta(days=1), queryDate
+                )
+            result.update({"title": programme["title"]})
+            result.update({"episode": programme["episode"]})
+            result.update({"season": programme["season"]})
+            result.update({"imageUrl": programme["imageUrl"]})
+            return result
+        except Exception as err:
+            _LOGGER.exception(
+                f"X0030 - Error occurred: {self._host} : {sid} : {channelno} : {err}"
+            )
+            return result
+
+    def press(self, sequence):
+        if isinstance(sequence, list):
+            for item in sequence:
+                if item not in self.commands:
+                    _LOGGER.error(
+                        "E0010 - Invalid command: {self._host} : {0}".format(item)
+                    )
+                    break
+                self._sendCommand(self.commands[item.casefold()])
+                time.sleep(0.5)
+        else:
+            if sequence not in self.commands:
+                _LOGGER.error(
+                    "E0020 - Invalid command: {self._host} : {0}".format(sequence)
+                )
+            else:
+                self._sendCommand(self.commands[sequence])
+
+    def _http_json(self, path, headers=None) -> str:
         response = requests.get(
             self.REST_BASE_URL.format(self._host, self._jsonport, path),
             timeout=self.TIMEOUT,
@@ -230,170 +396,6 @@ class SkyQRemote:
             _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")
             return None
 
-    def getActiveApplication(self):
-        try:
-            result = self.APP_EPG
-            apps = self._callSkyWebSocket(WS_CURRENT_APPS)
-            if apps is None:
-                return result
-            app = next(
-                a for a in apps["apps"] if a["status"] == self.APP_STATUS_VISIBLE
-            )["appId"]
-
-            # app = "com.roku"
-            result = app
-
-            return result
-        except Exception:
-            return result
-
-    def powerStatus(self) -> str:
-        if self._soapControlURL is None:
-            return "Powered Off"
-        try:
-            output = self.http_json(self.REST_PATH_INFO)
-            if "activeStandby" in output and output["activeStandby"] is False:
-                return "On"
-            return "Off"
-        except (
-            requests.exceptions.ConnectTimeout,
-            requests.exceptions.ReadTimeout,
-        ):
-            return "Off"
-        except (requests.exceptions.ConnectionError):
-            _LOGGER.info(
-                f"I0010 - Device has control URL but connection request failed: {self._host}"
-            )
-            return "Off"
-        except Exception as err:
-            _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
-            return "Off"
-
-    def getProgrammeFromEpg(self, sid, channelno, epgDate, queryDate):
-        epgData = self._clientCountry.getEpgData(sid, channelno, epgDate)
-        if epgData is None:
-            return None
-
-        try:
-            programme = next(
-                p
-                for p in epgData
-                if p["starttime"] <= queryDate and p["endtime"] >= queryDate
-            )
-            return programme
-
-        except StopIteration:
-            return PAST_END_OF_EPG
-
-    def getCurrentLiveTVProgramme(self, sid, channelno):
-        try:
-            result = {"title": None, "season": None, "episode": None, "imageUrl": None}
-            queryDate = datetime.utcnow()
-            programme = self.getProgrammeFromEpg(sid, channelno, queryDate, queryDate)
-            if programme == PAST_END_OF_EPG:
-                programme = self.getProgrammeFromEpg(
-                    sid, channelno, queryDate + timedelta(days=1), queryDate
-                )
-            result.update({"title": programme["title"]})
-            result.update({"episode": programme["episode"]})
-            result.update({"season": programme["season"]})
-            result.update({"imageUrl": programme["imageUrl"]})
-            return result
-        except Exception as err:
-            _LOGGER.exception(
-                f"X0030 - Error occurred: {self._host} : {sid} : {channelno} : {err}"
-            )
-            return result
-
-    def getCurrentMedia(self):
-        result = {
-            "channel": None,
-            "channelno": None,
-            "imageUrl": None,
-            "title": None,
-            "season": None,
-            "episode": None,
-            "sid": None,
-            "live": False,
-        }
-        response = self._callSkySOAPService(UPNP_GET_MEDIA_INFO)
-        if response is not None:
-            currentURI = response[CURRENT_URI]
-            if currentURI is not None:
-                if XSI in currentURI:
-                    # Live content
-                    sid = int(currentURI[6:], 16)
-                    channels = self.http_json(REST_CHANNEL_LIST)
-                    channelNode = next(
-                        s for s in channels["services"] if s["sid"] == str(sid)
-                    )
-                    channel = channelNode["t"]
-                    channelno = channelNode["c"]
-                    if self._country == "test":
-                        sid = 74
-                        channelno = "120"
-                        channel = "Sky Arte HD"
-
-                    result.update({"sid": sid, "live": True})
-                    result.update({"channel": channel})
-                    result.update({"channelno": channelno})
-                    chid = "".join(e for e in channel.casefold() if e.isalnum())
-                    result.update({"imageUrl": self._buildCloudFrontUrl(sid, chid)})
-                elif PVR in currentURI:
-                    # Recorded content
-                    pvrId = "P" + currentURI[11:]
-                    recording = self.http_json(REST_RECORDING_DETAILS.format(pvrId))
-                    result.update({"channel": recording["details"]["cn"]})
-                    result.update({"title": recording["details"]["t"]})
-                    if (
-                        "seasonnumber" in recording["details"]
-                        and "episodenumber" in recording["details"]
-                    ):
-                        result.update({"season": recording["details"]["seasonnumber"]})
-                        result.update(
-                            {"episode": recording["details"]["episodenumber"]}
-                        )
-                    if "programmeuuid" in recording["details"]:
-                        programmeuuid = recording["details"]["programmeuuid"]
-                        imageUrl = self._clientCountry.pvr_image_url.format(
-                            str(programmeuuid)
-                        )
-                        if "osid" in recording["details"]:
-                            osid = recording["details"]["osid"]
-                            imageUrl += "?sid=" + str(osid)
-                        result.update({"imageUrl": imageUrl})
-        return result
-
-    def getCurrentState(self):
-        if self.powerStatus() == "Off":
-            return self.SKY_STATE_OFF
-        response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
-        if response is not None:
-            state = response[CURRENT_TRANSPORT_STATE]
-            if state == self.SKY_STATE_PLAYING:
-                return self.SKY_STATE_PLAYING
-            if state == self.SKY_STATE_PAUSED:
-                return self.SKY_STATE_PAUSED
-        return self.SKY_STATE_OFF
-
-    def press(self, sequence):
-        if isinstance(sequence, list):
-            for item in sequence:
-                if item not in self.commands:
-                    _LOGGER.error(
-                        "E0010 - Invalid command: {self._host} : {0}".format(item)
-                    )
-                    break
-                self._sendCommand(self.commands[item.casefold()])
-                time.sleep(0.5)
-        else:
-            if sequence not in self.commands:
-                _LOGGER.error(
-                    "E0020 - Invalid command: {self._host} : {0}".format(sequence)
-                )
-            else:
-                self._sendCommand(self.commands[sequence])
-
     def _sendCommand(self, code):
         commandBytes = bytearray(
             [4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16]
@@ -441,7 +443,7 @@ class SkyQRemote:
                 break
 
     def _buildCloudFrontUrl(self, sid, chid):
-        channel_image_url = self._clientCountry.channel_image_url
+        channel_image_url = self._remoteCountry.channel_image_url
         return channel_image_url.format(sid, chid)
 
 
