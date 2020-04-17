@@ -63,7 +63,6 @@ Will return a dictionary object such as below:
 ```
 {
    'channel':'Sky Comedy HD',
-   'channelno':'113',
    'imageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb1143.png',
    'title':None,
    'season':None,
@@ -76,7 +75,7 @@ Will return a dictionary object such as below:
 ### Get EPG information
 
 ```
-epg = self.client.getEpgData(sid, channelno, epgDate)
+epg = self.client.getEpgData(sid, epgDate)
 ```
 
 Will return a dictionary object with an array of events:
@@ -110,7 +109,7 @@ Will return a dictionary object with an array of events:
 Note that at the end of a day, the programme may appear on the next day's schedule. 
 
 ```
-programme = self.client.getProgrammeFromEpg(sid, channelno, epgDate, queryDate)
+programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate)
 ```
 
 Will return a dictionary object such as below:
@@ -130,7 +129,7 @@ Will return a dictionary object such as below:
 ### Get current live TV programme
 
 ```
-currentTV = self.client.getCurrentLiveTVProgramme(sid, channelno)
+currentTV = self.client.getCurrentLiveTVProgramme(sid)
 ```
 
 Will return a dictionary object such as below:
