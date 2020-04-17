@@ -58,148 +58,89 @@ Will return the running application name or 'com.bskyb.epgui'
 app = self.client.getCurrentMedia()
 ```
 
-Will return a JSON object such as below:
+Will return a dictionary object such as below:
 
 ```
 {
-   'channel':'BBC One HD',
-   'imageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2076.png',
+   'channel':'Sky Comedy HD',
+   'channelno':'113',
+   'imageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb1143.png',
    'title':None,
    'season':None,
    'episode':None,
-   'sid':2076,
+   'sid':1143,
    'live':True
 }
 ```
 
-### Get EPG information *(Not currently available)*
+### Get EPG information
 
 ```
-epg = self.client.getEpgData(sid, queryDate)
+epg = self.client.getEpgData(sid, channelno, epgDate)
 ```
 
-Will return a JSON object with an array of events:
+Will return a dictionary object with an array of events:
 
 ```
-{
-   'sid':'2076',
-   'events':[
-      {
-         'st':1586640300,
-         'd':3000,
-         'eid':'E81c-2be3',
-         'cgid':5,
-         'haschildren':False,
-         't':'MOTD Top Ten Managers',
-         'sy':'Gary ...',
-         'eg':7,
-         'esg':8,
-         'tso':0,
-         'r':'--',
-         'at':'S',
-         's':True,
-         'ad':False,
-         'hd':True,
-         'new':False,
-         'canl':True,
-         'canb':True,
-         'hasAlternativeAudio':False,
-         'restartable':False,
-         'slo':False,
-         'w':True,
-         'ippv':False,
-         'oppv':False
-      },
-      {
-         'st':1586643300,
-         'd':3000,
-         'eid':'E81c-2be5',
-         'cgid':5,
-         'programmeuuid':'dd524d18-995c-4957-9096-209e3ea4bb7c',
-         'episodenumber':0,
-         'seriesuuid':'d9432b96-d643-4d9d-859f-8f3f53e0b133',
-         'haschildren':False,
-         't':'Match of Their Day',
-         'sy':'The pundits ...',
-         'eg':7,
-         'esg':8,
-         'tso':0,
-         'r':'--',
-         'at':'S',
-         's':True,
-         'ad':False,
-         'hd':True,
-         'new':False,
-         'canl':True,
-         'canb':True,
-         'hasAlternativeAudio':False,
-         'restartable':False,
-         'slo':False,
-         'w':True,
-         'ippv':False,
-         'oppv':False
-      },
-      {...}
-   ]
-}
+[
+   {
+      'progammeuuid':'57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0',
+      'starttime':datetime.datetime(2020,4,16,21,50),
+      'endtime':datetime.datetime(2020,4,16,22,50),
+      'title':'New: Tonight Show Starring. Jimmy Fallon',
+      'season':7,
+      'episode':119,
+      'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9'
+   },
+   {
+      'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
+      'starttime':datetime.datetime(2020,4,16,22,50),
+      'endtime':datetime.datetime(2020,4,16,23,50),
+      'title':'New: Late Late Show With...',
+      'season':2020,
+      'episode':89,
+      'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9'
+   },
+   {...}
+]
 ```
 
-### Get programme at a point in time on a day *(Not currently available)*
+### Get programme at a point in time on a day 
 
-Note that at the end of a day, the programme may appear on the next day's schedule. timeFromEpoch is teh number of seconds from the start of 1970.
+Note that at the end of a day, the programme may appear on the next day's schedule. 
 
 ```
-programme = self.client.getProgrammeFromEpg(sid, querydate, timeFromEpoch)
+programme = self.client.getProgrammeFromEpg(sid, channelno, epgDate, queryDate)
 ```
 
-Will return a JSON object such as below:
+Will return a dictionary object such as below:
 
 ```
 {
-   'st':1586687400,
-   'd':2400,
-   'eid':'E81c-2baf',
-   'cgid':5,
-   'programmeuuid':'8dc6bcb7-b8be-4c4f-8844-ecc5bb84ebf4',
-   'episodenumber':0,
-   'seriesuuid':'5a6d57d0-901f-4508-bb6e-a217dc84dac1',
-   'haschildren':False,
-   't':'Sunday Worship',
-   'sy':'The Very...',
-   'eg':5,
-   'esg':10,
-   'tso':0,
-   'r':'--',
-   'at':'S',
-   's':True,
-   'ad':False,
-   'hd':True,
-   'new':False,
-   'canl':True,
-   'canb':True,
-   'hasAlternativeAudio':False,
-   'restartable':False,
-   'slo':False,
-   'w':True,
-   'ippv':False,
-   'oppv':False
+   'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
+   'starttime':datetime.datetime(2020,4,17,8,30),
+   'endtime':datetime.datetime(2020,4,17,9,0),
+   'title':'Parks And Recreation',
+   'season':4,
+   'episode':5,
+   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
 }
 ```
 
 ### Get current live TV programme
 
 ```
-currentTV = self.client.getCurrentLiveTVProgramme(sid)
+currentTV = self.client.getCurrentLiveTVProgramme(sid, channelno)
 ```
 
-Will return a JSON object such as below:
+Will return a dictionary object such as below:
 
 ```
 {
-   'title':"Britain's Got Talent",
-   'season':14,
-   'episode':1,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/50d6b29f-35ac-49e3-b00d-9cf2718990c7/16-9/1788'
+   'title':'Parks And Recreation',
+   'season':4,
+   'episode':5,
+   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
 }
 ```
 
