@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 import requests
 
@@ -39,7 +39,7 @@ class SkyQCountry:
             return None
         if len(epgData[0]["events"]) == 0:
             _LOGGER.warning(
-                f"W0010UK - Programme data not found. Do you need to set 'live_tv' to False?"
+                f"W0010UK - Programme data not found. Do you need to set 'live_tv' to False? {self._host}"
             )
             return None
 

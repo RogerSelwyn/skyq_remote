@@ -5,7 +5,6 @@ import requests
 import json
 import xmltodict
 import logging
-import traceback
 from datetime import datetime, timedelta
 from http import HTTPStatus
 
@@ -36,7 +35,6 @@ WS_BASE_URL = "ws://{0}:9006/as/{1}"
 WS_CURRENT_APPS = "apps/status"
 
 # REST Constants
-REST_PATH_APPS = "apps/status"
 REST_CHANNEL_LIST = "services"
 REST_RECORDING_DETAILS = "pvr/details/{0}"
 
@@ -102,10 +100,11 @@ class SkyQRemote:
     REST_BASE_URL = "http://{0}:{1}/as/{2}"
     REST_PATH_INFO = "system/information"
 
-    SKY_STATE_NO_MEDIA_PRESENT = "NO_MEDIA_PRESENT"
     SKY_STATE_PLAYING = "PLAYING"
     SKY_STATE_PAUSED = "PAUSED_PLAYBACK"
     SKY_STATE_OFF = "OFF"
+    SKY_STATE_ON = "ON"
+    SKY_STATE_POWERED_OFF = "POWERED OFF"
 
     # Application Constants
     APP_EPG = "com.bskyb.epgui"
@@ -138,28 +137,28 @@ class SkyQRemote:
 
     def powerStatus(self) -> str:
         if self._soapControlURL is None:
-            return "Powered Off"
+            return self.SKY_STATE_POWERED_OFF
         try:
             output = self._http_json(self.REST_PATH_INFO)
             if "activeStandby" in output and output["activeStandby"] is False:
-                return "On"
-            return "Off"
+                return self.SKY_STATE_ON
+            return self.SKY_STATE_OFF
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ReadTimeout,
         ):
-            return "Off"
+            return self.SKY_STATE_OFF
         except (requests.exceptions.ConnectionError):
             _LOGGER.info(
                 f"I0010 - Device has control URL but connection request failed: {self._host}"
             )
-            return "Off"
+            return self.SKY_STATE_OFF
         except Exception as err:
             _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
-            return "Off"
+            return self.SKY_STATE_OFF
 
     def getCurrentState(self):
-        if self.powerStatus() == "Off":
+        if self.powerStatus() == self.SKY_STATE_OFF:
             return self.SKY_STATE_OFF
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
         if response is not None:
