@@ -205,13 +205,13 @@ class SkyQRemote:
                     sid = int(currentURI[6:], 16)
 
                     if self._country == "test":
-                        sid = 74
+                        sid = 74  # 5435
 
                     channel = self._getChannelNode(sid)["channel"]
                     result.update({"sid": sid, "live": True})
                     result.update({"channel": channel})
                     chid = "".join(e for e in channel.casefold() if e.isalnum())
-                    result.update({"imageUrl": self._buildCloudFrontUrl(sid, chid)})
+                    result.update({"imageUrl": self._buildChannelUrl(sid, chid)})
                 elif PVR in currentURI:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
@@ -262,6 +262,8 @@ class SkyQRemote:
             result = {"title": None, "season": None, "episode": None, "imageUrl": None}
             queryDate = datetime.utcnow()
             programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
+            if programme is None:
+                return result
             if programme == PAST_END_OF_EPG:
                 programme = self.getProgrammeFromEpg(
                     sid, queryDate + timedelta(days=1), queryDate
@@ -433,13 +435,16 @@ class SkyQRemote:
                 )
                 break
 
-    def _buildCloudFrontUrl(self, sid, chid):
+    def _buildChannelUrl(self, sid, chid):
         channel_image_url = self._remoteCountry.channel_image_url
         return channel_image_url.format(sid, chid)
 
     def _getChannelNode(self, sid):
         if self._country == "test":
-            return {"channel": "Sky Arte HD", "channelno": "120"}
+            return {
+                "channel": "Sky Arte HD",
+                "channelno": "120",
+            }  # {"channel": "Canale 5 HD", "channelno": "999"}
 
         channelNode = next(
             s for s in self._channels["services"] if s["sid"] == str(sid)
