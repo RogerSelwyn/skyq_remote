@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.5 (18/04/2020)
+- [Fixed error when channel not available in channel list (Italy)](https://github.com/RogerSelwyn/skyq_remote/commit/29e50c8744609c0ea3bd7f11d898eda969f49643) - @RogerSelwyn
+- [Bump version to 0.2.5](https://github.com/RogerSelwyn/skyq_remote/commit/47e3fed8aa34643a7e4de028d0e59c661f1ef0bf) - @RogerSelwyn
+- [Code tidy up](https://github.com/RogerSelwyn/skyq_remote/commit/e653e83d41805bdf93dfd923d2579974db6f7282) - @RogerSelwyn
+
 ## v0.2.4 (17/04/2020)
 - [Added init.py](https://github.com/RogerSelwyn/skyq_remote/commit/00d5ff14f50e2aaec31d69605d68c74278e0e10a) - @RogerSelwyn
 
