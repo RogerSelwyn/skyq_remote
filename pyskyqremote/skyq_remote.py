@@ -1,3 +1,4 @@
+"""Python module for accessing SkyQ box and EPG, and sending commands."""
 import time
 import math
 import socket
@@ -14,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # SOAP/UPnP Constants
 SKY_PLAY_URN = "urn:nds-com:serviceId:SkyPlay"
-SKYControl = "SkyControl"
+SKYCONTROL = "SkyControl"
 SOAP_ACTION = '"urn:schemas-nds-com:service:SkyPlay:2#{0}"'
 SOAP_CONTROL_BASE_URL = "http://{0}:49153{1}"
 SOAP_DESCRIPTION_BASE_URL = "http://{0}:49153/description{1}.xml"
@@ -35,8 +36,10 @@ WS_BASE_URL = "ws://{0}:9006/as/{1}"
 WS_CURRENT_APPS = "apps/status"
 
 # REST Constants
+REST_BASE_URL = "http://{0}:{1}/as/{2}"
 REST_CHANNEL_LIST = "services"
 REST_RECORDING_DETAILS = "pvr/details/{0}"
+REST_PATH_INFO = "system/information"
 
 # Generic Constants
 DEFAULT_ENCODING = "utf-8"
@@ -44,13 +47,65 @@ DEFAULT_ENCODING = "utf-8"
 # Sky specific constants
 CURRENT_URI = "CurrentURI"
 CURRENT_TRANSPORT_STATE = "CurrentTransportState"
+APP_STATUS_VISIBLE = "VISIBLE"
 
 PVR = "pvr"
 XSI = "xsi"
 PAST_END_OF_EPG = "past end of epg"
 
+CONNECTTIMEOUT = 1000
+TIMEOUT = 2
+
+
+TEST_CHANNEL_LIST = {
+    "documentId": "2416",
+    "services": [
+        {
+            "c": "317",
+            "dvbtriplet": "64511.8800.11684",
+            "schedule": True,
+            "servicetype": "DSAT",
+            "servicetypes": ["DSAT"],
+            "sf": "hd",
+            "sg": 12,
+            "sid": "684",
+            "sk": 684,
+            "t": "Premium Comedy HD",
+            "xsg": 3,
+        },
+        {
+            "c": "400",
+            "dvbtriplet": "64511.6400.11075",
+            "schedule": True,
+            "servicetype": "DSAT",
+            "servicetypes": ["DSAT"],
+            "sf": "hd",
+            "sg": 13,
+            "sid": "75",
+            "sk": 75,
+            "t": "Sky Arte HD",
+            "xsg": 4,
+        },
+        {
+            "c": "120",
+            "dvbtriplet": "64511.6400.11074",
+            "schedule": True,
+            "servicetype": "DSAT",
+            "servicetypes": ["DSAT"],
+            "sf": "hd",
+            "sg": 21,
+            "sid": "74",
+            "sk": 74,
+            "t": "Sky Arte HD",
+            "xsg": 1,
+        },
+    ],
+}
+
 
 class SkyQRemote:
+    """SkyQRemote is the instantiation of the SKYQ remote ccontrol."""
+
     commands = {
         "power": 0,
         "select": 1,
@@ -94,11 +149,6 @@ class SkyQRemote:
         "boxoffice": 240,
         "sky": 241,
     }
-    connectTimeout = 1000
-    TIMEOUT = 2
-
-    REST_BASE_URL = "http://{0}:{1}/as/{2}"
-    REST_PATH_INFO = "system/information"
 
     SKY_STATE_PLAYING = "PLAYING"
     SKY_STATE_PAUSED = "PAUSED_PLAYBACK"
@@ -108,13 +158,14 @@ class SkyQRemote:
 
     # Application Constants
     APP_EPG = "com.bskyb.epgui"
-    APP_STATUS_VISIBLE = "VISIBLE"
 
     def __init__(self, host, country, port=49160, jsonport=9006):
+        """Stand up a new SkyQ box."""
         self._host = host
         self._country = country.casefold()
         self._port = port
         self._jsonport = jsonport
+
         url_index = 0
         self._soapControlURL = None
         while self._soapControlURL is None and url_index < 50:
@@ -133,13 +184,17 @@ class SkyQRemote:
             )
 
         self._remoteCountry = SkyQCountry(self._host)
-        self._channels = self._http_json(REST_CHANNEL_LIST)
+        if self._country != "test":
+            self._channels = self._http_json(REST_CHANNEL_LIST)
+        else:
+            self._channels = TEST_CHANNEL_LIST
 
     def powerStatus(self) -> str:
+        """Get the power status of the Sky Q box."""
         if self._soapControlURL is None:
             return self.SKY_STATE_POWERED_OFF
         try:
-            output = self._http_json(self.REST_PATH_INFO)
+            output = self._http_json(REST_PATH_INFO)
             if "activeStandby" in output and output["activeStandby"] is False:
                 return self.SKY_STATE_ON
             return self.SKY_STATE_OFF
@@ -158,6 +213,7 @@ class SkyQRemote:
             return self.SKY_STATE_OFF
 
     def getCurrentState(self):
+        """Get current state of the SkyQ box."""
         if self.powerStatus() == self.SKY_STATE_OFF:
             return self.SKY_STATE_OFF
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
@@ -170,16 +226,16 @@ class SkyQRemote:
         return self.SKY_STATE_OFF
 
     def getActiveApplication(self):
+        """Get the active application on Sky Q box."""
         try:
             result = self.APP_EPG
             apps = self._callSkyWebSocket(WS_CURRENT_APPS)
             if apps is None:
                 return result
-            app = next(
-                a for a in apps["apps"] if a["status"] == self.APP_STATUS_VISIBLE
-            )["appId"]
+            app = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)[
+                "appId"
+            ]
 
-            # app = "com.roku"
             result = app
 
             return result
@@ -187,6 +243,7 @@ class SkyQRemote:
             return result
 
     def getCurrentMedia(self):
+        """Get the currently playing media on the SkyQ box."""
         result = {
             "channel": None,
             "imageUrl": None,
@@ -205,7 +262,7 @@ class SkyQRemote:
                     sid = int(currentURI[6:], 16)
 
                     if self._country == "test":
-                        sid = 74  # 5435
+                        sid = "684"  # 5435
 
                     channel = self._getChannelNode(sid)["channel"]
                     result.update({"sid": sid, "live": True})
@@ -238,10 +295,12 @@ class SkyQRemote:
         return result
 
     def getEpgData(self, sid, epgDate):
+        """Get EPG data for the specified channel."""
         channelno = self._getChannelNode(sid)["channelno"]
         return self._remoteCountry.getEpgData(sid, channelno, epgDate)
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
+        """Get programme from EPG for specfied time and channel."""
         epgData = self.getEpgData(sid, epgDate)
         if epgData is None:
             return None
@@ -258,6 +317,7 @@ class SkyQRemote:
             return PAST_END_OF_EPG
 
     def getCurrentLiveTVProgramme(self, sid):
+        """Get current live programme on the specified channel."""
         try:
             result = {"title": None, "season": None, "episode": None, "imageUrl": None}
             queryDate = datetime.utcnow()
@@ -278,6 +338,7 @@ class SkyQRemote:
             return result
 
     def press(self, sequence):
+        """Issue the specified sequence of commands to SkyQ box."""
         if isinstance(sequence, list):
             for item in sequence:
                 if item not in self.commands:
@@ -297,8 +358,8 @@ class SkyQRemote:
 
     def _http_json(self, path, headers=None) -> str:
         response = requests.get(
-            self.REST_BASE_URL.format(self._host, self._jsonport, path),
-            timeout=self.TIMEOUT,
+            REST_BASE_URL.format(self._host, self._jsonport, path),
+            timeout=TIMEOUT,
             headers=headers,
         )
         return json.loads(response.content)
@@ -309,11 +370,11 @@ class SkyQRemote:
                 self._host, descriptionIndex
             )
             headers = {"User-Agent": SOAP_USER_AGENT}
-            resp = requests.get(descriptionUrl, headers=headers, timeout=self.TIMEOUT)
+            resp = requests.get(descriptionUrl, headers=headers, timeout=TIMEOUT)
             if resp.status_code == HTTPStatus.OK:
                 description = xmltodict.parse(resp.text)
                 deviceType = description["root"]["device"]["deviceType"]
-                if not (SKYControl in deviceType):
+                if not (SKYCONTROL in deviceType):
                     return {"url": None, "status": "Not Found"}
                 services = description["root"]["device"]["serviceList"]["service"]
                 if not isinstance(services, list):
@@ -331,7 +392,7 @@ class SkyQRemote:
                     "status": "OK",
                 }
             return {"url": None, "status": "Not Found"}
-        except (requests.exceptions.Timeout) as err:
+        except (requests.exceptions.Timeout):
             _LOGGER.warning(
                 f"W0020 - Control URL not accessible: {self._host} : {descriptionUrl}"
             )
@@ -355,7 +416,7 @@ class SkyQRemote:
                 headers=headers,
                 data=payload,
                 verify=True,
-                timeout=self.TIMEOUT,
+                timeout=TIMEOUT,
             )
             if resp.status_code == HTTPStatus.OK:
                 xml = resp.text
@@ -368,7 +429,7 @@ class SkyQRemote:
 
     def _callSkyWebSocket(self, method):
         try:
-            client = SkyWebSocket(WS_BASE_URL.format(self._host, method))
+            client = _SkyWebSocket(WS_BASE_URL.format(self._host, method))
             client.connect()
             timeout = datetime.now() + timedelta(0, 5)
             while client.data is None and datetime.now() < timeout:
@@ -382,7 +443,7 @@ class SkyQRemote:
         except (AttributeError) as err:
             _LOGGER.debug(f"D0010 - Attribute Error occurred: {self._host} : {err}")
             return None
-        except (TimeoutError) as err:
+        except (TimeoutError):
             _LOGGER.warning(f"W0030 - Websocket call failed: {self._host} : {method}")
             return {"url": None, "status": "Error"}
         except Exception as err:
@@ -410,16 +471,16 @@ class SkyQRemote:
             )
             return
 
-        l = 12
-        timeout = time.time() + self.connectTimeout
+        strlen = 12
+        timeout = time.time() + CONNECTTIMEOUT
 
         while 1:
             data = client.recv(1024)
             data = data
 
             if len(data) < 24:
-                client.sendall(data[0:l])
-                l = 1
+                client.sendall(data[0:strlen])
+                strlen = 1
             else:
                 client.sendall(commandBytes)
                 commandBytes[1] = 0
@@ -440,12 +501,6 @@ class SkyQRemote:
         return channel_image_url.format(sid, chid)
 
     def _getChannelNode(self, sid):
-        if self._country == "test":
-            return {
-                "channel": "Sky Arte HD",
-                "channelno": "120",
-            }  # {"channel": "Canale 5 HD", "channelno": "999"}
-
         channelNode = next(
             s for s in self._channels["services"] if s["sid"] == str(sid)
         )
@@ -454,9 +509,9 @@ class SkyQRemote:
         return {"channel": channel, "channelno": channelno}
 
 
-class SkyWebSocket(WebSocketClient):
+class _SkyWebSocket(WebSocketClient):
     def __init__(self, url):
-        super(SkyWebSocket, self).__init__(url)
+        super(_SkyWebSocket, self).__init__(url)
         self.data = None
 
     def received_message(self, message):
