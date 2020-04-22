@@ -1,3 +1,4 @@
+"""Italy specific code."""
 from datetime import datetime
 import logging
 import requests
@@ -18,7 +19,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SkyQCountry:
+    """Italy specific SkyQ."""
+
     def __init__(self, host):
+        """Initialise Italy remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
         self.epgData = None
@@ -30,6 +34,7 @@ class SkyQCountry:
         self._getChannels()
 
     def getEpgData(self, sid, channelno, epgDate):
+        """Get EPG data for Italy."""
         queryDateFrom = epgDate.strftime("%Y-%m-%dT00:00:00Z")
         queryDateTo = epgDate.strftime("%Y-%m-%dT23:59:59Z")
 
@@ -57,9 +62,14 @@ class SkyQCountry:
             return None
 
         self.epgData = []
-        for p in epgData:
+        epgDataLen = len(epgData) - 1
+        for index, p in enumerate(epgData):
             starttime = datetime.strptime(p["starttime"], "%Y-%m-%dT%H:%M:%SZ")
-            endtime = datetime.strptime(p["endtime"], "%Y-%m-%dT%H:%M:%SZ")
+            if index < epgDataLen:
+                endtimeStr = epgData[index + 1]["starttime"]
+            else:
+                endtimeStr = p["endtime"]
+            endtime = datetime.strptime(endtimeStr, "%Y-%m-%dT%H:%M:%SZ")
             title = p["eventTitle"]
             season = None
             if "seasonNumber" in p["content"]:
