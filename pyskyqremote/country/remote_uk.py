@@ -1,3 +1,4 @@
+"""UK specific code."""
 from datetime import datetime
 import logging
 import requests
@@ -15,7 +16,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SkyQCountry:
+    """UK specific SkyQ."""
+
     def __init__(self, host):
+        """Initialise UK remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
         self.epgData = None
@@ -24,6 +28,7 @@ class SkyQCountry:
         self._host = host
 
     def getEpgData(self, sid, channelno, epgDate):
+        """Get EPG data for UK."""
         epgDateStr = epgDate.strftime("%Y%m%d")
         epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
         epgData = None
