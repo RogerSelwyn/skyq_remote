@@ -6,6 +6,8 @@ import requests
 import json
 import xmltodict
 import logging
+import importlib
+import pycountry
 from datetime import datetime, timedelta
 from http import HTTPStatus
 
@@ -40,6 +42,7 @@ REST_BASE_URL = "http://{0}:{1}/as/{2}"
 REST_CHANNEL_LIST = "services"
 REST_RECORDING_DETAILS = "pvr/details/{0}"
 REST_PATH_INFO = "system/information"
+REST_PATH_DEVICEINFO = "system/deviceinformation"
 
 # Generic Constants
 DEFAULT_ENCODING = "utf-8"
@@ -159,12 +162,24 @@ class SkyQRemote:
     # Application Constants
     APP_EPG = "com.bskyb.epgui"
 
-    def __init__(self, host, country, port=49160, jsonport=9006):
+    def __init__(
+        self, host, overrideCountry=None, test_channel=None, port=49160, jsonport=9006,
+    ):
         """Stand up a new SkyQ box."""
         self._host = host
-        self._country = country.casefold()
+        self._test_channel = test_channel
+        self._overrideCountry = overrideCountry
         self._port = port
         self._jsonport = jsonport
+
+        if not self._overrideCountry:
+            alpha3 = self._getCountry()
+        else:
+            self._overrideCountry = self._overrideCountry.upper()
+            alpha3 = self._overrideCountry
+
+        if alpha3:
+            country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
 
         url_index = 0
         self._soapControlURL = None
@@ -172,22 +187,19 @@ class SkyQRemote:
             self._soapControlURL = self._getSoapControlURL(url_index)["url"]
             url_index += 1
 
-        if self._country == "uk":
-            from pyskyqremote.country.remote_uk import SkyQCountry
-        elif self._country == "it":
-            from pyskyqremote.country.remote_it import SkyQCountry
-        elif self._country == "test":
-            from pyskyqremote.country.remote_it import SkyQCountry
-        else:
-            _LOGGER.exception(
-                f"X0999 - Invalid country: {self._host} : {self._country}"
-            )
+        try:
+            SkyQCountry = importlib.import_module(
+                "pyskyqremote.country.remote_" + country
+            ).SkyQCountry
 
-        self._remoteCountry = SkyQCountry(self._host)
-        if self._country != "test":
-            self._channels = self._http_json(REST_CHANNEL_LIST)
-        else:
-            self._channels = TEST_CHANNEL_LIST
+            self._remoteCountry = SkyQCountry(self._host)
+            if not self._test_channel:
+                self._channels = self._http_json(REST_CHANNEL_LIST)
+            else:
+                self._channels = TEST_CHANNEL_LIST
+
+        except Exception:
+            _LOGGER.error(f"E0040 - Invalid country: {self._host} : {alpha3}")
 
     def powerStatus(self) -> str:
         """Get the power status of the Sky Q box."""
@@ -261,8 +273,8 @@ class SkyQRemote:
                     # Live content
                     sid = int(currentURI[6:], 16)
 
-                    if self._country == "test":
-                        sid = "684"  # 5435
+                    if self._test_channel:
+                        sid = self._test_channel
 
                     channel = self._getChannelNode(sid)["channel"]
                     result.update({"sid": sid, "live": True})
@@ -507,6 +519,19 @@ class SkyQRemote:
         channel = channelNode["t"]
         channelno = channelNode["c"]
         return {"channel": channel, "channelno": channelno}
+
+    def _getCountry(self) -> str:
+        if self._overrideCountry:
+            return self._overrideCountry
+        try:
+            output = self._http_json(REST_PATH_DEVICEINFO)
+            if "countryCode" in output:
+                return output["countryCode"].upper()
+
+            return None
+        except Exception as err:
+            _LOGGER.exception(f"X0070 - Error occurred: {self._host} : {err}")
+            return None
 
 
 class _SkyWebSocket(WebSocketClient):
