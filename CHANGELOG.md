@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.7 (25/04/2020) *(Beta)*
+- [Updated to deal with switched off/standby devices](https://github.com/RogerSelwyn/skyq_remote/commit/feaaf2a841a99cf08241e1e08284fea66ccd9e81) - @RogerSelwyn
+- [Updated to remove need to for country parameter](https://github.com/RogerSelwyn/skyq_remote/commit/b71727c2d3c19f57c9dc481a2ef09213292d7707) - @RogerSelwyn
+
+## v0.2.6 (22/04/2020) *(Beta)*
+- [Fixed programme end time not covering adverts](https://github.com/RogerSelwyn/skyq_remote/commit/2a3c2b8f466468b80653c6ca8fbbd5191d2411a4) - @RogerSelwyn
+- [Tidied up code to Flake8](https://github.com/RogerSelwyn/skyq_remote/commit/d2d449971e289375c04dabe2f895f3fccc89a2b5) - @RogerSelwyn
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/3a638dd30f8e41e7823db11d039076c9e5b043ed) - @RogerSelwyn
+
 ## v0.2.5 (18/04/2020)
 - [Fixed error when channel not available in channel list (Italy)](https://github.com/RogerSelwyn/skyq_remote/commit/29e50c8744609c0ea3bd7f11d898eda969f49643) - @RogerSelwyn
 - [Bump version to 0.2.5](https://github.com/RogerSelwyn/skyq_remote/commit/47e3fed8aa34643a7e4de028d0e59c661f1ef0bf) - @RogerSelwyn
