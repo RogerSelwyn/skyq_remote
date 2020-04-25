@@ -155,9 +155,9 @@ class SkyQRemote:
 
     SKY_STATE_PLAYING = "PLAYING"
     SKY_STATE_PAUSED = "PAUSED_PLAYBACK"
-    SKY_STATE_OFF = "OFF"
+    SKY_STATE_STANDBY = "STANDBY"
     SKY_STATE_ON = "ON"
-    SKY_STATE_POWERED_OFF = "POWERED OFF"
+    SKY_STATE_OFF = "POWERED OFF"
 
     # Application Constants
     APP_EPG = "com.bskyb.epgui"
@@ -168,53 +168,31 @@ class SkyQRemote:
         """Stand up a new SkyQ box."""
         self._host = host
         self._test_channel = test_channel
-        self._overrideCountry = overrideCountry
         self._port = port
         self._jsonport = jsonport
-
-        if not self._overrideCountry:
-            alpha3 = self._getCountry()
-        else:
-            self._overrideCountry = self._overrideCountry.upper()
-            alpha3 = self._overrideCountry
-
-        if alpha3:
-            country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
-
-        url_index = 0
+        self._overrideCountry = overrideCountry
+        self.deviceSetup = False
         self._soapControlURL = None
-        while self._soapControlURL is None and url_index < 50:
-            self._soapControlURL = self._getSoapControlURL(url_index)["url"]
-            url_index += 1
 
-        try:
-            SkyQCountry = importlib.import_module(
-                "pyskyqremote.country.remote_" + country
-            ).SkyQCountry
-
-            self._remoteCountry = SkyQCountry(self._host)
-            if not self._test_channel:
-                self._channels = self._http_json(REST_CHANNEL_LIST)
-            else:
-                self._channels = TEST_CHANNEL_LIST
-
-        except Exception:
-            _LOGGER.error(f"E0040 - Invalid country: {self._host} : {alpha3}")
+        self.powerStatus()
 
     def powerStatus(self) -> str:
         """Get the power status of the Sky Q box."""
+        if not self.deviceSetup:
+            self._setupDevice()
+
         if self._soapControlURL is None:
-            return self.SKY_STATE_POWERED_OFF
+            return self.SKY_STATE_OFF
         try:
             output = self._http_json(REST_PATH_INFO)
             if "activeStandby" in output and output["activeStandby"] is False:
                 return self.SKY_STATE_ON
-            return self.SKY_STATE_OFF
+            return self.SKY_STATE_STANDBY
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ReadTimeout,
         ):
-            return self.SKY_STATE_OFF
+            return self.SKY_STATE_STANDBY
         except (requests.exceptions.ConnectionError):
             _LOGGER.info(
                 f"I0010 - Device has control URL but connection request failed: {self._host}"
@@ -222,12 +200,12 @@ class SkyQRemote:
             return self.SKY_STATE_OFF
         except Exception as err:
             _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
-            return self.SKY_STATE_OFF
+            return self.SKY_STATE_STANDBY
 
     def getCurrentState(self):
         """Get current state of the SkyQ box."""
-        if self.powerStatus() == self.SKY_STATE_OFF:
-            return self.SKY_STATE_OFF
+        if self.powerStatus() == self.SKY_STATE_STANDBY:
+            return self.SKY_STATE_STANDBY
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
@@ -235,7 +213,7 @@ class SkyQRemote:
                 return self.SKY_STATE_PLAYING
             if state == self.SKY_STATE_PAUSED:
                 return self.SKY_STATE_PAUSED
-        return self.SKY_STATE_OFF
+        return self.SKY_STATE_STANDBY
 
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
@@ -520,17 +498,57 @@ class SkyQRemote:
         channelno = channelNode["c"]
         return {"channel": channel, "channelno": channelno}
 
-    def _getCountry(self) -> str:
-        if self._overrideCountry:
-            return self._overrideCountry
+    def _getDeviceInformation(self):
         try:
-            output = self._http_json(REST_PATH_DEVICEINFO)
-            if "countryCode" in output:
-                return output["countryCode"].upper()
-
+            resp = self._http_json(REST_PATH_DEVICEINFO)
+            return resp
+        except requests.exceptions.ConnectTimeout:
+            _LOGGER.warning(f"W0040 - Device not switched on: {self._host}")
             return None
         except Exception as err:
-            _LOGGER.exception(f"X0070 - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0080 - Error occurred: {self._host} : {err}")
+            return None
+
+    def _setupDevice(self):
+        """Set the remote up."""
+        deviceInfo = self._getDeviceInformation()
+        if not deviceInfo:
+            return None
+
+        alpha3 = None
+        if self._overrideCountry:
+            alpha3 = self._overrideCountry
+        elif "countryCode" in deviceInfo:
+            alpha3 = deviceInfo["countryCode"].upper()
+
+        if not alpha3:
+            _LOGGER.error(f"E0050 - No country identified: {self._host}")
+            return None
+
+        country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
+
+        url_index = 0
+        self._soapControlURL = None
+        while self._soapControlURL is None and url_index < 50:
+            self._soapControlURL = self._getSoapControlURL(url_index)["url"]
+            url_index += 1
+
+        try:
+            SkyQCountry = importlib.import_module(
+                "pyskyqremote.country.remote_" + country
+            ).SkyQCountry
+
+            self._remoteCountry = SkyQCountry(self._host)
+            if not self._test_channel:
+                self._channels = self._http_json(REST_CHANNEL_LIST)
+            else:
+                self._channels = TEST_CHANNEL_LIST
+
+            self.deviceSetup = True
+            return "ok"
+
+        except Exception:
+            _LOGGER.error(f"E0040 - Invalid country: {self._host} : {alpha3}")
             return None
 
 
