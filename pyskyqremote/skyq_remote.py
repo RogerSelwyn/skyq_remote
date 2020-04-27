@@ -229,9 +229,6 @@ class SkyQRemote:
         if "programmeuuid" in recording["details"]:
             programmeuuid = recording["details"]["programmeuuid"]
             imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
-            if "osid" in recording["details"]:
-                osid = recording["details"]["osid"]
-                imageUrl += "?sid=" + str(osid)
             result.update({"imageUrl": imageUrl})
 
         return _objectview(result)
