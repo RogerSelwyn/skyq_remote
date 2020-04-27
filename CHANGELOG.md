@@ -1,10 +1,15 @@
 # Changelog
 
-## v0.2.7 (25/04/2020) *(Beta)*
+## v0.2.8 (27/04/2020) *(Beta)*
+- [Bump to 0.2.8](https://github.com/RogerSelwyn/skyq_remote/commit/28537281c677e4c26b44c932e9632f1b70535a24) - @RogerSelwyn
+- [Updated to simplify code and usage](https://github.com/RogerSelwyn/skyq_remote/commit/3a909a8a1ec5f6a497398507e146c7890b72ba6e) - @RogerSelwyn
+- [Reduce number of E0060 to startup only](https://github.com/RogerSelwyn/skyq_remote/commit/7b798c58d3657b310429ab7df2b6f50835003592) - @RogerSelwyn
+
+## v0.2.7 (25/04/2020)
 - [Updated to deal with switched off/standby devices](https://github.com/RogerSelwyn/skyq_remote/commit/feaaf2a841a99cf08241e1e08284fea66ccd9e81) - @RogerSelwyn
 - [Updated to remove need to for country parameter](https://github.com/RogerSelwyn/skyq_remote/commit/b71727c2d3c19f57c9dc481a2ef09213292d7707) - @RogerSelwyn
 
-## v0.2.6 (22/04/2020) *(Beta)*
+## v0.2.6 (22/04/2020)
 - [Fixed programme end time not covering adverts](https://github.com/RogerSelwyn/skyq_remote/commit/2a3c2b8f466468b80653c6ca8fbbd5191d2411a4) - @RogerSelwyn
 - [Tidied up code to Flake8](https://github.com/RogerSelwyn/skyq_remote/commit/d2d449971e289375c04dabe2f895f3fccc89a2b5) - @RogerSelwyn
 - [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/3a638dd30f8e41e7823db11d039076c9e5b043ed) - @RogerSelwyn
