@@ -58,19 +58,30 @@ Will return the running application name or 'com.bskyb.epgui'
 app = self.client.getCurrentMedia()
 ```
 
-Will return a dictionary object such as below:
+Will return an object such as below for live programme:
 
 ```
 {
    'channel':'Sky Comedy HD',
    'imageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb1143.png',
-   'title':None,
-   'season':None,
-   'episode':None,
    'sid':1143,
+   'pvrId':None,
    'live':True
 }
 ```
+
+or for recording
+
+```
+{
+   'channel':None,
+   'imageUrl':None,
+   'sid':None,
+   'pvrId':'P12345ABC'
+   'live':False
+}
+```
+
 
 ### Get EPG information
 
@@ -78,7 +89,7 @@ Will return a dictionary object such as below:
 epg = self.client.getEpgData(sid, epgDate)
 ```
 
-Will return a dictionary object with an array of events:
+Will return an object with an array of events:
 
 ```
 [
@@ -112,7 +123,7 @@ Note that at the end of a day, the programme may appear on the next day's schedu
 programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate)
 ```
 
-Will return a dictionary object such as below:
+Will return an object such as below:
 
 ```
 {
@@ -132,7 +143,7 @@ Will return a dictionary object such as below:
 currentTV = self.client.getCurrentLiveTVProgramme(sid)
 ```
 
-Will return a dictionary object such as below:
+Will return an object such as below:
 
 ```
 {
@@ -140,6 +151,24 @@ Will return a dictionary object such as below:
    'season':4,
    'episode':5,
    'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
+}
+```
+
+### Get recording
+
+```
+recording = self.client.getRecording(pvrId)
+```
+
+Will return an object such as below:
+
+```
+{
+   'channel':'ITV HD',
+   'title':'Van Der Valk',
+   'season':4,
+   'episode':5,
+   'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9'
 }
 ```
 
