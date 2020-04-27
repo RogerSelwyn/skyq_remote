@@ -41,12 +41,12 @@ from .const import (
     CONNECTTIMEOUT,
     TIMEOUT,
     COMMANDS,
-    CONST_SKY_STATE_PLAYING,
-    CONST_SKY_STATE_PAUSED,
-    CONST_SKY_STATE_STANDBY,
-    CONST_SKY_STATE_ON,
-    CONST_SKY_STATE_OFF,
-    CONST_APP_EPG,
+    SKY_STATE_PLAYING,
+    SKY_STATE_PAUSED,
+    SKY_STATE_STANDBY,
+    SKY_STATE_ON,
+    SKY_STATE_OFF,
+    APP_EPG,
 )
 from .const import TEST_CHANNEL_LIST
 
@@ -57,15 +57,6 @@ class SkyQRemote:
     """SkyQRemote is the instantiation of the SKYQ remote ccontrol."""
 
     commands = COMMANDS
-
-    SKY_STATE_PLAYING = CONST_SKY_STATE_PLAYING
-    SKY_STATE_PAUSED = CONST_SKY_STATE_PAUSED
-    SKY_STATE_STANDBY = CONST_SKY_STATE_STANDBY
-    SKY_STATE_ON = CONST_SKY_STATE_ON
-    SKY_STATE_OFF = CONST_SKY_STATE_OFF
-
-    # Application Constants
-    APP_EPG = CONST_APP_EPG
 
     def __init__(
         self, host, overrideCountry=None, test_channel=None, port=49160, jsonport=9006,
@@ -91,43 +82,43 @@ class SkyQRemote:
             self._setupDevice()
 
         if self._soapControlURL is None:
-            return self.SKY_STATE_OFF
+            return SKY_STATE_OFF
         try:
             output = self._http_json(REST_PATH_INFO)
             if "activeStandby" in output and output["activeStandby"] is False:
-                return self.SKY_STATE_ON
-            return self.SKY_STATE_STANDBY
+                return SKY_STATE_ON
+            return SKY_STATE_STANDBY
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ReadTimeout,
         ):
-            return self.SKY_STATE_STANDBY
+            return SKY_STATE_STANDBY
         except (requests.exceptions.ConnectionError):
             _LOGGER.info(
                 f"I0010 - Device has control URL but connection request failed: {self._host}"
             )
-            return self.SKY_STATE_OFF
+            return SKY_STATE_OFF
         except Exception as err:
             _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
-            return self.SKY_STATE_STANDBY
+            return SKY_STATE_STANDBY
 
     def getCurrentState(self):
         """Get current state of the SkyQ box."""
-        if self.powerStatus() == self.SKY_STATE_STANDBY:
-            return self.SKY_STATE_STANDBY
+        if self.powerStatus() == SKY_STATE_STANDBY:
+            return SKY_STATE_STANDBY
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
-            if state == self.SKY_STATE_PLAYING:
-                return self.SKY_STATE_PLAYING
-            if state == self.SKY_STATE_PAUSED:
-                return self.SKY_STATE_PAUSED
-        return self.SKY_STATE_STANDBY
+            if state == SKY_STATE_PLAYING:
+                return SKY_STATE_PLAYING
+            if state == SKY_STATE_PAUSED:
+                return SKY_STATE_PAUSED
+        return SKY_STATE_STANDBY
 
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
         try:
-            result = self.APP_EPG
+            result = APP_EPG
             apps = self._callSkyWebSocket(WS_CURRENT_APPS)
             if apps is None:
                 return result
@@ -146,10 +137,8 @@ class SkyQRemote:
         result = {
             "channel": None,
             "imageUrl": None,
-            "title": None,
-            "season": None,
-            "episode": None,
             "sid": None,
+            "pvrId": None,
             "live": False,
         }
         response = self._callSkySOAPService(UPNP_GET_MEDIA_INFO)
@@ -171,27 +160,9 @@ class SkyQRemote:
                 elif PVR in currentURI:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
-                    recording = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
-                    result.update({"channel": recording["details"]["cn"]})
-                    result.update({"title": recording["details"]["t"]})
-                    if (
-                        "seasonnumber" in recording["details"]
-                        and "episodenumber" in recording["details"]
-                    ):
-                        result.update({"season": recording["details"]["seasonnumber"]})
-                        result.update(
-                            {"episode": recording["details"]["episodenumber"]}
-                        )
-                    if "programmeuuid" in recording["details"]:
-                        programmeuuid = recording["details"]["programmeuuid"]
-                        imageUrl = self._remoteCountry.pvr_image_url.format(
-                            str(programmeuuid)
-                        )
-                        if "osid" in recording["details"]:
-                            osid = recording["details"]["osid"]
-                            imageUrl += "?sid=" + str(osid)
-                        result.update({"imageUrl": imageUrl})
-        return result
+                    result.update({"pvrId": pvrId, "live": False})
+
+        return _objectview(result)
 
     def getEpgData(self, sid, epgDate):
         """Get EPG data for the specified channel."""
@@ -231,10 +202,39 @@ class SkyQRemote:
             result.update({"episode": programme["episode"]})
             result.update({"season": programme["season"]})
             result.update({"imageUrl": programme["imageUrl"]})
-            return result
+            return _objectview(result)
         except Exception as err:
             _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
-            return result
+            return _objectview(result)
+
+    def getRecording(self, pvrId):
+        """Get the recording details."""
+        result = {
+            "channel": None,
+            "imageUrl": None,
+            "title": None,
+            "season": None,
+            "episode": None,
+        }
+
+        recording = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
+        result.update({"channel": recording["details"]["cn"]})
+        result.update({"title": recording["details"]["t"]})
+        if (
+            "seasonnumber" in recording["details"]
+            and "episodenumber" in recording["details"]
+        ):
+            result.update({"season": recording["details"]["seasonnumber"]})
+            result.update({"episode": recording["details"]["episodenumber"]})
+        if "programmeuuid" in recording["details"]:
+            programmeuuid = recording["details"]["programmeuuid"]
+            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
+            if "osid" in recording["details"]:
+                osid = recording["details"]["osid"]
+                imageUrl += "?sid=" + str(osid)
+            result.update({"imageUrl": imageUrl})
+
+        return _objectview(result)
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
@@ -467,3 +467,8 @@ class _SkyWebSocket(WebSocketClient):
 
     def received_message(self, message):
         self.data = message.data
+
+
+class _objectview(object):
+    def __init__(self, d):
+        self.__dict__ = d
