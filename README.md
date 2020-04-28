@@ -34,7 +34,7 @@ self.client = SkyQRemote('192.168.1.99')
 status = self.client.powerStatus()
 ```
 
-Will return "Off", "On" or "Powered Off" 
+Will return "POWERED OFF", "STANDBY or "ON" 
 
 ### Get current state
 
@@ -42,7 +42,7 @@ Will return "Off", "On" or "Powered Off"
 status = self.client.getCurrentState()
 ```
 
-Will return "OFF", "PLAYING", "PAUSED PLAYBACK"
+Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK"
 
 ### Get the active application
 
@@ -69,7 +69,6 @@ Will return an object such as below for live programme:
    'live':True
 }
 ```
-
 or for recording
 
 ```
@@ -81,6 +80,50 @@ or for recording
    'live':False
 }
 ```
+## Get current media (JSON)
+
+```
+media = self.client.getCurrentMediaJSON()
+```
+
+Will return a JSON structure such as below for live programme:
+
+```
+{
+   "__type__":"__media__",
+   "attributes":{
+      "channel":"BBC One South",
+      "imageUrl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
+      "sid":2153,
+      "pvrId":null,
+      "live":true
+   }
+}
+
+```
+or for recording
+
+```
+{
+   "__type__":"__media__",
+   "attributes":{
+      "channel":null,
+      "imageUrl":null,
+      "sid":null,
+      "pvrId":"P12345ABC",
+      "live":faalse
+   }
+}
+```
+
+## Decode current media (JSON)
+
+```
+from pyskyqremote.media import MediaDecoder
+media = MediaDecoder(mediaJSON)
+```
+
+Will decode the JSON structure to a python object.
 
 
 ### Get EPG information
@@ -92,28 +135,89 @@ epg = self.client.getEpgData(sid, epgDate)
 Will return an object with an array of events:
 
 ```
-[
-   {
-      'progammeuuid':'57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0',
-      'starttime':datetime.datetime(2020,4,16,21,50),
-      'endtime':datetime.datetime(2020,4,16,22,50),
-      'title':'New: Tonight Show Starring. Jimmy Fallon',
-      'season':7,
-      'episode':119,
-      'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9'
-   },
-   {
-      'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
-      'starttime':datetime.datetime(2020,4,16,22,50),
-      'endtime':datetime.datetime(2020,4,16,23,50),
-      'title':'New: Late Late Show With...',
-      'season':2020,
-      'episode':89,
-      'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9'
-   },
-   {...}
-]
+{
+   'sid':2153,
+   'channelno':'101',
+   'channelname':'BBC One South',
+   'channelImageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
+   'programmes':[
+      {
+         'progammeuuid':'57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0',
+         'starttime':datetime.datetime(2020,4,16,21,50),
+         'endtime':datetime.datetime(2020,4,16,22,50),
+         'title':'New: Tonight Show Starring. Jimmy Fallon',
+         'season':7,
+         'episode':119,
+         'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9'
+      },
+      {
+         'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
+         'starttime':datetime.datetime(2020,4,16,22,50),
+         'endtime':datetime.datetime(2020,4,16,23,50),
+         'title':'New: Late Late Show With...',
+         'season':2020,
+         'episode':89,
+         'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9'
+      },
+      {...}
+   ]
+}
 ```
+### Get EPG information (JSON)
+
+```
+epg = self.client.getEpgData(sid, epgDate)
+```
+
+Will return a JSON structure with an array of events:
+
+```
+{
+   "__type__":"__channel__",
+   "attributes":{
+      "sid":2153,
+      "channelno":"101",
+      "channelname":"BBC One South",
+      "channelImageUrl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png"
+   },
+   "programmes":[
+      {
+         "__type__":"__programme__",
+         "attributes":{
+            "programmeuuid":"62ad0457-1a6a-4b45-9ef7-6e144639d734",
+            "starttime":"2020-04-27T21:45:00Z",
+            "endtime":"2020-04-27T22:10:00Z",
+            "title":"Man Like Mobeen",
+            "season":3,
+            "episode":5,
+            "imageUrl":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9"
+         }
+      },
+      {
+         "__type__":"__programme__",
+         "attributes":{
+            "programmeuuid":"a975bdeb-c19b-4de2-9557-c6d2757bdae7",
+            "starttime":"2020-04-27T22:10:00Z",
+            "endtime":"2020-04-27T22:50:00Z",
+            "title":"Have I Got A Bit More News For You",
+            "season":59,
+            "episode":4,
+            "imageUrl":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9"
+         }
+      },
+      {...},
+   ]
+}
+```
+
+## Decode EPG information (JSON)
+
+```
+from pyskyqremote.channel import ChannelDecoder
+channel = ChannelDecoder(channelJSON)
+```
+
+Will decode the JSON structure to a python object.
 
 ### Get programme at a point in time on a day 
 
@@ -136,6 +240,36 @@ Will return an object such as below:
    'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
 }
 ```
+### Get programme at a point in time on a day (JSON)
+
+Note that at the end of a day, the programme may appear on the next day's schedule. 
+
+```
+programme = self.client.getProgrammeFromEpgJSON(sid, epgDate, queryDate)
+```
+
+Will return a JSON structure such as below:
+
+```
+{
+   "__type__":"__programme__",
+   "attributes":{
+      "programmeuuid":"e11d9e93-0eec-4855-88f5-6ade9946d5dd",
+      "starttime":"2020-04-28T21:00:00Z",
+      "endtime":"2020-04-28T21:30:00Z",
+      "title":"BBC News at Ten",
+      "season":null,
+      "episode":null,
+      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9"
+   }
+}
+```
+## Decode programme information (JSON)
+
+```
+from pyskyqremote.programme import ProgrammeDecoder
+programme = ProgrammeDecoder(programmeJSON)
+```
 
 ### Get current live TV programme on a channel
 
@@ -147,10 +281,35 @@ Will return an object such as below:
 
 ```
 {
+   'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
+   'starttime':datetime.datetime(2020,4,17,8,30),
+   'endtime':datetime.datetime(2020,4,17,9,0),
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
    'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
+}
+```
+### Get current live TV programme on a channel (JSON)
+
+```
+currentTV = self.client.getCurrentLiveTVProgrammeJSON(sid)
+```
+
+Will return a JSON structure such as below:
+
+```
+{
+   "__type__":"__programme__",
+   "attributes":{
+      "programmeuuid":"e11d9e93-0eec-4855-88f5-6ade9946d5dd",
+      "starttime":"2020-04-28T21:00:00Z",
+      "endtime":"2020-04-28T21:30:00Z",
+      "title":"BBC News at Ten",
+      "season":null,
+      "episode":null,
+      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9"
+   }
 }
 ```
 
@@ -164,12 +323,44 @@ Will return an object such as below:
 
 ```
 {
+   'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
+   'starttime':datetime.datetime(2020,4,17,8,30),
+   'endtime':datetime.datetime(2020,4,17,9,0),
    'channel':'ITV HD',
    'title':'Van Der Valk',
    'season':4,
    'episode':5,
    'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9'
 }
+```
+### Get recording (JSON)
+
+```
+recording = self.client.getRecordingJSON(pvrId)
+```
+
+Will return an object such as below:
+
+```
+{
+   "__type__":"__recording__",
+   "attributes":{
+      "programmeuuid":"e11d9e93-0eec-4855-88f5-6ade9946d5dd",
+      "starttime":"2020-04-28T21:00:00Z",
+      "endtime":"2020-04-28T21:30:00Z",
+      "channel":"ITV HD",
+      "title":"BBC News at Ten",
+      "season":null,
+      "episode":null,
+      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9"
+   }
+}
+```
+## Decode recording information (JSON)
+
+```
+from pyskyqremote.programme import RecordedProgrammeDecoder
+recording = RecordedProgrammeDecoder(recordingJSON)
 ```
 
 ### Send key press
