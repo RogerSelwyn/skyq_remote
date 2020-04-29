@@ -1,6 +1,11 @@
 # Changelog
 
-## v0.2.8 (27/04/2020) *(Beta)*
+## v0.2.9 (29/04/2020) *(Beta)*
+- [Bump to 0.2.9](https://github.com/RogerSelwyn/skyq_remote/commit/9ba01ca86cf356b3d9c52ba314f9a9f044f2e06b) - @RogerSelwyn
+- [Updated to enable return of JSON structures](https://github.com/RogerSelwyn/skyq_remote/commit/a17df4f902bbc380490e02a9c2accfdefecafe12) - @RogerSelwyn
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/4413ad41679e6afc86df31472d1421f27de2e9d9) - @RogerSelwyn
+
+## v0.2.8 (27/04/2020)
 - [Bump to 0.2.8](https://github.com/RogerSelwyn/skyq_remote/commit/28537281c677e4c26b44c932e9632f1b70535a24) - @RogerSelwyn
 - [Updated to simplify code and usage](https://github.com/RogerSelwyn/skyq_remote/commit/3a909a8a1ec5f6a497398507e146c7890b72ba6e) - @RogerSelwyn
 - [Reduce number of E0060 to startup only](https://github.com/RogerSelwyn/skyq_remote/commit/7b798c58d3657b310429ab7df2b6f50835003592) - @RogerSelwyn
