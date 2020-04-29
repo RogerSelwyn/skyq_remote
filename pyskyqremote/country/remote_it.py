@@ -3,9 +3,10 @@ from datetime import datetime
 import logging
 import requests
 
-from pyskyqremote.channel import Programme
-
 from ..const import RESPONSE_OK
+from ..channel import Channel
+from ..programme import Programme
+
 from .const_it import (
     CHANNEL_IMAGE_URL,
     PVR_IMAGE_URL,
@@ -24,7 +25,7 @@ class SkyQCountry:
         """Initialise Italy remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
-        self.epgData = None
+        self.epgData = set()
 
         self._lastEpgUrl = None
         self._host = host
@@ -60,7 +61,7 @@ class SkyQCountry:
             )
             return None
 
-        self.epgData = []
+        programmes = set()
         epgDataLen = len(epgData) - 1
         for index, p in enumerate(epgData):
             starttime = datetime.strptime(p["starttime"], "%Y-%m-%dT%H:%M:%SZ")
@@ -84,13 +85,11 @@ class SkyQCountry:
                 programmeuuid = str(p["content"]["uuid"])
                 imageUrl = LIVE_IMAGE_URL.format(programmeuuid)
 
-            programme = vars(
-                Programme(
-                    programmeuuid, starttime, endtime, title, season, episode, imageUrl
-                )
+            programme = Programme(
+                programmeuuid, starttime, endtime, title, season, episode, imageUrl
             )
-
-            self.epgData.append(programme)
+            programmes.add(programme)
+        self.epgData = Channel(sid, channelno, None, None, sorted(programmes))
         return self.epgData
 
     def _getChannels(self):

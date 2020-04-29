@@ -22,5 +22,6 @@ setup(
     install_requires=['requests', 'ws4py==0.5.1', 'xmltodict==0.12.0', 'pycountry==19.8.18'],
     keywords='SKYQ Remote',
     include_package_data=True,
-    zip_safe=False
+    zip_safe=False,
+    python_requires='>=3.7'	
 )

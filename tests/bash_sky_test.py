@@ -1,42 +1,47 @@
 #!/usr/bin/env python
-import requests
+"""Test script."""
 import sys
 from datetime import datetime
 
 from pyskyqremote.skyq_remote import SkyQRemote
+from pyskyqremote.const import APP_EPG
+from pyskyqremote.media import MediaDecoder
+
+# from pyskyqremote.channel import ChannelDecoder
+# from pyskyqremote.programme import ProgrammeDecoder, RecordedProgrammeDecoder
+
 
 # Run ./bash_sky.py <sky_box_ip>
 # example: ./bash_sky_test.py 192.168.0.9
 # Note: you may need to modify top line change python3 to python, depending on OS/setup. this is works for me on my mac
-country = "UK"
+country = None
 if len(sys.argv) == 3:
     country = sys.argv[2]
 
-sky = SkyQRemote(sys.argv[1], country=country)
+sky = SkyQRemote(sys.argv[1], overrideCountry=country)
 
 print("----------- Power status")
 print(sky.powerStatus())
-print("----------- Current Media")
-currentMedia = sky.getCurrentMedia()
-print(currentMedia)
-if currentMedia["live"]:
-    queryDate = datetime.utcnow()
-    # print("----------- Today's EPG")
-    # print(sky.getEpgData(currentMedia["sid"], queryDate))
-    print("----------- Programme from Epg - Now")
-    print(sky.getProgrammeFromEpg(currentMedia["sid"], queryDate, queryDate))
-    print("----------- Current Live TV")
-    print(sky.getCurrentLiveTVProgramme(currentMedia["sid"]))
-
 print("----------- Active Application")
-print(str(sky.getActiveApplication()))
+app = sky.getActiveApplication()
+print(str(app))
+if app == APP_EPG:
+    print("----------- Current Media")
+    currentMedia = sky.getCurrentMediaJSON()
+    print(currentMedia)
 
-# print("----------- Testing Description 0")
-# print(sky._getSoapControlURL(0))
-# print("----------- Testing Description 1")
-# print(sky._getSoapControlURL(1))
-# print("----------- Testing Description 2")
-# print(sky._getSoapControlURL(2))
+    media = MediaDecoder(currentMedia)
+    sid = media.sid
+    if not media.live:
+        print("----------- Recording")
+        print(sky.getRecordingJSON(media.pvrId))
+        sid = 2153
 
-# print("----------- Transport Info")
-# print(sky._callSkySOAPService('GetTransportInfo'))
+    queryDate = datetime.utcnow()
+    print(f"----------- Programme from Epg - Now - {sid}")
+    print(sky.getProgrammeFromEpgJSON(sid, queryDate, queryDate))
+    print(f"----------- Current Live TV - {sid}")
+    print(sky.getCurrentLiveTVProgrammeJSON(sid))
+
+    print("----------- Today's EPG")
+    print(sky.getEpgDataJSON(sid, queryDate))

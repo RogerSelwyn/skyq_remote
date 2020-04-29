@@ -49,6 +49,8 @@ from .const import (
     APP_EPG,
 )
 from .const import TEST_CHANNEL_LIST
+from .programme import RecordedProgramme
+from .media import Media
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -104,6 +106,8 @@ class SkyQRemote:
 
     def getCurrentState(self):
         """Get current state of the SkyQ box."""
+        if self.powerStatus() == SKY_STATE_OFF:
+            return SKY_STATE_OFF
         if self.powerStatus() == SKY_STATE_STANDBY:
             return SKY_STATE_STANDBY
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
@@ -132,15 +136,22 @@ class SkyQRemote:
         except Exception:
             return result
 
+    def getCurrentMediaJSON(self):
+        """Get the currently playing media on the SkyQ box as json."""
+        media = self.getCurrentMedia()
+        if media:
+            return media.as_json()
+        else:
+            return None
+
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
-        result = {
-            "channel": None,
-            "imageUrl": None,
-            "sid": None,
-            "pvrId": None,
-            "live": False,
-        }
+        channel = None
+        imageUrl = None
+        sid = None
+        pvrId = None
+        live = False
+
         response = self._callSkySOAPService(UPNP_GET_MEDIA_INFO)
         if response is not None:
             currentURI = response[CURRENT_URI]
@@ -152,22 +163,42 @@ class SkyQRemote:
                     if self._test_channel:
                         sid = self._test_channel
 
+                    live = True
                     channel = self._getChannelNode(sid)["channel"]
-                    result.update({"sid": sid, "live": True})
-                    result.update({"channel": channel})
-                    chid = "".join(e for e in channel.casefold() if e.isalnum())
-                    result.update({"imageUrl": self._buildChannelUrl(sid, chid)})
+                    imageUrl = self._buildChannelUrl(sid, channel)
                 elif PVR in currentURI:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
-                    result.update({"pvrId": pvrId, "live": False})
+                    live = False
+        media = Media(channel, imageUrl, sid, pvrId, live)
 
-        return _objectview(result)
+        return media
+
+    def getEpgDataJSON(self, sid, epgDate):
+        """Get EPG data for the specified channel as json."""
+        channel = self.getEpgData(sid, epgDate)
+        if channel:
+            return channel.as_json()
+        else:
+            return None
 
     def getEpgData(self, sid, epgDate):
         """Get EPG data for the specified channel."""
         channelno = self._getChannelNode(sid)["channelno"]
-        return self._remoteCountry.getEpgData(sid, channelno, epgDate)
+        channelname = self._getChannelNode(sid)["channel"]
+        channelImageUrl = self._buildChannelUrl(sid, channelname)
+        channel = self._remoteCountry.getEpgData(sid, channelno, epgDate)
+        channel.channelname = channelname
+        channel.channelImageUrl = channelImageUrl
+        return channel
+
+    def getProgrammeFromEpgJSON(self, sid, epgDate, queryDate):
+        """Get programme from EPG for specfied time and channel as json."""
+        programme = self.getProgrammeFromEpg(sid, epgDate, queryDate)
+        if programme:
+            return programme.as_json()
+        else:
+            return None
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
@@ -178,60 +209,81 @@ class SkyQRemote:
         try:
             programme = next(
                 p
-                for p in epgData
-                if p["starttime"] <= queryDate and p["endtime"] >= queryDate
+                for p in epgData.programmes
+                if p.starttime <= queryDate and p.endtime >= queryDate
             )
             return programme
 
         except StopIteration:
             return PAST_END_OF_EPG
 
+    def getCurrentLiveTVProgrammeJSON(self, sid):
+        """Get current live programme on the specified channel as json."""
+        programme = self.getCurrentLiveTVProgramme(sid)
+        if programme:
+            return programme.as_json()
+        else:
+            return None
+
     def getCurrentLiveTVProgramme(self, sid):
         """Get current live programme on the specified channel."""
         try:
-            result = {"title": None, "season": None, "episode": None, "imageUrl": None}
             queryDate = datetime.utcnow()
             programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
             if programme is None:
-                return result
+                return None
             if programme == PAST_END_OF_EPG:
                 programme = self.getProgrammeFromEpg(
                     sid, queryDate + timedelta(days=1), queryDate
                 )
-            result.update({"title": programme["title"]})
-            result.update({"episode": programme["episode"]})
-            result.update({"season": programme["season"]})
-            result.update({"imageUrl": programme["imageUrl"]})
-            return _objectview(result)
+            return programme
         except Exception as err:
             _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
-            return _objectview(result)
+            return None
+
+    def getRecordingJSON(self, pvrId):
+        """Get the recording details as json."""
+        recording = self.getRecording(pvrId)
+        if recording:
+            return recording.as_json()
+        else:
+            return None
 
     def getRecording(self, pvrId):
         """Get the recording details."""
-        result = {
-            "channel": None,
-            "imageUrl": None,
-            "title": None,
-            "season": None,
-            "episode": None,
-        }
+        season = None
+        episode = None
+        starttime = None
+        endtime = None
+        programmeuuid = None
 
-        recording = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
-        result.update({"channel": recording["details"]["cn"]})
-        result.update({"title": recording["details"]["t"]})
-        if (
-            "seasonnumber" in recording["details"]
-            and "episodenumber" in recording["details"]
-        ):
-            result.update({"season": recording["details"]["seasonnumber"]})
-            result.update({"episode": recording["details"]["episodenumber"]})
-        if "programmeuuid" in recording["details"]:
-            programmeuuid = recording["details"]["programmeuuid"]
+        recording = self._http_json(REST_RECORDING_DETAILS.format(pvrId))["details"]
+
+        channel = recording["cn"]
+        title = recording["t"]
+        if "seasonnumber" in recording and "episodenumber" in recording:
+            season = recording["seasonnumber"]
+            episode = recording["episodenumber"]
+        if "programmeuuid" in recording:
+            programmeuuid = recording["programmeuuid"]
             imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
-            result.update({"imageUrl": imageUrl})
+        elif "osid" in recording:
+            sid = str(recording["osid"])
+            imageUrl = self._buildChannelUrl(sid)
 
-        return _objectview(result)
+        starttime = datetime.utcfromtimestamp(recording["ast"])
+        if "finald" in recording:
+            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["finald"])
+        elif "schd" in recording:
+            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["schd"])
+        else:
+            endtime = starttime
+
+        programme = RecordedProgramme(
+            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel
+        )
+
+        return programme
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
@@ -392,7 +444,8 @@ class SkyQRemote:
                 )
                 break
 
-    def _buildChannelUrl(self, sid, chid):
+    def _buildChannelUrl(self, sid, channel):
+        chid = "".join(e for e in channel.casefold() if e.isalnum())
         channel_image_url = self._remoteCountry.channel_image_url
         return channel_image_url.format(sid, chid)
 
@@ -452,8 +505,8 @@ class SkyQRemote:
             self.deviceSetup = True
             return "ok"
 
-        except Exception:
-            _LOGGER.error(f"E0040 - Invalid country: {self._host} : {alpha3}")
+        except Exception as err:
+            _LOGGER.error(f"E0040 - Invalid country: {self._host} : {alpha3} : {err}")
             return None
 
 
@@ -464,8 +517,3 @@ class _SkyWebSocket(WebSocketClient):
 
     def received_message(self, message):
         self.data = message.data
-
-
-class _objectview(object):
-    def __init__(self, d):
-        self.__dict__ = d

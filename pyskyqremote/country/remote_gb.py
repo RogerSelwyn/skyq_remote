@@ -3,9 +3,10 @@ from datetime import datetime
 import logging
 import requests
 
-from pyskyqremote.channel import Programme
-
 from ..const import RESPONSE_OK
+from ..channel import Channel
+from ..programme import Programme
+
 from .const_gb import CHANNEL_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL, LIVE_IMAGE_URL
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ class SkyQCountry:
         """Initialise UK remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
-        self.epgData = None
+        self.epgData = set()
 
         self._lastEpgUrl = None
         self._host = host
@@ -38,13 +39,14 @@ class SkyQCountry:
 
         if epgData is None:
             return None
+
         if len(epgData[0]["events"]) == 0:
             _LOGGER.warning(
                 f"W0010UK - Programme data not found. Do you need to set 'live_tv' to False? {self._host}"
             )
             return None
 
-        self.epgData = []
+        programmes = set()
         for p in epgData[0]["events"]:
             starttime = datetime.utcfromtimestamp(p["st"])
             endtime = datetime.utcfromtimestamp(p["st"] + p["d"])
@@ -63,11 +65,9 @@ class SkyQCountry:
                 programmeuuid = str(p["programmeuuid"])
                 imageUrl = LIVE_IMAGE_URL.format(programmeuuid)
 
-            programme = vars(
-                Programme(
-                    programmeuuid, starttime, endtime, title, season, episode, imageUrl
-                )
+            programme = Programme(
+                programmeuuid, starttime, endtime, title, season, episode, imageUrl
             )
-
-            self.epgData.append(programme)
+            programmes.add(programme)
+        self.epgData = Channel(sid, channelno, None, None, sorted(programmes))
         return self.epgData
