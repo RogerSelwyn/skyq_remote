@@ -15,10 +15,14 @@ from pyskyqremote.media import MediaDecoder
 # example: ./bash_sky_test.py 192.168.0.9
 # Note: you may need to modify top line change python3 to python, depending on OS/setup. this is works for me on my mac
 country = None
-if len(sys.argv) == 3:
-    country = sys.argv[2]
+test_channel = None
+if len(sys.argv) > 2:
+    if sys.argv[2] != "None":
+        country = sys.argv[2]
+if len(sys.argv) > 3:
+    test_channel = sys.argv[3]
 
-sky = SkyQRemote(sys.argv[1], overrideCountry=country)
+sky = SkyQRemote(sys.argv[1], overrideCountry=country, test_channel=test_channel)
 
 print("----------- Power status")
 print(sky.powerStatus())
@@ -43,5 +47,5 @@ if app == APP_EPG:
     print(f"----------- Current Live TV - {sid}")
     print(sky.getCurrentLiveTVProgrammeJSON(sid))
 
-    print("----------- Today's EPG")
-    print(sky.getEpgDataJSON(sid, queryDate))
+# print("----------- Today's EPG")
+# print(sky.getEpgDataJSON(sid, queryDate))

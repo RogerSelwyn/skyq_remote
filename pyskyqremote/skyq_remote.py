@@ -49,6 +49,7 @@ from .const import (
     APP_EPG,
 )
 from .const import TEST_CHANNEL_LIST
+from .channel import Channel
 from .programme import RecordedProgramme
 from .media import Media
 
@@ -184,12 +185,16 @@ class SkyQRemote:
 
     def getEpgData(self, sid, epgDate):
         """Get EPG data for the specified channel."""
-        channelno = self._getChannelNode(sid)["channelno"]
-        channelname = self._getChannelNode(sid)["channel"]
+        channelNode = self._getChannelNode(sid)
+        channelno = channelNode["channelno"]
+        channelname = channelNode["channel"]
         channelImageUrl = self._buildChannelUrl(sid, channelname)
-        channel = self._remoteCountry.getEpgData(sid, channelno, epgDate)
-        channel.channelname = channelname
-        channel.channelImageUrl = channelImageUrl
+        programmes = self._remoteCountry.getEpgData(sid, channelno, epgDate)
+
+        channel = Channel(
+            sid, channelno, channelname, channelImageUrl, sorted(programmes)
+        )
+
         return channel
 
     def getProgrammeFromEpgJSON(self, sid, epgDate, queryDate):
@@ -203,7 +208,7 @@ class SkyQRemote:
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
         epgData = self.getEpgData(sid, epgDate)
-        if epgData is None:
+        if len(epgData.programmes) == 0:
             return None
 
         try:

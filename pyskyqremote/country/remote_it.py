@@ -4,7 +4,6 @@ import logging
 import requests
 
 from ..const import RESPONSE_OK
-from ..channel import Channel
 from ..programme import Programme
 
 from .const_it import (
@@ -35,6 +34,7 @@ class SkyQCountry:
 
     def getEpgData(self, sid, channelno, epgDate):
         """Get EPG data for Italy."""
+        programmes = set()
         queryDateFrom = epgDate.strftime("%Y-%m-%dT00:00:00Z")
         queryDateTo = epgDate.strftime("%Y-%m-%dT23:59:59Z")
 
@@ -54,14 +54,13 @@ class SkyQCountry:
             return self.epgData
 
         if epgData is None:
-            return None
+            return programmes
         if len(epgData) == 0:
             _LOGGER.warning(
                 f"W0010IT - Programme data not found. Do you need to set 'live_tv' to False? {self._host}"
             )
-            return None
+            return programmes
 
-        programmes = set()
         epgDataLen = len(epgData) - 1
         for index, p in enumerate(epgData):
             starttime = datetime.strptime(p["starttime"], "%Y-%m-%dT%H:%M:%SZ")
@@ -89,7 +88,7 @@ class SkyQCountry:
                 programmeuuid, starttime, endtime, title, season, episode, imageUrl
             )
             programmes.add(programme)
-        self.epgData = Channel(sid, channelno, None, None, sorted(programmes))
+        self.epgData = programmes
         return self.epgData
 
     def _getChannels(self):
