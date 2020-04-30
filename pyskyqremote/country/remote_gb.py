@@ -18,32 +18,24 @@ class SkyQCountry:
         """Initialise UK remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
-        self.epgData = set()
-
-        self._lastEpgUrl = None
         self._host = host
 
     def getEpgData(self, sid, channelno, epgDate):
         """Get EPG data for UK."""
-        programmes = set()
         epgDateStr = epgDate.strftime("%Y%m%d")
+
         epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
         epgData = None
-        if self._lastEpgUrl is None or self._lastEpgUrl != epgUrl:
-            resp = requests.get(epgUrl)
-            if resp.status_code == RESPONSE_OK:
-                epgData = resp.json()["schedule"]
-                self._lastEpgUrl = epgUrl
-        else:
-            return self.epgData
+        programmes = set()
+
+        resp = requests.get(epgUrl)
+        if resp.status_code == RESPONSE_OK:
+            epgData = resp.json()["schedule"]
 
         if epgData is None:
             return programmes
 
-        if len(epgData[0]["events"]) == 0:
-            _LOGGER.warning(
-                f"W0010UK - Programme data not found. Do you need to set 'live_tv' to False? {self._host}"
-            )
+        if len(epgData) == 0:
             return programmes
 
         for p in epgData[0]["events"]:
@@ -68,5 +60,5 @@ class SkyQCountry:
                 programmeuuid, starttime, endtime, title, season, episode, imageUrl
             )
             programmes.add(programme)
-        self.epgData = programmes
-        return self.epgData
+
+        return programmes

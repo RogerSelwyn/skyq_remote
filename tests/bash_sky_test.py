@@ -16,11 +16,14 @@ from pyskyqremote.media import MediaDecoder
 # Note: you may need to modify top line change python3 to python, depending on OS/setup. this is works for me on my mac
 country = None
 test_channel = None
+queryDate = datetime.utcnow()
 if len(sys.argv) > 2:
     if sys.argv[2] != "None":
         country = sys.argv[2]
 if len(sys.argv) > 3:
     test_channel = sys.argv[3]
+if len(sys.argv) > 4:
+    queryDate = datetime.utcfromtimestamp(int(sys.argv[4]))
 
 sky = SkyQRemote(sys.argv[1], overrideCountry=country, test_channel=test_channel)
 
@@ -35,14 +38,15 @@ if app == APP_EPG:
     print(currentMedia)
 
     media = MediaDecoder(currentMedia)
-    sid = media.sid
     if not media.live:
         print("----------- Recording")
         print(sky.getRecordingJSON(media.pvrId))
-        sid = 2153
 
-    queryDate = datetime.utcnow()
-    print(f"----------- Programme from Epg - Now - {sid}")
+    if test_channel:
+        sid = test_channel
+    else:
+        sid = media.sid
+    print(f"----------- Programme from Epg - {queryDate} - {sid}")
     print(sky.getProgrammeFromEpgJSON(sid, queryDate, queryDate))
     print(f"----------- Current Live TV - {sid}")
     print(sky.getCurrentLiveTVProgrammeJSON(sid))

@@ -71,7 +71,9 @@ class SkyQRemote:
         self._jsonport = jsonport
         self._overrideCountry = overrideCountry
         self.deviceSetup = False
+        self.channel = None
         self._soapControlURL = None
+        self._lastEpg = None
 
         self.powerStatus()
         if not self.deviceSetup:
@@ -183,19 +185,37 @@ class SkyQRemote:
         else:
             return None
 
-    def getEpgData(self, sid, epgDate):
-        """Get EPG data for the specified channel."""
+    def getEpgData(self, sid, epgDate, days=2):
+        """Get EPG data for the specified channel/date."""
         channelNode = self._getChannelNode(sid)
         channelno = channelNode["channelno"]
         channelname = channelNode["channel"]
         channelImageUrl = self._buildChannelUrl(sid, channelname)
-        programmes = self._remoteCountry.getEpgData(sid, channelno, epgDate)
 
-        channel = Channel(
+        epg = str(sid) + epgDate.strftime("%Y%m%d")
+        if self._lastEpg == epg:
+            return self.channel
+
+        programmes = set()
+        for n in range(days):
+            programmesData = self._remoteCountry.getEpgData(
+                sid, channelno, epgDate + timedelta(days=n)
+            )
+            if len(programmesData) > 0:
+                programmes = programmes.union(programmesData)
+            else:
+                break
+
+        self._lastEpg = epg
+
+        if len(programmes) == 0:
+            _LOGGER.info(f"I0020 - Programme data not found for {sid} : {epgDate}")
+
+        self.channel = Channel(
             sid, channelno, channelname, channelImageUrl, sorted(programmes)
         )
 
-        return channel
+        return self.channel
 
     def getProgrammeFromEpgJSON(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel as json."""
@@ -237,10 +257,7 @@ class SkyQRemote:
             programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
             if programme is None:
                 return None
-            if programme == PAST_END_OF_EPG:
-                programme = self.getProgrammeFromEpg(
-                    sid, queryDate + timedelta(days=1), queryDate
-                )
+
             return programme
         except Exception as err:
             _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
@@ -261,28 +278,37 @@ class SkyQRemote:
         starttime = None
         endtime = None
         programmeuuid = None
+        channel = None
+        imageUrl = None
+        title = None
 
-        recording = self._http_json(REST_RECORDING_DETAILS.format(pvrId))["details"]
+        resp = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
+        if "details" in resp:
+            recording = resp["details"]
 
-        channel = recording["cn"]
-        title = recording["t"]
-        if "seasonnumber" in recording and "episodenumber" in recording:
-            season = recording["seasonnumber"]
-            episode = recording["episodenumber"]
-        if "programmeuuid" in recording:
-            programmeuuid = recording["programmeuuid"]
-            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
-        elif "osid" in recording:
-            sid = str(recording["osid"])
-            imageUrl = self._buildChannelUrl(sid)
+            channel = recording["cn"]
+            title = recording["t"]
+            if "seasonnumber" in recording and "episodenumber" in recording:
+                season = recording["seasonnumber"]
+                episode = recording["episodenumber"]
+            if "programmeuuid" in recording:
+                programmeuuid = recording["programmeuuid"]
+                imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
+            elif "osid" in recording:
+                sid = str(recording["osid"])
+                imageUrl = self._buildChannelUrl(sid)
 
-        starttime = datetime.utcfromtimestamp(recording["ast"])
-        if "finald" in recording:
-            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["finald"])
-        elif "schd" in recording:
-            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["schd"])
-        else:
-            endtime = starttime
+            starttime = datetime.utcfromtimestamp(recording["ast"])
+            if "finald" in recording:
+                endtime = datetime.utcfromtimestamp(
+                    recording["ast"] + recording["finald"]
+                )
+            elif "schd" in recording:
+                endtime = datetime.utcfromtimestamp(
+                    recording["ast"] + recording["schd"]
+                )
+            else:
+                endtime = starttime
 
         programme = RecordedProgramme(
             programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel

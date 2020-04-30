@@ -141,5 +141,18 @@ TEST_CHANNEL_LIST = {
             "t": "Sky Arte HD",
             "xsg": 1,
         },
+        {
+            "c": "101",
+            "dvbtriplet": "2.2048.10353",
+            "schedule": True,
+            "servicetype": "DSAT",
+            "servicetypes": ["DSAT"],
+            "sf": "sd",
+            "sg": 12,
+            "sid": "2153",
+            "sk": 2153,
+            "t": "BBC One South",
+            "xsg": 3,
+        },
     ],
 }
