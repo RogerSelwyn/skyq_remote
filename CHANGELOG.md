@@ -1,10 +1,15 @@
 # Changelog
 
-## v0.2.10 (29/04/2020) *(Beta)*
+## v0.2.11 (01/05/2020) *(Beta)*
+- [Bump to 0.2.11](https://github.com/RogerSelwyn/skyq_remote/commit/722a7bfeb16c28ddcc7173c88fac2e80bf4c345c) - @RogerSelwyn
+- [Fixed non-return of recording data so not fatal error](https://github.com/RogerSelwyn/skyq_remote/commit/f34c726831d565805d0eca48f760038c60b159ee) - @RogerSelwyn
+- [Fixed issue with no details for recording](https://github.com/RogerSelwyn/skyq_remote/commit/6debeea1e05c2a2aa4a9db6d552daacc4fcdbefa) - @RogerSelwyn
+
+## v0.2.10 (29/04/2020) 
 - [Bump to 0.2.10](https://github.com/RogerSelwyn/skyq_remote/commit/be337a8987a2dae2961855d8e86d6cb2f1b12b09) - @RogerSelwyn
 - [Fixed issue with empty EPG](https://github.com/RogerSelwyn/skyq_remote/commit/79fd10e8aa6c8f46a15aaeb1e0241c46580cff3a) - @RogerSelwyn
 
-## v0.2.9 (29/04/2020) *(Beta)*
+## v0.2.9 (29/04/2020) 
 - [Bump to 0.2.9](https://github.com/RogerSelwyn/skyq_remote/commit/9ba01ca86cf356b3d9c52ba314f9a9f044f2e06b) - @RogerSelwyn
 - [Updated to enable return of JSON structures](https://github.com/RogerSelwyn/skyq_remote/commit/a17df4f902bbc380490e02a9c2accfdefecafe12) - @RogerSelwyn
 - [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/4413ad41679e6afc86df31472d1421f27de2e9d9) - @RogerSelwyn
