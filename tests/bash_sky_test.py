@@ -29,6 +29,8 @@ sky = SkyQRemote(sys.argv[1], overrideCountry=country, test_channel=test_channel
 
 print("----------- Power status")
 print(sky.powerStatus())
+print("----------- Current status")
+print(sky.getCurrentState())
 print("----------- Active Application")
 app = sky.getActiveApplication()
 print(str(app))

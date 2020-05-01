@@ -283,32 +283,31 @@ class SkyQRemote:
         title = None
 
         resp = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
-        if "details" in resp:
-            recording = resp["details"]
+        if "details" not in resp:
+            _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
+            return None
 
-            channel = recording["cn"]
-            title = recording["t"]
-            if "seasonnumber" in recording and "episodenumber" in recording:
-                season = recording["seasonnumber"]
-                episode = recording["episodenumber"]
-            if "programmeuuid" in recording:
-                programmeuuid = recording["programmeuuid"]
-                imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
-            elif "osid" in recording:
-                sid = str(recording["osid"])
-                imageUrl = self._buildChannelUrl(sid)
+        recording = resp["details"]
 
-            starttime = datetime.utcfromtimestamp(recording["ast"])
-            if "finald" in recording:
-                endtime = datetime.utcfromtimestamp(
-                    recording["ast"] + recording["finald"]
-                )
-            elif "schd" in recording:
-                endtime = datetime.utcfromtimestamp(
-                    recording["ast"] + recording["schd"]
-                )
-            else:
-                endtime = starttime
+        channel = recording["cn"]
+        title = recording["t"]
+        if "seasonnumber" in recording and "episodenumber" in recording:
+            season = recording["seasonnumber"]
+            episode = recording["episodenumber"]
+        if "programmeuuid" in recording:
+            programmeuuid = recording["programmeuuid"]
+            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
+        elif "osid" in recording:
+            sid = str(recording["osid"])
+            imageUrl = self._buildChannelUrl(sid)
+
+        starttime = datetime.utcfromtimestamp(recording["ast"])
+        if "finald" in recording:
+            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["finald"])
+        elif "schd" in recording:
+            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["schd"])
+        else:
+            endtime = starttime
 
         programme = RecordedProgramme(
             programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel
