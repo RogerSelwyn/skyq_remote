@@ -129,10 +129,10 @@ Will decode the JSON structure to a python object.
 ### Get EPG information
 
 ```
-epg = self.client.getEpgData(sid, epgDate)
+epg = self.client.getEpgData(sid, epgDate, days)
 ```
 
-Will return an object with an array of events:
+Will return an object with an array of events including the specified number of days. Defaults to 2 days.
 
 ```
 {
@@ -166,10 +166,10 @@ Will return an object with an array of events:
 ### Get EPG information (JSON)
 
 ```
-epg = self.client.getEpgData(sid, epgDate)
+epg = self.client.getEpgData(sid, epgDate, days)
 ```
 
-Will return a JSON structure with an array of events:
+Will return a JSON structure with an array of events including the specified number of days. Defaults to 2 days.
 
 ```
 {
