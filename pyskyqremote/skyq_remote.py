@@ -142,10 +142,10 @@ class SkyQRemote:
     def getCurrentMediaJSON(self):
         """Get the currently playing media on the SkyQ box as json."""
         media = self.getCurrentMedia()
-        if media:
-            return media.as_json()
-        else:
+        if not media:
             return None
+
+        return media.as_json()
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
@@ -180,10 +180,10 @@ class SkyQRemote:
     def getEpgDataJSON(self, sid, epgDate):
         """Get EPG data for the specified channel as json."""
         channel = self.getEpgData(sid, epgDate)
-        if channel:
-            return channel.as_json()
-        else:
+        if not channel:
             return None
+
+        return channel.as_json()
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
@@ -220,10 +220,10 @@ class SkyQRemote:
     def getProgrammeFromEpgJSON(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel as json."""
         programme = self.getProgrammeFromEpg(sid, epgDate, queryDate)
-        if programme:
-            return programme.as_json()
-        else:
+        if not programme:
             return None
+
+        return programme.as_json()
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
@@ -245,10 +245,10 @@ class SkyQRemote:
     def getCurrentLiveTVProgrammeJSON(self, sid):
         """Get current live programme on the specified channel as json."""
         programme = self.getCurrentLiveTVProgramme(sid)
-        if programme:
-            return programme.as_json()
-        else:
+        if not programme:
             return None
+
+        return programme.as_json()
 
     def getCurrentLiveTVProgramme(self, sid):
         """Get current live programme on the specified channel."""
@@ -266,10 +266,10 @@ class SkyQRemote:
     def getRecordingJSON(self, pvrId):
         """Get the recording details as json."""
         recording = self.getRecording(pvrId)
-        if recording:
-            return recording.as_json()
-        else:
+        if not recording:
             return None
+
+        return recording.as_json()
 
     def getRecording(self, pvrId):
         """Get the recording details."""

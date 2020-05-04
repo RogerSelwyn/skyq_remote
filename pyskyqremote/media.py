@@ -43,7 +43,7 @@ class _MediaJSONEncoder(json.JSONEncoder):
         if isinstance(obj, Media):
             attributes = {}
             for k, v in vars(obj).items():
-                if type(v) is datetime:
+                if isinstance(v, datetime):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes.update({k: v})
 

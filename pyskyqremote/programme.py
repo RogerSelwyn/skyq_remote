@@ -83,7 +83,7 @@ class _ProgrammeJSONEncoder(json.JSONEncoder):
         if isinstance(obj, Programme):
             attributes = {}
             for k, v in vars(obj).items():
-                if type(v) is datetime:
+                if isinstance(v, datetime):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes.update({k: v})
 
@@ -99,7 +99,7 @@ class _RecordingJSONEncoder(json.JSONEncoder):
         if isinstance(obj, Programme):
             attributes = {}
             for k, v in vars(obj).items():
-                if type(v) is datetime:
+                if isinstance(v, datetime):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes.update({k: v})
 
