@@ -319,20 +319,16 @@ class SkyQRemote:
         """Issue the specified sequence of commands to SkyQ box."""
         if isinstance(sequence, list):
             for item in sequence:
-                if item not in self.commands:
-                    _LOGGER.error(
-                        "E0010 - Invalid command: {self._host} : {0}".format(item)
-                    )
+                if item.casefold() not in self.commands:
+                    _LOGGER.error(f"E0010 - Invalid command: {self._host} : {item}")
                     break
                 self._sendCommand(self.commands[item.casefold()])
                 time.sleep(0.5)
         else:
             if sequence not in self.commands:
-                _LOGGER.error(
-                    "E0020 - Invalid command: {self._host} : {0}".format(sequence)
-                )
+                _LOGGER.error(f"E0020 - Invalid command: {self._host} : {sequence}")
             else:
-                self._sendCommand(self.commands[sequence])
+                self._sendCommand(self.commands[sequence.casefold()])
 
     def _http_json(self, path, headers=None) -> str:
         response = requests.get(
