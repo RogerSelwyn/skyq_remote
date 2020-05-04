@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.2.11 (01/05/2020) *(Beta)*
+## v0.2.12 (04/05/2020)
+- [Bump to 0.2.12](https://github.com/RogerSelwyn/skyq_remote/commit/bd072b9d9ee6a326e64ea17ce04d9489a2d91a4e) - @RogerSelwyn
+- [Fixed issue with capitalisation of commands](https://github.com/RogerSelwyn/skyq_remote/commit/47e826e8f2eef09175ebe5d7169edac34ba0b059) - @RogerSelwyn
+
+## v0.2.11 (01/05/2020)
 - [Bump to 0.2.11](https://github.com/RogerSelwyn/skyq_remote/commit/722a7bfeb16c28ddcc7173c88fac2e80bf4c345c) - @RogerSelwyn
 - [Fixed non-return of recording data so not fatal error](https://github.com/RogerSelwyn/skyq_remote/commit/f34c726831d565805d0eca48f760038c60b159ee) - @RogerSelwyn
 - [Fixed issue with no details for recording](https://github.com/RogerSelwyn/skyq_remote/commit/6debeea1e05c2a2aa4a9db6d552daacc4fcdbefa) - @RogerSelwyn
