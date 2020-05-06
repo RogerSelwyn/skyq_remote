@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.2.13 (05/05/2020)
+- [Bump to 0.2.13](https://github.com/RogerSelwyn/skyq_remote/commit/7a462abedca1aea776a2e11ccec66ef2abeece35) - @RogerSelwyn
 - [Replaced ws4py with websocket-client](https://github.com/RogerSelwyn/skyq_remote/commit/624ed6de8277d090711cf684efc896712e2b432f) - @RogerSelwyn
 - [Fixed unknown country not defaulting to GBR](https://github.com/RogerSelwyn/skyq_remote/commit/35395a6332fee097d3048b4e3ac1bca507a5a5b4) - @RogerSelwyn
 - [Improved code quality as analysed by codefactor](https://github.com/RogerSelwyn/skyq_remote/commit/056955540d6ae3ed36c86623b6e22d63b8fbc361) - @RogerSelwyn
