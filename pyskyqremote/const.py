@@ -28,9 +28,6 @@ REST_RECORDING_DETAILS = "pvr/details/{0}"
 REST_PATH_INFO = "system/information"
 REST_PATH_DEVICEINFO = "system/deviceinformation"
 
-# Generic Constants
-DEFAULT_ENCODING = "utf-8"
-
 # Sky specific constants
 CURRENT_URI = "CurrentURI"
 CURRENT_TRANSPORT_STATE = "CurrentTransportState"

@@ -11,7 +11,7 @@ import pycountry
 from datetime import datetime, timedelta
 from http import HTTPStatus
 
-from ws4py.client.threadedclient import WebSocketClient
+import websocket
 
 from .const import (
     SKY_PLAY_URN,
@@ -31,7 +31,6 @@ from .const import (
     REST_RECORDING_DETAILS,
     REST_PATH_INFO,
     REST_PATH_DEVICEINFO,
-    DEFAULT_ENCODING,
     CURRENT_URI,
     CURRENT_TRANSPORT_STATE,
     APP_STATUS_VISIBLE,
@@ -75,6 +74,7 @@ class SkyQRemote:
         self.channel = None
         self._soapControlURL = None
         self._lastEpg = None
+        self._currentApp = APP_EPG
 
         self.powerStatus()
         if not self.deviceSetup:
@@ -126,19 +126,17 @@ class SkyQRemote:
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
         try:
-            result = APP_EPG
             apps = self._callSkyWebSocket(WS_CURRENT_APPS)
             if apps is None:
-                return result
-            app = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)[
-                "appId"
-            ]
+                return self._currentApp
 
-            result = app
+            self._currentApp = next(
+                a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE
+            )["appId"]
 
-            return result
+            return self._currentApp
         except Exception:
-            return result
+            return self._currentApp
 
     def getCurrentMediaJSON(self):
         """Get the currently playing media on the SkyQ box as json."""
@@ -404,22 +402,10 @@ class SkyQRemote:
 
     def _callSkyWebSocket(self, method):
         try:
-            client = _SkyWebSocket(WS_BASE_URL.format(self._host, method))
-            client.connect()
-            timeout = datetime.now() + timedelta(0, 5)
-            while client.data is None and datetime.now() < timeout:
-                pass
-            client.close()
-            if client.data is not None:
-                return json.loads(
-                    client.data.decode(DEFAULT_ENCODING), encoding=DEFAULT_ENCODING
-                )
-            return None
-        except (AttributeError) as err:
-            _LOGGER.debug(
-                f"D0010 - Attribute Error occurred: {self._host} : {method} : {err}"
-            )
-            return None
+            ws = websocket.create_connection(WS_BASE_URL.format(self._host, method))
+            response = json.loads(ws.recv())
+            ws.close()
+            return response
         except (TimeoutError) as err:
             _LOGGER.warning(
                 f"W0020 - Websocket call failed: {self._host} : {method} : {err}"
@@ -548,12 +534,3 @@ class SkyQRemote:
             from pyskyqremote.country.remote_gb import SkyQCountry
 
             return SkyQCountry
-
-
-class _SkyWebSocket(WebSocketClient):
-    def __init__(self, url):
-        super(_SkyWebSocket, self).__init__(url)
-        self.data = None
-
-    def received_message(self, message):
-        self.data = message.data
