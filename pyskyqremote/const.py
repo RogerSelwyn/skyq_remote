@@ -99,6 +99,12 @@ COMMANDS = {
 
 RESPONSE_OK = 200
 
+KNOWN_COUNTRIES = {
+    "GBR": "GBR",
+    "IRL": "GBR",
+    "ITA": "ITA",
+}
+
 TEST_CHANNEL_LIST = {
     "documentId": "2416",
     "services": [

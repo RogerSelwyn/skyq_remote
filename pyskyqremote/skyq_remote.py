@@ -47,6 +47,7 @@ from .const import (
     SKY_STATE_ON,
     SKY_STATE_OFF,
     APP_EPG,
+    KNOWN_COUNTRIES,
 )
 from .const import TEST_CHANNEL_LIST
 from .channel import Channel
@@ -368,7 +369,7 @@ class SkyQRemote:
             return {"url": None, "status": "Not Found"}
         except (requests.exceptions.Timeout):
             _LOGGER.warning(
-                f"W0020 - Control URL not accessible: {self._host} : {descriptionUrl}"
+                f"W0010 - Control URL not accessible: {self._host} : {descriptionUrl}"
             )
             return {"url": None, "status": "Error"}
         except (requests.exceptions.ConnectionError) as err:
@@ -415,10 +416,14 @@ class SkyQRemote:
                 )
             return None
         except (AttributeError) as err:
-            _LOGGER.debug(f"D0010 - Attribute Error occurred: {self._host} : {err}")
+            _LOGGER.debug(
+                f"D0010 - Attribute Error occurred: {self._host} : {method} : {err}"
+            )
             return None
-        except (TimeoutError):
-            _LOGGER.warning(f"W0030 - Websocket call failed: {self._host} : {method}")
+        except (TimeoutError) as err:
+            _LOGGER.warning(
+                f"W0020 - Websocket call failed: {self._host} : {method} : {err}"
+            )
             return {"url": None, "status": "Error"}
         except Exception as err:
             _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")
@@ -499,6 +504,24 @@ class SkyQRemote:
         if not deviceInfo:
             return None
 
+        url_index = 0
+        self._soapControlURL = None
+        while self._soapControlURL is None and url_index < 50:
+            self._soapControlURL = self._getSoapControlURL(url_index)["url"]
+            url_index += 1
+
+        SkyQCountry = self._importCountry(deviceInfo)
+        self._remoteCountry = SkyQCountry(self._host)
+
+        if not self._test_channel:
+            self._channels = self._http_json(REST_CHANNEL_LIST)
+        else:
+            self._channels = TEST_CHANNEL_LIST
+
+        self.deviceSetup = True
+        return "ok"
+
+    def _importCountry(self, deviceInfo):
         alpha3 = None
         if self._overrideCountry:
             alpha3 = self._overrideCountry
@@ -509,31 +532,22 @@ class SkyQRemote:
             _LOGGER.error(f"E0050 - No country identified: {self._host}")
             return None
 
+        if alpha3 in KNOWN_COUNTRIES:
+            alpha3 = KNOWN_COUNTRIES[alpha3]
+
         country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
-
-        url_index = 0
-        self._soapControlURL = None
-        while self._soapControlURL is None and url_index < 50:
-            self._soapControlURL = self._getSoapControlURL(url_index)["url"]
-            url_index += 1
-
         try:
-            SkyQCountry = importlib.import_module(
+            return importlib.import_module(
                 "pyskyqremote.country.remote_" + country
             ).SkyQCountry
 
-            self._remoteCountry = SkyQCountry(self._host)
-            if not self._test_channel:
-                self._channels = self._http_json(REST_CHANNEL_LIST)
-            else:
-                self._channels = TEST_CHANNEL_LIST
-
-            self.deviceSetup = True
-            return "ok"
-
         except Exception as err:
-            _LOGGER.error(f"E0040 - Invalid country: {self._host} : {alpha3} : {err}")
-            return None
+            _LOGGER.warning(
+                f"W0030 - Invalid country, defaulting to GBR : {self._host} : {alpha3} : {err}"
+            )
+            from pyskyqremote.country.remote_gb import SkyQCountry
+
+            return SkyQCountry
 
 
 class _SkyWebSocket(WebSocketClient):

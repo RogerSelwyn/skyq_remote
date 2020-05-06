@@ -4,7 +4,7 @@ import sys
 from datetime import datetime
 
 from pyskyqremote.skyq_remote import SkyQRemote
-from pyskyqremote.const import APP_EPG
+from pyskyqremote.const import APP_EPG, SKY_STATE_STANDBY
 from pyskyqremote.media import MediaDecoder
 
 # from pyskyqremote.channel import ChannelDecoder
@@ -29,29 +29,38 @@ sky = SkyQRemote(sys.argv[1], overrideCountry=country, test_channel=test_channel
 
 print("----------- Power status")
 print(sky.powerStatus())
+
 print("----------- Current status")
+currentState = sky.getCurrentState()
 print(sky.getCurrentState())
+if currentState == SKY_STATE_STANDBY:
+    exit()
+
 print("----------- Active Application")
 app = sky.getActiveApplication()
 print(str(app))
-if app == APP_EPG:
-    print("----------- Current Media")
-    currentMedia = sky.getCurrentMediaJSON()
-    print(currentMedia)
+if app != APP_EPG:
+    exit()
 
-    media = MediaDecoder(currentMedia)
-    if not media.live:
-        print("----------- Recording")
-        print(sky.getRecordingJSON(media.pvrId))
+print("----------- Current Media")
+currentMedia = sky.getCurrentMediaJSON()
+print(currentMedia)
 
-    if test_channel:
-        sid = test_channel
-    else:
-        sid = media.sid
-    print(f"----------- Programme from Epg - {queryDate} - {sid}")
-    print(sky.getProgrammeFromEpgJSON(sid, queryDate, queryDate))
-    print(f"----------- Current Live TV - {sid}")
-    print(sky.getCurrentLiveTVProgrammeJSON(sid))
+media = MediaDecoder(currentMedia)
+if not media.live:
+    print("----------- Recording")
+    print(sky.getRecordingJSON(media.pvrId))
+
+if test_channel:
+    sid = test_channel
+else:
+    sid = media.sid
+
+print(f"----------- Programme from Epg - {queryDate} - {sid}")
+print(sky.getProgrammeFromEpgJSON(sid, queryDate, queryDate))
+
+print(f"----------- Current Live TV - {sid}")
+print(sky.getCurrentLiveTVProgrammeJSON(sid))
 
 # print("----------- Today's EPG")
 # print(sky.getEpgDataJSON(sid, queryDate))
