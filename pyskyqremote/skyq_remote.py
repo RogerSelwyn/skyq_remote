@@ -65,7 +65,7 @@ class SkyQRemote:
         self, host, overrideCountry=None, test_channel=None, port=49160, jsonport=9006,
     ):
         """Stand up a new SkyQ box."""
-        self._host = host
+        self.host = host
         self._test_channel = test_channel
         self._port = port
         self._jsonport = jsonport
@@ -97,11 +97,11 @@ class SkyQRemote:
             return SKY_STATE_STANDBY
         except (requests.exceptions.ConnectionError):
             _LOGGER.info(
-                f"I0010 - Device has control URL but connection request failed: {self._host}"
+                f"I0010 - Device has control URL but connection request failed: {self.host}"
             )
             return SKY_STATE_OFF
         except Exception as err:
-            _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0060 - Error occurred: {self.host} : {err}")
             return SKY_STATE_STANDBY
 
     def getCurrentState(self):
@@ -255,7 +255,7 @@ class SkyQRemote:
 
             return programme
         except Exception as err:
-            _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
+            _LOGGER.exception(f"X0030 - Error occurred: {self.host} : {sid} : {err}")
             return None
 
     def getRecordingJSON(self, pvrId):
@@ -315,19 +315,19 @@ class SkyQRemote:
         if isinstance(sequence, list):
             for item in sequence:
                 if item.casefold() not in self.commands:
-                    _LOGGER.error(f"E0010 - Invalid command: {self._host} : {item}")
+                    _LOGGER.error(f"E0010 - Invalid command: {self.host} : {item}")
                     break
                 self._sendCommand(self.commands[item.casefold()])
                 time.sleep(0.5)
         else:
             if sequence not in self.commands:
-                _LOGGER.error(f"E0020 - Invalid command: {self._host} : {sequence}")
+                _LOGGER.error(f"E0020 - Invalid command: {self.host} : {sequence}")
             else:
                 self._sendCommand(self.commands[sequence.casefold()])
 
     def _http_json(self, path, headers=None) -> str:
         response = requests.get(
-            REST_BASE_URL.format(self._host, self._jsonport, path),
+            REST_BASE_URL.format(self.host, self._jsonport, path),
             timeout=TIMEOUT,
             headers=headers,
         )
@@ -336,7 +336,7 @@ class SkyQRemote:
     def _getSoapControlURL(self, descriptionIndex):
         try:
             descriptionUrl = SOAP_DESCRIPTION_BASE_URL.format(
-                self._host, descriptionIndex
+                self.host, descriptionIndex
             )
             headers = {"User-Agent": SOAP_USER_AGENT}
             resp = requests.get(descriptionUrl, headers=headers, timeout=TIMEOUT)
@@ -356,21 +356,21 @@ class SkyQRemote:
                     return {"url": None, "status": "Not Found"}
                 return {
                     "url": SOAP_CONTROL_BASE_URL.format(
-                        self._host, playService["controlURL"]
+                        self.host, playService["controlURL"]
                     ),
                     "status": "OK",
                 }
             return {"url": None, "status": "Not Found"}
         except (requests.exceptions.Timeout):
             _LOGGER.warning(
-                f"W0010 - Control URL not accessible: {self._host} : {descriptionUrl}"
+                f"W0010 - Control URL not accessible: {self.host} : {descriptionUrl}"
             )
             return {"url": None, "status": "Error"}
         except (requests.exceptions.ConnectionError) as err:
-            _LOGGER.exception(f"X0070 - Connection error: {self._host} : {err}")
+            _LOGGER.exception(f"X0070 - Connection error: {self.host} : {err}")
             return {"url": None, "status": "Error"}
         except Exception as err:
-            _LOGGER.exception(f"X0010 - Other error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0010 - Other error occurred: {self.host} : {err}")
             return {"url": None, "status": "Error"}
 
     def _callSkySOAPService(self, method):
@@ -398,17 +398,17 @@ class SkyQRemote:
 
     def _callSkyWebSocket(self, method):
         try:
-            ws = websocket.create_connection(WS_BASE_URL.format(self._host, method))
+            ws = websocket.create_connection(WS_BASE_URL.format(self.host, method))
             response = json.loads(ws.recv())
             ws.close()
             return response
         except (TimeoutError) as err:
             _LOGGER.warning(
-                f"W0020 - Websocket call failed: {self._host} : {method} : {err}"
+                f"W0020 - Websocket call failed: {self.host} : {method} : {err}"
             )
             return {"url": None, "status": "Error"}
         except Exception as err:
-            _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0020 - Error occurred: {self.host} : {err}")
             return None
 
     def _sendCommand(self, code):
@@ -420,15 +420,15 @@ class SkyQRemote:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error as err:
             _LOGGER.exception(
-                f"X0040 - Failed to create socket when sending command: {self._host} : {err}"
+                f"X0040 - Failed to create socket when sending command: {self.host} : {err}"
             )
             return
 
         try:
-            client.connect((self._host, self._port))
+            client.connect((self.host, self._port))
         except Exception as err:
             _LOGGER.exception(
-                f"X0050 - Failed to connect to client when sending command: {self._host} : {err}"
+                f"X0050 - Failed to connect to client when sending command: {self.host} : {err}"
             )
             return
 
@@ -451,7 +451,7 @@ class SkyQRemote:
 
             if time.time() > timeout:
                 _LOGGER.error(
-                    "E0030 - Timeout error sending command: {self._host} : {0}".format(
+                    "E0030 - Timeout error sending command: {self.host} : {0}".format(
                         str(code)
                     )
                 )
@@ -483,7 +483,7 @@ class SkyQRemote:
             url_index += 1
 
         SkyQCountry = self._importCountry(deviceInfo)
-        self._remoteCountry = SkyQCountry(self._host)
+        self._remoteCountry = SkyQCountry(self.host)
 
         if not self._test_channel:
             self._channels = self._http_json(REST_CHANNEL_LIST)
@@ -503,7 +503,7 @@ class SkyQRemote:
         ):
             return None
         except Exception as err:
-            _LOGGER.exception(f"X0080 - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0080 - Error occurred: {self.host} : {err}")
             return None
 
     def _importCountry(self, deviceInfo):
@@ -514,7 +514,7 @@ class SkyQRemote:
             alpha3 = deviceInfo["countryCode"].upper()
 
         if not alpha3:
-            _LOGGER.error(f"E0050 - No country identified: {self._host}")
+            _LOGGER.error(f"E0050 - No country identified: {self.host}")
             return None
 
         if alpha3 in KNOWN_COUNTRIES:
@@ -528,7 +528,7 @@ class SkyQRemote:
 
         except (AttributeError, ModuleNotFoundError) as err:
             _LOGGER.warning(
-                f"W0030 - Invalid country, defaulting to GBR : {self._host} : {alpha3} : {err}"
+                f"W0030 - Invalid country, defaulting to GBR : {self.host} : {alpha3} : {err}"
             )
             from pyskyqremote.country.remote_gb import SkyQCountry
 
