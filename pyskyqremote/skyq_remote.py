@@ -77,10 +77,6 @@ class SkyQRemote:
         self._currentApp = APP_EPG
 
         self.powerStatus()
-        if not self.deviceSetup:
-            _LOGGER.error(
-                f"E0060 - Device not switched on during restart: {self._host}"
-            )
 
     def powerStatus(self) -> str:
         """Get the power status of the Sky Q box."""
@@ -474,21 +470,11 @@ class SkyQRemote:
         channelno = channelNode["c"]
         return {"channel": channel, "channelno": channelno}
 
-    def _getDeviceInformation(self):
-        try:
-            resp = self._http_json(REST_PATH_DEVICEINFO)
-            return resp
-        except requests.exceptions.ConnectTimeout:
-            return None
-        except Exception as err:
-            _LOGGER.exception(f"X0080 - Error occurred: {self._host} : {err}")
-            return None
-
     def _setupDevice(self):
         """Set the remote up."""
         deviceInfo = self._getDeviceInformation()
         if not deviceInfo:
-            return None
+            return
 
         url_index = 0
         self._soapControlURL = None
@@ -505,7 +491,20 @@ class SkyQRemote:
             self._channels = TEST_CHANNEL_LIST
 
         self.deviceSetup = True
-        return "ok"
+        return
+
+    def _getDeviceInformation(self):
+        try:
+            resp = self._http_json(REST_PATH_DEVICEINFO)
+            return resp
+        except (
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ConnectionError,
+        ):
+            return None
+        except Exception as err:
+            _LOGGER.exception(f"X0080 - Error occurred: {self._host} : {err}")
+            return None
 
     def _importCountry(self, deviceInfo):
         alpha3 = None
