@@ -521,13 +521,13 @@ class SkyQRemote:
         if alpha3 in KNOWN_COUNTRIES:
             alpha3 = KNOWN_COUNTRIES[alpha3]
 
-        country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
         try:
+            country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
             return importlib.import_module(
                 "pyskyqremote.country.remote_" + country
             ).SkyQCountry
 
-        except Exception as err:
+        except (AttributeError, ModuleNotFoundError) as err:
             _LOGGER.warning(
                 f"W0030 - Invalid country, defaulting to GBR : {self._host} : {alpha3} : {err}"
             )
