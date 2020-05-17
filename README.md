@@ -28,6 +28,66 @@ from pyskyqremote import SkyQRemote
 self.client = SkyQRemote('192.168.1.99')
 ```
 
+### Get device information
+
+```
+device = self.client.getDeviceInformation()
+```
+
+Will return an object such as below for device informatiom:
+
+```
+{
+   'ASVersion':'Q112.000.21.00-AS_asdev',
+   'IPAddress':'192.168.1.22',
+   'countryCode':'GBR',
+   'epgCountryCode':'GBR',
+   'hardwareModel':'ES240',
+   'hardwareName':'Falcon',
+   'manufacturer':'Sky',
+   'modelNumber':'Q112.000.21.00L (53wk8j8)',
+   'serialNumber':'0627086857 2',
+   'versionNumber':'32B12D'
+}
+```
+
+### Get device information (JSON)
+
+```
+device = self.client.getDeviceInformationJSON()
+```
+
+Will return a JSON structure such as below for device information:
+
+```
+{
+   "__type__":"__device__",
+   "attributes":{
+      "ASVersion":"Q112.000.21.00-AS_asdev",
+      "IPAddress":"192.168.x.xx",
+      "countryCode":"GBR",
+      "epgCountryCode":"GBR",
+      "hardwareModel":"ES240",
+      "hardwareName":"Falcon",
+      "manufacturer":"Sky",
+      "modelNumber":"Q112.000.21.00L (53wk8j8)",
+      "serialNumber":"##########",
+      "versionNumber":"32B12D"
+   }
+}
+
+```
+
+### Decode device information (JSON)
+
+```
+from pyskyqremote.media import DeviceDecoder
+device = DeviceDecoder(deviceJSON)
+```
+
+Will decode the JSON structure to a python object.
+
+
 ### Get power status
 
 ```
@@ -80,7 +140,7 @@ or for recording
    'live':False
 }
 ```
-## Get current media (JSON)
+### Get current media (JSON)
 
 ```
 media = self.client.getCurrentMediaJSON()
@@ -116,7 +176,7 @@ or for recording
 }
 ```
 
-## Decode current media (JSON)
+### Decode current media (JSON)
 
 ```
 from pyskyqremote.media import MediaDecoder
@@ -210,7 +270,7 @@ Will return a JSON structure with an array of events including the specified num
 }
 ```
 
-## Decode EPG information (JSON)
+### Decode EPG information (JSON)
 
 ```
 from pyskyqremote.channel import ChannelDecoder
@@ -264,7 +324,7 @@ Will return a JSON structure such as below:
    }
 }
 ```
-## Decode programme information (JSON)
+### Decode programme information (JSON)
 
 ```
 from pyskyqremote.programme import ProgrammeDecoder
@@ -356,7 +416,7 @@ Will return an object such as below:
    }
 }
 ```
-## Decode recording information (JSON)
+### Decode recording information (JSON)
 
 ```
 from pyskyqremote.programme import RecordedProgrammeDecoder
