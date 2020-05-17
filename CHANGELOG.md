@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.14 (17/05/2020)
+- [Bump to 0.2.14](https://github.com/RogerSelwyn/skyq_remote/commit/eecd8de50535c68de1bff653399c23755920f7c5) - @RogerSelwyn
+- [Extract serialNumber from SkyQ](https://github.com/RogerSelwyn/skyq_remote/commit/c84a5d04f41a99d1aaf3ebb97cd72e9aa80510b8) - @RogerSelwyn
+- [Make host details available in class](https://github.com/RogerSelwyn/skyq_remote/commit/46030662c83d7b4566d62b7877d307e5271c1f41) - @RogerSelwyn
+- [Remove error on failed setup](https://github.com/RogerSelwyn/skyq_remote/commit/223d9480cdea7b011b3760b79d5d9eee977d19a1) - @RogerSelwyn
+- [Handled invalid countries more tidily](https://github.com/RogerSelwyn/skyq_remote/commit/c0f67d73f92d5aed45eb9d84d0edf803c734b920) - @RogerSelwyn
+
 ## v0.2.13 (05/05/2020)
 - [Bump to 0.2.13](https://github.com/RogerSelwyn/skyq_remote/commit/7a462abedca1aea776a2e11ccec66ef2abeece35) - @RogerSelwyn
 - [Replaced ws4py with websocket-client](https://github.com/RogerSelwyn/skyq_remote/commit/624ed6de8277d090711cf684efc896712e2b432f) - @RogerSelwyn
