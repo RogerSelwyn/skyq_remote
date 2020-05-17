@@ -4,9 +4,10 @@ import sys
 from datetime import datetime
 
 from pyskyqremote.skyq_remote import SkyQRemote
-from pyskyqremote.const import APP_EPG, SKY_STATE_STANDBY
+from pyskyqremote.const import APP_EPG, SKY_STATE_STANDBY, SKY_STATE_OFF
 from pyskyqremote.media import MediaDecoder
 
+# from pyskyqremote.device import DeviceDecoder
 # from pyskyqremote.channel import ChannelDecoder
 # from pyskyqremote.programme import ProgrammeDecoder, RecordedProgrammeDecoder
 
@@ -29,6 +30,12 @@ sky = SkyQRemote(sys.argv[1], overrideCountry=country, test_channel=test_channel
 
 print("----------- Power status")
 print(sky.powerStatus())
+
+if sky.powerStatus != SKY_STATE_OFF:
+    print("----------- DeviceInfo")
+    print(sky.getDeviceInformationJSON())
+    # print("----------- DeviceInfo Decoded")
+    # print(DeviceDecoder(sky.getDeviceInformationJSON()))
 
 print("----------- Current status")
 currentState = sky.getCurrentState()

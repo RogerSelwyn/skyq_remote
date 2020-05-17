@@ -29,7 +29,7 @@ from .const import (
     REST_BASE_URL,
     REST_CHANNEL_LIST,
     REST_RECORDING_DETAILS,
-    REST_PATH_INFO,
+    REST_PATH_SYSTEMINFO,
     REST_PATH_DEVICEINFO,
     CURRENT_URI,
     CURRENT_TRANSPORT_STATE,
@@ -52,6 +52,7 @@ from .const import TEST_CHANNEL_LIST
 from .channel import Channel
 from .programme import RecordedProgramme
 from .media import Media
+from .device import Device
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -66,9 +67,9 @@ class SkyQRemote:
     ):
         """Stand up a new SkyQ box."""
         self.host = host
-        self.country = None
-        self.serialNumber = None
-        self.deviceSetup = False
+        self.deviceInfo = None
+        self._country = None
+        self._serialNumber = None
         self._channel = None
         self._test_channel = test_channel
         self._port = port
@@ -82,13 +83,13 @@ class SkyQRemote:
 
     def powerStatus(self) -> str:
         """Get the power status of the Sky Q box."""
-        if not self.deviceSetup:
+        if not self.deviceInfo:
             self._setupDevice()
 
         if self._soapControlURL is None:
             return SKY_STATE_OFF
         try:
-            output = self._http_json(REST_PATH_INFO)
+            output = self._retrieveSystemInformation()
             if "activeStandby" in output and output["activeStandby"] is False:
                 return SKY_STATE_ON
             return SKY_STATE_STANDBY
@@ -312,6 +313,57 @@ class SkyQRemote:
 
         return programme
 
+    def getDeviceInformationJSON(self):
+        """Get the device information from the SkyQ box as json."""
+        device = self.getDeviceInformation()
+        if not device:
+            return None
+
+        return device.as_json()
+
+    def getDeviceInformation(self):
+        """Get the device information from the SkyQ box."""
+        device = None
+        deviceInfo = self._retrieveDeviceInformation()
+
+        if deviceInfo:
+            systemInfo = self._retrieveSystemInformation()
+            ASVersion = deviceInfo["ASVersion"]
+            IPAddress = deviceInfo["IPAddress"]
+            countryCode = deviceInfo["countryCode"]
+            hardwareModel = systemInfo["hardwareModel"]
+            hardwareName = deviceInfo["hardwareName"]
+            manufacturer = systemInfo["manufacturer"]
+            modelNumber = deviceInfo["modelNumber"]
+            serialNumber = deviceInfo["serialNumber"]
+            versionNumber = deviceInfo["versionNumber"]
+
+            epgCountryCode = None
+            if self._overrideCountry:
+                epgCountryCode = self._overrideCountry
+            else:
+                epgCountryCode = countryCode.upper()
+            if not epgCountryCode:
+                _LOGGER.error(f"E0050 - No country identified: {self.host}")
+                return None
+
+            if epgCountryCode in KNOWN_COUNTRIES:
+                epgCountryCode = KNOWN_COUNTRIES[epgCountryCode]
+
+            device = Device(
+                ASVersion,
+                IPAddress,
+                countryCode,
+                epgCountryCode,
+                hardwareModel,
+                hardwareName,
+                manufacturer,
+                modelNumber,
+                serialNumber,
+                versionNumber,
+            )
+        return device
+
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
         if isinstance(sequence, list):
@@ -474,8 +526,8 @@ class SkyQRemote:
 
     def _setupDevice(self):
         """Set the remote up."""
-        deviceInfo = self._getDeviceInformation()
-        if not deviceInfo:
+        self.deviceInfo = self.getDeviceInformation()
+        if not self.deviceInfo:
             return
 
         url_index = 0
@@ -484,22 +536,20 @@ class SkyQRemote:
             self._soapControlURL = self._getSoapControlURL(url_index)["url"]
             url_index += 1
 
-        SkyQCountry = self._importCountry(deviceInfo)
-        if "serialNumber" in deviceInfo:
-            self.serialNumber = deviceInfo["serialNumber"]
+        SkyQCountry = self._importCountry(self.deviceInfo)
 
         self._remoteCountry = SkyQCountry(self.host)
-        self.country = self._remoteCountry.country
+        self._country = self._remoteCountry.country
 
         if not self._test_channel:
             self._channels = self._http_json(REST_CHANNEL_LIST)
         else:
             self._channels = TEST_CHANNEL_LIST
 
-        self.deviceSetup = True
+        self._deviceSetup = True
         return
 
-    def _getDeviceInformation(self):
+    def _retrieveDeviceInformation(self):
         try:
             resp = self._http_json(REST_PATH_DEVICEINFO)
             return resp
@@ -512,29 +562,31 @@ class SkyQRemote:
             _LOGGER.exception(f"X0080 - Error occurred: {self.host} : {err}")
             return None
 
-    def _importCountry(self, deviceInfo):
-        alpha3 = None
-        if self._overrideCountry:
-            alpha3 = self._overrideCountry
-        elif "countryCode" in deviceInfo:
-            alpha3 = deviceInfo["countryCode"].upper()
-
-        if not alpha3:
-            _LOGGER.error(f"E0050 - No country identified: {self.host}")
+    def _retrieveSystemInformation(self):
+        try:
+            resp = self._http_json(REST_PATH_SYSTEMINFO)
+            return resp
+        except (
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ConnectionError,
+        ):
+            return None
+        except Exception as err:
+            _LOGGER.exception(f"X0090 - Error occurred: {self.host} : {err}")
             return None
 
-        if alpha3 in KNOWN_COUNTRIES:
-            alpha3 = KNOWN_COUNTRIES[alpha3]
-
+    def _importCountry(self, deviceInfo):
         try:
-            country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
+            country = pycountry.countries.get(
+                alpha_3=deviceInfo.epgCountryCode
+            ).alpha_2.casefold()
             SkyQCountry = importlib.import_module(
                 "pyskyqremote.country.remote_" + country
             ).SkyQCountry
 
         except (AttributeError, ModuleNotFoundError) as err:
             _LOGGER.warning(
-                f"W0030 - Invalid country, defaulting to GBR : {self.host} : {alpha3} : {err}"
+                f"W0030 - Invalid country, defaulting to GBR : {self.host} : {deviceInfo.epgCountryCode} : {err}"
             )
 
             from pyskyqremote.country.remote_gb import SkyQCountry
