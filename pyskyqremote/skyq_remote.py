@@ -66,12 +66,14 @@ class SkyQRemote:
     ):
         """Stand up a new SkyQ box."""
         self.host = host
+        self.country = None
+        self.serialNumber = None
+        self.deviceSetup = False
+        self._channel = None
         self._test_channel = test_channel
         self._port = port
         self._jsonport = jsonport
         self._overrideCountry = overrideCountry
-        self.deviceSetup = False
-        self.channel = None
         self._soapControlURL = None
         self._lastEpg = None
         self._currentApp = APP_EPG
@@ -189,7 +191,7 @@ class SkyQRemote:
 
         epg = str(sid) + epgDate.strftime("%Y%m%d")
         if self._lastEpg == epg:
-            return self.channel
+            return self._channel
 
         programmes = set()
         for n in range(days):
@@ -206,11 +208,11 @@ class SkyQRemote:
         if len(programmes) == 0:
             _LOGGER.info(f"I0020 - Programme data not found for {sid} : {epgDate}")
 
-        self.channel = Channel(
+        self._channel = Channel(
             sid, channelno, channelname, channelImageUrl, sorted(programmes)
         )
 
-        return self.channel
+        return self._channel
 
     def getProgrammeFromEpgJSON(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel as json."""
@@ -483,7 +485,11 @@ class SkyQRemote:
             url_index += 1
 
         SkyQCountry = self._importCountry(deviceInfo)
+        if "serialNumber" in deviceInfo:
+            self.serialNumber = deviceInfo["serialNumber"]
+
         self._remoteCountry = SkyQCountry(self.host)
+        self.country = self._remoteCountry.country
 
         if not self._test_channel:
             self._channels = self._http_json(REST_CHANNEL_LIST)
@@ -522,7 +528,7 @@ class SkyQRemote:
 
         try:
             country = pycountry.countries.get(alpha_3=alpha3).alpha_2.casefold()
-            return importlib.import_module(
+            SkyQCountry = importlib.import_module(
                 "pyskyqremote.country.remote_" + country
             ).SkyQCountry
 
@@ -530,6 +536,7 @@ class SkyQRemote:
             _LOGGER.warning(
                 f"W0030 - Invalid country, defaulting to GBR : {self.host} : {alpha3} : {err}"
             )
+
             from pyskyqremote.country.remote_gb import SkyQCountry
 
-            return SkyQCountry
+        return SkyQCountry
