@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.16 (17/05/2020)
+- [Bump to 0.2.16](https://github.com/RogerSelwyn/skyq_remote/commit/146ffe4d3b83cb93ee4a1d12509e3cf82c55b5dc) - @RogerSelwyn
+- [Code tidy up](https://github.com/RogerSelwyn/skyq_remote/commit/7940b2c8afa1ff56bc6152bdbb23c08c5ba68acb) - @RogerSelwyn
+- [Re-factored to require explicit call to get device info](https://github.com/RogerSelwyn/skyq_remote/commit/995bef9eaa1e8abca8953704af0d7190dc71c828) - @RogerSelwyn
+- [Added more device information](https://github.com/RogerSelwyn/skyq_remote/commit/34aed335e4be4a1183ec17032c0e863bba9d9fd6) - @RogerSelwyn
+
 ## v0.2.15 (17/05/2020)
 - [Bump to 0.2.15](https://github.com/RogerSelwyn/skyq_remote/commit/c1e3ddf74ac1721197a03627d5015a1f9165416c) - @RogerSelwyn
 - [Remove dataclasses from setup.py](https://github.com/RogerSelwyn/skyq_remote/commit/a11e6311903a8744c62bdf68627f384f3b2d0f25) - @RogerSelwyn
