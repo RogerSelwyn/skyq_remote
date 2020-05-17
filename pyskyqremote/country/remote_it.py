@@ -26,7 +26,6 @@ class SkyQCountry:
         self.pvr_image_url = PVR_IMAGE_URL
         self._host = host
         self._channellist = None
-        self.country = "ITA"
 
         self._getChannels()
 

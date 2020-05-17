@@ -67,7 +67,6 @@ class SkyQRemote:
     ):
         """Stand up a new SkyQ box."""
         self._host = host
-        self._country = None
         self._serialNumber = None
         self._channel = None
         self._test_channel = test_channel
@@ -530,8 +529,6 @@ class SkyQRemote:
         if not deviceInfo:
             return
 
-        self.deviceSetup = True
-
         url_index = 0
         self._soapControlURL = None
         while self._soapControlURL is None and url_index < 50:
@@ -541,12 +538,14 @@ class SkyQRemote:
         SkyQCountry = self._importCountry(deviceInfo)
 
         self._remoteCountry = SkyQCountry(self._host)
-        self._country = self._remoteCountry.country
 
+        # This is here because otherwise I can never validate code for a foreign device
         if not self._test_channel:
             self._channels = self._http_json(REST_CHANNEL_LIST)
         else:
             self._channels = TEST_CHANNEL_LIST
+
+        self.deviceSetup = True
 
         return
 
