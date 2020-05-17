@@ -80,7 +80,7 @@ or for recording
    'live':False
 }
 ```
-## Get current media (JSON)
+### Get current media (JSON)
 
 ```
 media = self.client.getCurrentMediaJSON()
@@ -116,7 +116,7 @@ or for recording
 }
 ```
 
-## Decode current media (JSON)
+### Decode current media (JSON)
 
 ```
 from pyskyqremote.media import MediaDecoder
@@ -210,7 +210,7 @@ Will return a JSON structure with an array of events including the specified num
 }
 ```
 
-## Decode EPG information (JSON)
+### Decode EPG information (JSON)
 
 ```
 from pyskyqremote.channel import ChannelDecoder
@@ -264,7 +264,7 @@ Will return a JSON structure such as below:
    }
 }
 ```
-## Decode programme information (JSON)
+### Decode programme information (JSON)
 
 ```
 from pyskyqremote.programme import ProgrammeDecoder
@@ -356,7 +356,7 @@ Will return an object such as below:
    }
 }
 ```
-## Decode recording information (JSON)
+### Decode recording information (JSON)
 
 ```
 from pyskyqremote.programme import RecordedProgrammeDecoder
