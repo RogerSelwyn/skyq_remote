@@ -87,24 +87,14 @@ class SkyQRemote:
 
         if self._soapControlURL is None:
             return SKY_STATE_OFF
-        try:
-            output = self._retrieveSystemInformation()
-            if "activeStandby" in output and output["activeStandby"] is False:
-                return SKY_STATE_ON
-            return SKY_STATE_STANDBY
-        except (
-            requests.exceptions.ConnectTimeout,
-            requests.exceptions.ReadTimeout,
-        ):
-            return SKY_STATE_STANDBY
-        except (requests.exceptions.ConnectionError):
-            _LOGGER.info(
-                f"I0010 - Device has control URL but connection request failed: {self._host}"
-            )
+
+        output = self._retrieveSystemInformation()
+        if output is None:
             return SKY_STATE_OFF
-        except Exception as err:
-            _LOGGER.exception(f"X0060 - Error occurred: {self._host} : {err}")
+        if "activeStandby" in output and output["activeStandby"] is True:
             return SKY_STATE_STANDBY
+
+        return SKY_STATE_ON
 
     def getCurrentState(self):
         """Get current state of the SkyQ box."""
@@ -420,7 +410,7 @@ class SkyQRemote:
             )
             return {"url": None, "status": "Error"}
         except (requests.exceptions.ConnectionError) as err:
-            _LOGGER.exception(f"X0070 - Connection error: {self._host} : {err}")
+            _LOGGER.exception(f"X0060 - Connection error: {self._host} : {err}")
             return {"url": None, "status": "Error"}
         except Exception as err:
             _LOGGER.exception(f"X0010 - Other error occurred: {self._host} : {err}")
@@ -569,6 +559,7 @@ class SkyQRemote:
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ConnectionError,
+            requests.exceptions.ReadTimeout,
         ):
             return None
         except Exception as err:
