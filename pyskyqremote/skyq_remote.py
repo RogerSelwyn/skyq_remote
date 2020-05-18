@@ -77,7 +77,7 @@ class SkyQRemote:
         self._lastEpg = None
         self._currentApp = APP_EPG
         self.deviceSetup = False
-        self._channels = None
+        self._channels = []
 
         self._setupDevice()
 
@@ -155,8 +155,10 @@ class SkyQRemote:
                         sid = self._test_channel
 
                     live = True
-                    channel = self._getChannelNode(sid)["channel"]
-                    imageUrl = self._buildChannelUrl(sid, channel)
+                    channelNode = self._getChannelNode(sid)
+                    if channelNode:
+                        channel = channelNode["channel"]
+                        imageUrl = self._buildChannelUrl(sid, channel)
                 elif PVR in currentURI:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
@@ -175,32 +177,36 @@ class SkyQRemote:
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
-        channelNode = self._getChannelNode(sid)
-        channelno = channelNode["channelno"]
-        channelname = channelNode["channel"]
-        channelImageUrl = self._buildChannelUrl(sid, channelname)
-
         epg = str(sid) + epgDate.strftime("%Y%m%d")
         if self._lastEpg == epg:
             return self._channel
-
-        programmes = set()
-        for n in range(days):
-            programmesData = self._remoteCountry.getEpgData(
-                sid, channelno, epgDate + timedelta(days=n)
-            )
-            if len(programmesData) > 0:
-                programmes = programmes.union(programmesData)
-            else:
-                break
-
         self._lastEpg = epg
 
+        channelNo = None
+        channelName = None
+        channelImageUrl = None
+        programmes = set()
+
+        channelNode = self._getChannelNode(sid)
+        if channelNode:
+            channelNo = channelNode["channelno"]
+            channelName = channelNode["channel"]
+            channelImageUrl = self._buildChannelUrl(sid, channelName)
+
+            for n in range(days):
+                programmesData = self._remoteCountry.getEpgData(
+                    sid, channelNo, epgDate + timedelta(days=n)
+                )
+                if len(programmesData) > 0:
+                    programmes = programmes.union(programmesData)
+                else:
+                    break
+
         if len(programmes) == 0:
-            _LOGGER.info(f"I0020 - Programme data not found for {sid} : {epgDate}")
+            _LOGGER.info(f"I0020 - Programme data not found for SID {sid} : {epgDate}")
 
         self._channel = Channel(
-            sid, channelno, channelname, channelImageUrl, sorted(programmes)
+            sid, channelNo, channelName, channelImageUrl, sorted(programmes)
         )
 
         return self._channel
@@ -287,7 +293,7 @@ class SkyQRemote:
             imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
         elif "osid" in recording:
             sid = str(recording["osid"])
-            imageUrl = self._buildChannelUrl(sid)
+            imageUrl = self._buildChannelUrl(sid, channel)
 
         starttime = datetime.utcfromtimestamp(recording["ast"])
         if "finald" in recording:
@@ -507,22 +513,32 @@ class SkyQRemote:
         return channel_image_url.format(sid, chid)
 
     def _getChannelNode(self, sid):
-        if not self._channels or "services" not in self._channels:
-            # This is here because otherwise I can never validate code for a foreign device
-            if not self._test_channel:
-                self._channels = self._http_json(REST_CHANNEL_LIST)
-            else:
-                self._channels = TEST_CHANNEL_LIST
+        channelNode = self._getNodeFromChannels(sid)
 
-        if not self._channels or "services" not in self._channels:
-            return None
+        if not channelNode:
+            # Load the channel list.
+            # It's also possible the channels may have changed since last HA restart, so reload them
+            self._channels = self._getChannels()
+            channelNode = self._getNodeFromChannels(sid)
+            if not channelNode:
+                return None
 
-        channelNode = next(
-            s for s in self._channels["services"] if s["sid"] == str(sid)
-        )
         channel = channelNode["t"]
         channelno = channelNode["c"]
         return {"channel": channel, "channelno": channelno}
+
+    def _getChannels(self):
+        # This is here because otherwise I can never validate code for a foreign device
+        if self._test_channel:
+            return TEST_CHANNEL_LIST
+        channels = self._http_json(REST_CHANNEL_LIST)
+        if channels:
+            return channels["services"]
+
+        return []
+
+    def _getNodeFromChannels(self, sid):
+        return next((s for s in self._channels if s["sid"] == str(sid)), None)
 
     def _setupDevice(self):
         """Set the remote up."""
