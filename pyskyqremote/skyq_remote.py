@@ -77,6 +77,7 @@ class SkyQRemote:
         self._lastEpg = None
         self._currentApp = APP_EPG
         self.deviceSetup = False
+        self._channels = None
 
         self._setupDevice()
 
@@ -506,6 +507,16 @@ class SkyQRemote:
         return channel_image_url.format(sid, chid)
 
     def _getChannelNode(self, sid):
+        if not self._channels or "services" not in self._channels:
+            # This is here because otherwise I can never validate code for a foreign device
+            if not self._test_channel:
+                self._channels = self._http_json(REST_CHANNEL_LIST)
+            else:
+                self._channels = TEST_CHANNEL_LIST
+
+        if not self._channels or "services" not in self._channels:
+            return None
+
         channelNode = next(
             s for s in self._channels["services"] if s["sid"] == str(sid)
         )
@@ -528,12 +539,6 @@ class SkyQRemote:
         SkyQCountry = self._importCountry(deviceInfo)
 
         self._remoteCountry = SkyQCountry(self._host)
-
-        # This is here because otherwise I can never validate code for a foreign device
-        if not self._test_channel:
-            self._channels = self._http_json(REST_CHANNEL_LIST)
-        else:
-            self._channels = TEST_CHANNEL_LIST
 
         self.deviceSetup = True
 
