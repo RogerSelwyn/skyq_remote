@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.17 (18/05/2020)
+- [Bump to 0.2.17](https://github.com/RogerSelwyn/skyq_remote/commit/c97d2df26586808ca092e0b1c864dd97d0a70650) - @RogerSelwyn
+- [Fixed erroneous errors when box on standby](https://github.com/RogerSelwyn/skyq_remote/commit/eea3e4ce5dd247d188ca9186d13c8c5a3e2a215d) - @RogerSelwyn
+
 ## v0.2.16 (17/05/2020)
 - [Bump to 0.2.16](https://github.com/RogerSelwyn/skyq_remote/commit/146ffe4d3b83cb93ee4a1d12509e3cf82c55b5dc) - @RogerSelwyn
 - [Code tidy up](https://github.com/RogerSelwyn/skyq_remote/commit/7940b2c8afa1ff56bc6152bdbb23c08c5ba68acb) - @RogerSelwyn
