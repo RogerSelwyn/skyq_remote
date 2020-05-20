@@ -516,7 +516,7 @@ class SkyQRemote:
         channelNode = self._getNodeFromChannels(sid)
 
         if not channelNode:
-            # Load the channel list.
+            # Load the channel list for the first time.
             # It's also possible the channels may have changed since last HA restart, so reload them
             self._channels = self._getChannels()
             channelNode = self._getNodeFromChannels(sid)
