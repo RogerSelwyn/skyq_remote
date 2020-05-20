@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.18 (20/05/2020)
+- [Bump to 0.2.18](https://github.com/RogerSelwyn/skyq_remote/commit/a1addcc1dae8514e72d8e9445d10747fdf71b612) - @RogerSelwyn
+- [Handle change of channel list](https://github.com/RogerSelwyn/skyq_remote/commit/031489e6b59c2b4ae2b96da517d463ee02c15ee5) - @RogerSelwyn
+- [Handle loss of channel information](https://github.com/RogerSelwyn/skyq_remote/commit/0919482f72b8e63685b9e4c9dccf5854786a3740) - @RogerSelwyn
+
 ## v0.2.17 (18/05/2020)
 - [Bump to 0.2.17](https://github.com/RogerSelwyn/skyq_remote/commit/c97d2df26586808ca092e0b1c864dd97d0a70650) - @RogerSelwyn
 - [Fixed erroneous errors when box on standby](https://github.com/RogerSelwyn/skyq_remote/commit/eea3e4ce5dd247d188ca9186d13c8c5a3e2a215d) - @RogerSelwyn
