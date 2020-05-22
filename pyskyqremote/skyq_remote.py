@@ -49,12 +49,12 @@ from .const import (
     KNOWN_COUNTRIES,
 )
 from .const import TEST_CHANNEL_LIST
-from .channelepg import ChannelEPG
-from .channellist import ChannelList
-from .channel import Channel
-from .programme import RecordedProgramme
-from .media import Media
-from .device import Device
+from .classes.channelepg import ChannelEPG
+from .classes.channellist import ChannelList
+from .classes.channel import Channel
+from .classes.programme import RecordedProgramme
+from .classes.media import Media
+from .classes.device import Device
 
 _LOGGER = logging.getLogger(__name__)
 

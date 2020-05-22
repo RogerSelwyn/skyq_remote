@@ -4,7 +4,7 @@ import logging
 import requests
 
 from ..const import RESPONSE_OK
-from ..programme import Programme
+from ..classes.programme import Programme
 
 from .const_it import (
     CHANNEL_IMAGE_URL,
