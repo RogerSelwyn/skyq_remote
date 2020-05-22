@@ -14,11 +14,10 @@ _LOGGER = logging.getLogger(__name__)
 class SkyQCountry:
     """UK specific SkyQ."""
 
-    def __init__(self, host):
+    def __init__(self):
         """Initialise UK remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
-        self._host = host
 
     def getEpgData(self, sid, channelno, epgDate):
         """Get EPG data for UK."""

@@ -20,11 +20,10 @@ _LOGGER = logging.getLogger(__name__)
 class SkyQCountry:
     """Italy specific SkyQ."""
 
-    def __init__(self, host):
+    def __init__(self):
         """Initialise Italy remote."""
         self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
-        self._host = host
         self._channellist = None
 
         self._getChannels()

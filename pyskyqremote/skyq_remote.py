@@ -62,17 +62,17 @@ class SkyQRemote:
 
     commands = COMMANDS
 
-    def __init__(
-        self, host, overrideCountry=None, test_channel=None, port=49160, jsonport=9006,
-    ):
+    def __init__(self, host, port=49160, jsonPort=9006):
         """Stand up a new SkyQ box."""
         self._host = host
+        self._remoteCountry = None
+        self._overrideCountry = None
+        self._epgCountryCode = None
         self._serialNumber = None
         self._channel = None
-        self._test_channel = test_channel
+        self._test_channel = None
         self._port = port
-        self._jsonport = jsonport
-        self._overrideCountry = overrideCountry
+        self._jsonport = jsonPort
         self._soapControlURL = None
         self._lastEpg = None
         self._currentApp = APP_EPG
@@ -85,6 +85,9 @@ class SkyQRemote:
         """Get the power status of the Sky Q box."""
         if not self.deviceSetup:
             self._setupDevice()
+
+        if not self._remoteCountry:
+            self._setupRemoteCountry()
 
         if self._soapControlURL is None:
             return SKY_STATE_OFF
@@ -334,7 +337,6 @@ class SkyQRemote:
             serialNumber = deviceInfo["serialNumber"]
             versionNumber = deviceInfo["versionNumber"]
 
-            epgCountryCode = None
             if self._overrideCountry:
                 epgCountryCode = self._overrideCountry
             else:
@@ -345,6 +347,8 @@ class SkyQRemote:
 
             if epgCountryCode in KNOWN_COUNTRIES:
                 epgCountryCode = KNOWN_COUNTRIES[epgCountryCode]
+
+            self._epgCountryCode = epgCountryCode
 
             device = Device(
                 ASVersion,
@@ -374,6 +378,19 @@ class SkyQRemote:
                 _LOGGER.error(f"E0020 - Invalid command: {self._host} : {sequence}")
             else:
                 self._sendCommand(self.commands[sequence.casefold()])
+
+    def setOverrides(
+        self, overrideCountry=None, test_Channel=None, jsonPort=None, port=None
+    ):
+        """Override various items."""
+        if overrideCountry:
+            self._overrideCountry = overrideCountry
+        if test_Channel:
+            self._test_channel = test_Channel
+        if jsonPort:
+            self._jsonport = jsonPort
+        if port:
+            self.port = port
 
     def _http_json(self, path, headers=None) -> str:
         response = requests.get(
@@ -552,10 +569,6 @@ class SkyQRemote:
             self._soapControlURL = self._getSoapControlURL(url_index)["url"]
             url_index += 1
 
-        SkyQCountry = self._importCountry(deviceInfo)
-
-        self._remoteCountry = SkyQCountry(self._host)
-
         self.deviceSetup = True
 
         return
@@ -587,20 +600,23 @@ class SkyQRemote:
             _LOGGER.exception(f"X0090 - Error occurred: {self._host} : {err}")
             return None
 
-    def _importCountry(self, deviceInfo):
+    def _importCountry(self, epgCountryCode):
         try:
-            country = pycountry.countries.get(
-                alpha_3=deviceInfo.epgCountryCode
-            ).alpha_2.casefold()
+            country = pycountry.countries.get(alpha_3=epgCountryCode).alpha_2.casefold()
             SkyQCountry = importlib.import_module(
                 "pyskyqremote.country.remote_" + country
             ).SkyQCountry
 
         except (AttributeError, ModuleNotFoundError) as err:
             _LOGGER.warning(
-                f"W0030 - Invalid country, defaulting to GBR : {self._host} : {deviceInfo.epgCountryCode} : {err}"
+                f"W0030 - Invalid country, defaulting to GBR : {self._host} : {epgCountryCode} : {err}"
             )
 
             from pyskyqremote.country.remote_gb import SkyQCountry
 
         return SkyQCountry
+
+    def _setupRemoteCountry(self):
+
+        SkyQCountry = self._importCountry(self._epgCountryCode)
+        self._remoteCountry = SkyQCountry()
