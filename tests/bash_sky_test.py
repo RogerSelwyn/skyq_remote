@@ -26,7 +26,8 @@ if len(sys.argv) > 3:
 if len(sys.argv) > 4:
     queryDate = datetime.utcfromtimestamp(int(sys.argv[4]))
 
-sky = SkyQRemote(sys.argv[1], overrideCountry=country, test_channel=test_channel)
+sky = SkyQRemote(sys.argv[1])
+sky.setOverrides(overrideCountry=country, test_channel=test_channel)
 
 print("----------- Power status")
 print(sky.powerStatus())
@@ -68,6 +69,9 @@ print(sky.getProgrammeFromEpgJSON(sid, queryDate, queryDate))
 
 print(f"----------- Current Live TV - {sid}")
 print(sky.getCurrentLiveTVProgrammeJSON(sid))
+
+print(f"----------- Channel list")
+print(sky.getChannelListJSON())
 
 # print("----------- Today's EPG")
 # print(sky.getEpgDataJSON(sid, queryDate))

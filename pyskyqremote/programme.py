@@ -1,4 +1,4 @@
-"""Structure of a standard EPG prorgramme."""
+"""Structure of a standard EPG programme."""
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -36,7 +36,7 @@ class Programme:
         return hash(self.starttime)
 
     def as_json(self) -> str:
-        """Return a JSON string respenting this Programmel."""
+        """Return a JSON string representing this Programme."""
         return json.dumps(self, cls=_ProgrammeJSONEncoder)
 
 
@@ -49,7 +49,7 @@ class RecordedProgramme(Programme):
     )
 
     def as_json(self) -> str:
-        """Return a JSON string respenting this recording."""
+        """Return a JSON string representing this recording."""
         return json.dumps(self, cls=_RecordingJSONEncoder)
 
 

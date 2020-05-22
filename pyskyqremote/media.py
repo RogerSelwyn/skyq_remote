@@ -26,7 +26,7 @@ class Media:
     )
 
     def as_json(self) -> str:
-        """Return a JSON string respenting this media info."""
+        """Return a JSON string representing this media info."""
         return json.dumps(self, cls=_MediaJSONEncoder)
 
 

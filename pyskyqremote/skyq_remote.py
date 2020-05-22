@@ -49,6 +49,8 @@ from .const import (
     KNOWN_COUNTRIES,
 )
 from .const import TEST_CHANNEL_LIST
+from .channelepg import ChannelEPG
+from .channellist import ChannelList
 from .channel import Channel
 from .programme import RecordedProgramme
 from .media import Media
@@ -172,11 +174,11 @@ class SkyQRemote:
 
     def getEpgDataJSON(self, sid, epgDate):
         """Get EPG data for the specified channel as json."""
-        channel = self.getEpgData(sid, epgDate)
-        if not channel:
+        channelepg = self.getEpgData(sid, epgDate)
+        if not channelepg:
             return None
 
-        return channel.as_json()
+        return channelepg.as_json()
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
@@ -208,7 +210,7 @@ class SkyQRemote:
         if len(programmes) == 0:
             _LOGGER.info(f"I0020 - Programme data not found for SID {sid} : {epgDate}")
 
-        self._channel = Channel(
+        self._channel = ChannelEPG(
             sid, channelNo, channelName, channelImageUrl, sorted(programmes)
         )
 
@@ -364,6 +366,32 @@ class SkyQRemote:
             )
         return device
 
+    def getChannelListJSON(self):
+        """Get EPG data for the specified channel as json."""
+        channellist = self.getChannelList()
+        if not channellist:
+            return None
+
+        return channellist.as_json()
+
+    def getChannelList(self):
+        """Get Channel list for Sky Q box."""
+        channels = self._getChannels()
+        if not channels:
+            return None
+
+        channelitems = set()
+
+        for c in channels:
+            channelno = c["c"]
+            channelname = c["t"]
+            channel = Channel(channelno, channelname)
+            channelitems.add(channel)
+
+        self._channellist = ChannelList(sorted(channelitems))
+
+        return self._channellist
+
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
         if isinstance(sequence, list):
@@ -380,13 +408,13 @@ class SkyQRemote:
                 self._sendCommand(self.commands[sequence.casefold()])
 
     def setOverrides(
-        self, overrideCountry=None, test_Channel=None, jsonPort=None, port=None
+        self, overrideCountry=None, test_channel=None, jsonPort=None, port=None
     ):
         """Override various items."""
         if overrideCountry:
             self._overrideCountry = overrideCountry
-        if test_Channel:
-            self._test_channel = test_Channel
+        if test_channel:
+            self._test_channel = test_channel
         if jsonPort:
             self._jsonport = jsonPort
         if port:
