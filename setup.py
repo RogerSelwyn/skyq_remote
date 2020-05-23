@@ -1,5 +1,5 @@
 """Setup skyq_remote package."""
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 from pyskyqremote.version import __version__ as version
 
@@ -18,7 +18,7 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/RogerSelwyn/skyq_remote',
     license='MIT',
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     install_requires=['requests==2.23.0', 'websocket-client==0.57.0', 'xmltodict==0.12.0', 'pycountry==19.8.18'],
     keywords='SKYQ Remote',
     include_package_data=True,
