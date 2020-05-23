@@ -54,7 +54,7 @@ Will return an object such as below for device informatiom:
 ### Get device information (JSON)
 
 ```
-device = self.client.getDeviceInformationJSON()
+device = self.client.getDeviceInformation().as_json()
 ```
 
 Will return a JSON structure such as below for device information:
@@ -143,7 +143,7 @@ or for recording
 ### Get current media (JSON)
 
 ```
-media = self.client.getCurrentMediaJSON()
+media = self.client.getCurrentMedia().as_json()
 ```
 
 Will return a JSON structure such as below for live programme:
@@ -226,7 +226,7 @@ Will return an object with an array of events including the specified number of 
 ### Get EPG information (JSON)
 
 ```
-epg = self.client.getEpgData(sid, epgDate, days)
+epg = self.client.getEpgData(sid, epgDate, days).as_json()
 ```
 
 Will return a JSON structure with an array of events including the specified number of days. Defaults to 2 days.
@@ -305,7 +305,7 @@ Will return an object such as below:
 Note that at the end of a day, the programme may appear on the next day's schedule. 
 
 ```
-programme = self.client.getProgrammeFromEpgJSON(sid, epgDate, queryDate)
+programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate).as_json()
 ```
 
 Will return a JSON structure such as below:
@@ -353,7 +353,7 @@ Will return an object such as below:
 ### Get current live TV programme on a channel (JSON)
 
 ```
-currentTV = self.client.getCurrentLiveTVProgrammeJSON(sid)
+currentTV = self.client.getCurrentLiveTVProgramme(sid).as_json()
 ```
 
 Will return a JSON structure such as below:
@@ -396,7 +396,7 @@ Will return an object such as below:
 ### Get recording (JSON)
 
 ```
-recording = self.client.getRecordingJSON(pvrId)
+recording = self.client.getRecording(pvrId).as_json()
 ```
 
 Will return an object such as below:
@@ -449,7 +449,7 @@ Will return an object with an array of channels.
 ### Get Channel List (JSON)
 
 ```
-channelList = self.client.getChannelListJSON()
+channelList = self.client.getChannelList().as_json()
 ```
 
 Will return a JSON structure with an array of channels.
