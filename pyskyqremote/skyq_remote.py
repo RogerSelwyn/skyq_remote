@@ -10,6 +10,7 @@ import importlib
 import pycountry
 from datetime import datetime, timedelta
 from http import HTTPStatus
+from operator import attrgetter
 
 import websocket
 
@@ -330,10 +331,14 @@ class SkyQRemote:
         for c in channels:
             channelno = c["c"]
             channelname = c["t"]
-            channel = Channel(channelno, channelname)
+            sf = c["sf"]
+            channel = Channel(channelno, channelname, sf)
             channelitems.add(channel)
 
-        self._channellist = ChannelList(sorted(channelitems))
+        channelnosorted = sorted(channelitems, key=attrgetter("channelno"))
+        self._channellist = ChannelList(
+            sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True)
+        )
 
         return self._channellist
 

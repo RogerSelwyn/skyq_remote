@@ -1,7 +1,10 @@
 """Structure of a standard channel."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 import json
+
+AUDIO = "audio"
+VIDEO = "video"
 
 
 @dataclass(order=True)
@@ -14,10 +17,20 @@ class Channel:
     channelname: str = field(
         init=True, repr=True, compare=False,
     )
+    sf: InitVar(str) = None
+    channeltype: str = None
+
+    def __post_init__(self, sf):
+        """Post process the channel setup."""
+        if sf == "au":
+            self.channeltype = AUDIO
+        else:
+            self.channeltype = VIDEO
 
     def __hash__(self):
         """Calculate the hash of this object."""
-        return hash(self.channelno)
+        typesort = "100" if self.channeltype == VIDEO else "20"
+        return hash(typesort + self.channelno)
 
     def as_json(self) -> str:
         """Return a JSON string representing this Channel."""
