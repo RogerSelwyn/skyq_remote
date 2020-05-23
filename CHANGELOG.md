@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.19 Beta (23/05/2020)
+- [Bump to 0.2.19.beta](https://github.com/RogerSelwyn/skyq_remote/commit/19fc525ff4730144241c0a5aac633572a6b5dbdc) - @RogerSelwyn
+- [Move classes to subfolder](https://github.com/RogerSelwyn/skyq_remote/commit/b6a344e7d53819feeae7e00cfcb565633fa4bf9b) - @RogerSelwyn
+- [Added getChannelList and getChannelListJSON](https://github.com/RogerSelwyn/skyq_remote/commit/cc0039a4e568ba389dfd00b14a4c36c4d684a8d6) - @RogerSelwyn
+- [Restructure to enable HA config flow](https://github.com/RogerSelwyn/skyq_remote/commit/e9c89f4dda6b1d9ca9f4ec8668467b20fc0f5836) - @RogerSelwyn
+
 ## v0.2.18 (20/05/2020)
 - [Bump to 0.2.18](https://github.com/RogerSelwyn/skyq_remote/commit/a1addcc1dae8514e72d8e9445d10747fdf71b612) - @RogerSelwyn
 - [Handle change of channel list](https://github.com/RogerSelwyn/skyq_remote/commit/031489e6b59c2b4ae2b96da517d463ee02c15ee5) - @RogerSelwyn
