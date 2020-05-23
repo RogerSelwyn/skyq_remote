@@ -5,7 +5,7 @@ from datetime import datetime
 
 from pyskyqremote.skyq_remote import SkyQRemote
 from pyskyqremote.const import APP_EPG, SKY_STATE_STANDBY, SKY_STATE_OFF
-from pyskyqremote.media import MediaDecoder
+from pyskyqremote.classes.media import MediaDecoder
 
 # from pyskyqremote.device import DeviceDecoder
 # from pyskyqremote.channel import ChannelDecoder

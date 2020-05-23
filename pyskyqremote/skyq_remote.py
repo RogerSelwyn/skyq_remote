@@ -94,7 +94,7 @@ class SkyQRemote:
         if self._soapControlURL is None:
             return SKY_STATE_OFF
 
-        output = self._retrieveSystemInformation()
+        output = self._retrieveInformation(REST_PATH_SYSTEMINFO)
         if output is None:
             return SKY_STATE_OFF
         if "activeStandby" in output and output["activeStandby"] is True:
@@ -324,46 +324,46 @@ class SkyQRemote:
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
-        device = None
-        deviceInfo = self._retrieveDeviceInformation()
+        deviceInfo = self._retrieveInformation(REST_PATH_DEVICEINFO)
+        if not deviceInfo:
+            return None
 
-        if deviceInfo:
-            systemInfo = self._retrieveSystemInformation()
-            ASVersion = deviceInfo["ASVersion"]
-            IPAddress = deviceInfo["IPAddress"]
-            countryCode = deviceInfo["countryCode"]
-            hardwareModel = systemInfo["hardwareModel"]
-            hardwareName = deviceInfo["hardwareName"]
-            manufacturer = systemInfo["manufacturer"]
-            modelNumber = deviceInfo["modelNumber"]
-            serialNumber = deviceInfo["serialNumber"]
-            versionNumber = deviceInfo["versionNumber"]
+        systemInfo = self._retrieveInformation(REST_PATH_SYSTEMINFO)
+        ASVersion = deviceInfo["ASVersion"]
+        IPAddress = deviceInfo["IPAddress"]
+        countryCode = deviceInfo["countryCode"]
+        hardwareModel = systemInfo["hardwareModel"]
+        hardwareName = deviceInfo["hardwareName"]
+        manufacturer = systemInfo["manufacturer"]
+        modelNumber = deviceInfo["modelNumber"]
+        serialNumber = deviceInfo["serialNumber"]
+        versionNumber = deviceInfo["versionNumber"]
 
-            if self._overrideCountry:
-                epgCountryCode = self._overrideCountry
-            else:
-                epgCountryCode = countryCode.upper()
-            if not epgCountryCode:
-                _LOGGER.error(f"E0050 - No country identified: {self._host}")
-                return None
+        if self._overrideCountry:
+            epgCountryCode = self._overrideCountry
+        else:
+            epgCountryCode = countryCode.upper()
+        if not epgCountryCode:
+            _LOGGER.error(f"E0050 - No country identified: {self._host}")
+            return None
 
-            if epgCountryCode in KNOWN_COUNTRIES:
-                epgCountryCode = KNOWN_COUNTRIES[epgCountryCode]
+        if epgCountryCode in KNOWN_COUNTRIES:
+            epgCountryCode = KNOWN_COUNTRIES[epgCountryCode]
 
-            self._epgCountryCode = epgCountryCode
+        self._epgCountryCode = epgCountryCode
 
-            device = Device(
-                ASVersion,
-                IPAddress,
-                countryCode,
-                epgCountryCode,
-                hardwareModel,
-                hardwareName,
-                manufacturer,
-                modelNumber,
-                serialNumber,
-                versionNumber,
-            )
+        device = Device(
+            ASVersion,
+            IPAddress,
+            countryCode,
+            epgCountryCode,
+            hardwareModel,
+            hardwareName,
+            manufacturer,
+            modelNumber,
+            serialNumber,
+            versionNumber,
+        )
         return device
 
     def getChannelListJSON(self):
@@ -601,22 +601,9 @@ class SkyQRemote:
 
         return
 
-    def _retrieveDeviceInformation(self):
+    def _retrieveInformation(self, rest_path):
         try:
-            resp = self._http_json(REST_PATH_DEVICEINFO)
-            return resp
-        except (
-            requests.exceptions.ConnectTimeout,
-            requests.exceptions.ConnectionError,
-        ):
-            return None
-        except Exception as err:
-            _LOGGER.exception(f"X0080 - Error occurred: {self._host} : {err}")
-            return None
-
-    def _retrieveSystemInformation(self):
-        try:
-            resp = self._http_json(REST_PATH_SYSTEMINFO)
+            resp = self._http_json(rest_path)
             return resp
         except (
             requests.exceptions.ConnectTimeout,
@@ -625,7 +612,7 @@ class SkyQRemote:
         ):
             return None
         except Exception as err:
-            _LOGGER.exception(f"X0090 - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0080 - Error occurred: {self._host} : {err}")
             return None
 
     def _importCountry(self, epgCountryCode):
