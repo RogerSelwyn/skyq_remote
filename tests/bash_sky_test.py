@@ -34,9 +34,9 @@ print(sky.powerStatus())
 
 if sky.powerStatus != SKY_STATE_OFF:
     print("----------- DeviceInfo")
-    print(sky.getDeviceInformationJSON())
+    print(sky.getDeviceInformation().as_json())
     # print("----------- DeviceInfo Decoded")
-    # print(DeviceDecoder(sky.getDeviceInformationJSON()))
+    # print(DeviceDecoder(sky.getDeviceInformation().as_json()))
 
 print("----------- Current status")
 currentState = sky.getCurrentState()
@@ -51,13 +51,13 @@ if app != APP_EPG:
     exit()
 
 print("----------- Current Media")
-currentMedia = sky.getCurrentMediaJSON()
+currentMedia = sky.getCurrentMedia().as_json()
 print(currentMedia)
 
 media = MediaDecoder(currentMedia)
 if not media.live:
     print("----------- Recording")
-    print(sky.getRecordingJSON(media.pvrId))
+    print(sky.getRecording(media.pvrId).as_json())
 
 if test_channel:
     sid = test_channel
@@ -65,13 +65,13 @@ else:
     sid = media.sid
 
 print(f"----------- Programme from Epg - {queryDate} - {sid}")
-print(sky.getProgrammeFromEpgJSON(sid, queryDate, queryDate))
+print(sky.getProgrammeFromEpg(sid, queryDate, queryDate).as_json())
 
 print(f"----------- Current Live TV - {sid}")
-print(sky.getCurrentLiveTVProgrammeJSON(sid))
+print(sky.getCurrentLiveTVProgramme(sid).as_json())
 
-print(f"----------- Channel list")
-print(sky.getChannelListJSON())
+# print(f"----------- Channel list")
+# print(sky.getChannelList().as_json())
 
 # print("----------- Today's EPG")
-# print(sky.getEpgDataJSON(sid, queryDate))
+# print(sky.getEpgData(sid, queryDate).as_json())

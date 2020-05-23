@@ -89,7 +89,8 @@ class SkyQRemote:
             self._setupDevice()
 
         if not self._remoteCountry:
-            self._setupRemoteCountry()
+            SkyQCountry = self._importCountry(self._epgCountryCode)
+            self._remoteCountry = SkyQCountry()
 
         if self._soapControlURL is None:
             return SKY_STATE_OFF
@@ -132,14 +133,6 @@ class SkyQRemote:
         except Exception:
             return self._currentApp
 
-    def getCurrentMediaJSON(self):
-        """Get the currently playing media on the SkyQ box as json."""
-        media = self.getCurrentMedia()
-        if not media:
-            return None
-
-        return media.as_json()
-
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
         channel = None
@@ -171,14 +164,6 @@ class SkyQRemote:
         media = Media(channel, imageUrl, sid, pvrId, live)
 
         return media
-
-    def getEpgDataJSON(self, sid, epgDate):
-        """Get EPG data for the specified channel as json."""
-        channelepg = self.getEpgData(sid, epgDate)
-        if not channelepg:
-            return None
-
-        return channelepg.as_json()
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
@@ -216,14 +201,6 @@ class SkyQRemote:
 
         return self._channel
 
-    def getProgrammeFromEpgJSON(self, sid, epgDate, queryDate):
-        """Get programme from EPG for specfied time and channel as json."""
-        programme = self.getProgrammeFromEpg(sid, epgDate, queryDate)
-        if not programme:
-            return None
-
-        return programme.as_json()
-
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
         epgData = self.getEpgData(sid, epgDate)
@@ -241,14 +218,6 @@ class SkyQRemote:
         except StopIteration:
             return PAST_END_OF_EPG
 
-    def getCurrentLiveTVProgrammeJSON(self, sid):
-        """Get current live programme on the specified channel as json."""
-        programme = self.getCurrentLiveTVProgramme(sid)
-        if not programme:
-            return None
-
-        return programme.as_json()
-
     def getCurrentLiveTVProgramme(self, sid):
         """Get current live programme on the specified channel."""
         try:
@@ -261,14 +230,6 @@ class SkyQRemote:
         except Exception as err:
             _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
             return None
-
-    def getRecordingJSON(self, pvrId):
-        """Get the recording details as json."""
-        recording = self.getRecording(pvrId)
-        if not recording:
-            return None
-
-        return recording.as_json()
 
     def getRecording(self, pvrId):
         """Get the recording details."""
@@ -314,14 +275,6 @@ class SkyQRemote:
 
         return programme
 
-    def getDeviceInformationJSON(self):
-        """Get the device information from the SkyQ box as json."""
-        device = self.getDeviceInformation()
-        if not device:
-            return None
-
-        return device.as_json()
-
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
         deviceInfo = self._retrieveInformation(REST_PATH_DEVICEINFO)
@@ -365,14 +318,6 @@ class SkyQRemote:
             versionNumber,
         )
         return device
-
-    def getChannelListJSON(self):
-        """Get EPG data for the specified channel as json."""
-        channellist = self.getChannelList()
-        if not channellist:
-            return None
-
-        return channellist.as_json()
 
     def getChannelList(self):
         """Get Channel list for Sky Q box."""
@@ -630,8 +575,3 @@ class SkyQRemote:
             from pyskyqremote.country.remote_gb import SkyQCountry
 
         return SkyQCountry
-
-    def _setupRemoteCountry(self):
-
-        SkyQCountry = self._importCountry(self._epgCountryCode)
-        self._remoteCountry = SkyQCountry()
