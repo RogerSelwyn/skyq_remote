@@ -423,6 +423,71 @@ from pyskyqremote.programme import RecordedProgrammeDecoder
 recording = RecordedProgrammeDecoder(recordingJSON)
 ```
 
+### Get Channel List
+
+```
+channelList = self.client.getChannelList()
+```
+
+Will return an object with an array of channels.
+
+```
+{
+   'channels':[
+      {
+         'channelno':'0101',
+         'channelname':'BBC R1'
+      },
+      {
+         'channelno':'0102',
+         'channelname':'BBC R2'
+      },
+      {...}
+   ]
+}
+```
+### Get Channel List (JSON)
+
+```
+channelList = self.client.getChannelListJSON()
+```
+
+Will return a JSON structure with an array of channels.
+
+```
+{
+   "__type__":"__channellist__",
+   "attributes":{
+   },
+   "channels":[
+      {
+         "__type__":"__channel__",
+         "attributes":{
+            "channelno":"0101",
+            "channelname":"BBC R1"
+         }
+      },
+      {
+         "__type__":"__channel__",
+         "attributes":{
+            "channelno":"0102",
+            "channelname":"BBC R2"
+         }
+      },
+      {...},
+   ]
+}
+```
+
+### Decode EPG information (JSON)
+
+```
+from pyskyqremote.channel import ChannelDecoder
+channel = ChannelDecoder(channelJSON)
+```
+
+Will decode the JSON structure to a python object.
+
 ### Send key press
 
 ```
