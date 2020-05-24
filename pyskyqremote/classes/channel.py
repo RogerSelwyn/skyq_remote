@@ -1,6 +1,6 @@
 """Structure of a standard channel."""
 
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass, field
 import json
 
 AUDIO = "audio"
@@ -17,12 +17,12 @@ class Channel:
     channelname: str = field(
         init=True, repr=True, compare=False,
     )
-    sf: InitVar(str) = None
     channeltype: str = None
+    sf: str = None
 
-    def __post_init__(self, sf):
+    def __post_init__(self):
         """Post process the channel setup."""
-        if sf == "au":
+        if self.sf == "au":
             self.channeltype = AUDIO
         else:
             self.channeltype = VIDEO

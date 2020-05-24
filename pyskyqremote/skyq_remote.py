@@ -332,7 +332,7 @@ class SkyQRemote:
             channelno = c["c"]
             channelname = c["t"]
             sf = c["sf"]
-            channel = Channel(channelno, channelname, sf)
+            channel = Channel(channelno, channelname, sf=sf)
             channelitems.add(channel)
 
         channelnosorted = sorted(channelitems, key=attrgetter("channelno"))
