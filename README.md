@@ -435,12 +435,16 @@ Will return an object with an array of channels.
 {
    'channels':[
       {
-         'channelno':'0101',
-         'channelname':'BBC R1'
+         'channelno':'101',
+         'channelname':'BBC ONE',
+         'channeltype':'video',
+         'sf':'sd'
       },
       {
          'channelno':'0102',
-         'channelname':'BBC R2'
+         'channelname':'BBC R2',
+         'channeltype':'audio',
+         'sf':'au'
       },
       {...}
    ]
@@ -463,15 +467,19 @@ Will return a JSON structure with an array of channels.
       {
          "__type__":"__channel__",
          "attributes":{
-            "channelno":"0101",
-            "channelname":"BBC R1"
+            "channelno":"101",
+            "channelname":"BBC ONE",
+            "channeltype":"video",
+            "sf":"sd"
          }
       },
       {
          "__type__":"__channel__",
          "attributes":{
             "channelno":"0102",
-            "channelname":"BBC R2"
+            "channelname":"BBC R2",
+            "channeltype":"audio",
+            "sf":"au"
          }
       },
       {...},
