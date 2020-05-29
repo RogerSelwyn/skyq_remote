@@ -1,7 +1,7 @@
 # Changelog
 
-## v0.2.19b1(24/05/2020)
-- [Bump to 0.2.19 beta1](https://github.com/RogerSelwyn/skyq_remote/commit/d7d4c681788d2fe11cc275cff1e01abaff9ab60e) - @RogerSelwyn
+## v0.2.19 (29/05/2020)
+- [Bump to 0.2.19](https://github.com/RogerSelwyn/skyq_remote/commit/bdb13f7521e57217705d8b9ccc5df14664d1cdc9) - @RogerSelwyn
 - [Added stream format to channelist](https://github.com/RogerSelwyn/skyq_remote/commit/611c2b642f625215474826bf9780bd0c04d45991) - @RogerSelwyn
 - [Changed channelList to be returned TV channels first](https://github.com/RogerSelwyn/skyq_remote/commit/243e74d01f8c28d0f45adafb387aa1f0a9dddf3a) - @RogerSelwyn
 - [Removed unneeded JSON methods](https://github.com/RogerSelwyn/skyq_remote/commit/13f8dc2e27cd296a79aa098506bb4162f2d895bc) - @RogerSelwyn
@@ -10,6 +10,7 @@
 - [Move classes to subfolder](https://github.com/RogerSelwyn/skyq_remote/commit/b6a344e7d53819feeae7e00cfcb565633fa4bf9b) - @RogerSelwyn
 - [Added getChannelList and getChannelListJSON](https://github.com/RogerSelwyn/skyq_remote/commit/cc0039a4e568ba389dfd00b14a4c36c4d684a8d6) - @RogerSelwyn
 - [Restructure to enable HA config flow](https://github.com/RogerSelwyn/skyq_remote/commit/e9c89f4dda6b1d9ca9f4ec8668467b20fc0f5836) - @RogerSelwyn
+
 
 
 
