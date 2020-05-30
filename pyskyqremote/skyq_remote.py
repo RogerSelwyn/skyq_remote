@@ -67,6 +67,7 @@ class SkyQRemote:
 
     def __init__(self, host, port=49160, jsonPort=9006):
         """Stand up a new SkyQ box."""
+        self.deviceSetup = False
         self._host = host
         self._remoteCountry = None
         self._overrideCountry = None
@@ -79,7 +80,6 @@ class SkyQRemote:
         self._soapControlURL = None
         self._lastEpg = None
         self._currentApp = APP_EPG
-        self.deviceSetup = False
         self._channels = []
 
         self._setupDevice()
@@ -496,9 +496,7 @@ class SkyQRemote:
 
             if time.time() > timeout:
                 _LOGGER.error(
-                    "E0030 - Timeout error sending command: {self._host} : {0}".format(
-                        str(code)
-                    )
+                    f"E0030 - Timeout error sending command: {self._host} : {str(code)}"
                 )
                 break
 
