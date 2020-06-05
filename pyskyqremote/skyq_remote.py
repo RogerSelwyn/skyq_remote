@@ -81,6 +81,7 @@ class SkyQRemote:
         self._lastEpg = None
         self._currentApp = APP_EPG
         self._channels = []
+        self._error = False
 
         self._setupDevice()
 
@@ -166,10 +167,10 @@ class SkyQRemote:
 
         return media
 
-    def getEpgData(self, sid, epgDate, days=2):
+    def getEpgData(self, sid, epgDate, days=2, timeSpecific=False):
         """Get EPG data for the specified channel/date."""
         epg = str(sid) + epgDate.strftime("%Y%m%d")
-        if self._lastEpg == epg:
+        if self._lastEpg == epg and not timeSpecific:
             return self._channel
         self._lastEpg = epg
 
@@ -184,17 +185,19 @@ class SkyQRemote:
             channelName = channelNode["channel"]
             channelImageUrl = self._buildChannelUrl(sid, channelName)
 
-            for n in range(days):
-                programmesData = self._remoteCountry.getEpgData(
-                    sid, channelNo, epgDate + timedelta(days=n)
+            if not timeSpecific:
+                for n in range(days):
+                    programmesData = self._remoteCountry.getEpgData(
+                        sid, channelNo, epgDate + timedelta(days=n)
+                    )
+                    if len(programmesData) > 0:
+                        programmes = programmes.union(programmesData)
+                    else:
+                        break
+            else:
+                programmes = self._remoteCountry.getTimeEpgData(
+                    sid, channelNo, epgDate, epgDate + timedelta(hours=12)
                 )
-                if len(programmesData) > 0:
-                    programmes = programmes.union(programmesData)
-                else:
-                    break
-
-        if len(programmes) == 0:
-            _LOGGER.info(f"I0020 - Programme data not found for SID {sid} : {epgDate}")
 
         self._channel = ChannelEPG(
             sid, channelNo, channelName, channelImageUrl, sorted(programmes)
@@ -205,8 +208,25 @@ class SkyQRemote:
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
         epgData = self.getEpgData(sid, epgDate)
+
+        timechange = 0
+        while (
+            len(epgData.programmes) > 0 and queryDate < epgData.programmes[0].starttime
+        ):
+            timechange += 1
+            epgData = self.getEpgData(
+                sid, epgDate - timedelta(hours=timechange), timeSpecific=True
+            )
+
         if len(epgData.programmes) == 0:
-            return None
+            if not self._error:
+                self._error = True
+                _LOGGER.info(
+                    f"I0020 - Programme data not found for SID {sid} : {epgDate}"
+                )
+                return PAST_END_OF_EPG
+        else:
+            self._error = False
 
         try:
             programme = next(
@@ -223,14 +243,17 @@ class SkyQRemote:
         """Get current live programme on the specified channel."""
         try:
             queryDate = datetime.utcnow()
+            # queryDate = datetime.strptime(
+            #     "2020-06-05 00:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"
+            # )
             programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
             if programme is None:
-                return None
+                return PAST_END_OF_EPG
 
             return programme
         except Exception as err:
             _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
-            return None
+            return PAST_END_OF_EPG
 
     def getRecording(self, pvrId):
         """Get the recording details."""
