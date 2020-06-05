@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.20 (06/05/2020)
+Fixed issue with Italian EPG
+
 ## v0.2.19 (29/05/2020)
 - [Bump to 0.2.19](https://github.com/RogerSelwyn/skyq_remote/commit/bdb13f7521e57217705d8b9ccc5df14664d1cdc9) - @RogerSelwyn
 - [Added stream format to channelist](https://github.com/RogerSelwyn/skyq_remote/commit/611c2b642f625215474826bf9780bd0c04d45991) - @RogerSelwyn
