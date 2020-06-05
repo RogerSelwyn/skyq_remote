@@ -79,6 +79,9 @@ class SkyQRemote:
         self._jsonport = jsonPort
         self._soapControlURL = None
         self._lastEpg = None
+        self._lastProgramme = None
+        self._lastSid = None
+        self._lastEpgDate = None
         self._currentApp = APP_EPG
         self._channels = []
         self._error = False
@@ -207,6 +210,14 @@ class SkyQRemote:
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
+        if (
+            self._lastProgramme
+            and sid == self._lastSid
+            and epgDate == self._lastEpgDate
+            and queryDate < self._lastProgramme.endtime
+        ):
+            return self._lastProgramme
+
         epgData = self.getEpgData(sid, epgDate)
 
         timechange = 0
@@ -234,6 +245,10 @@ class SkyQRemote:
                 for p in epgData.programmes
                 if p.starttime <= queryDate and p.endtime >= queryDate
             )
+
+            self._lastProgramme = programme
+            self._lastSid = sid
+            self._lastEpgDate = epgDate
             return programme
 
         except StopIteration:
