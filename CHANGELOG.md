@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.21b1 (07/05/2020)
+- [Fixed error over midnight in Italy](https://github.com/RogerSelwyn/skyq_remote/commit/88aed05aaca1157b5348121582b12aefb85fdadf) - @RogerSelwyn
+- [Bump to 0.2.21b1](https://github.com/RogerSelwyn/skyq_remote/commit/cd030ba6385c934fa95dc3daf8900c4d9d19dc76) - @RogerSelwyn
+
 ## v0.2.20 (06/05/2020)
 - [Fixed issue with Italian EPG](https://github.com/RogerSelwyn/skyq_remote/commit/4ace174038ec2b09c9d8840ebfe68b58b99af97a) - @RogerSelwyn
 - [Bump to 0.2.20](https://github.com/RogerSelwyn/skyq_remote/commit/4ace174038ec2b09c9d8840ebfe68b58b99af97a) - @RogerSelwyn
