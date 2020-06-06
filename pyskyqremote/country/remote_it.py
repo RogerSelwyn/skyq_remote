@@ -35,7 +35,7 @@ class SkyQCountry:
         return self._getData(sid, channelno, queryDateFrom, queryDateTo)
 
     def getTimeEpgData(self, sid, channelno, queryDateFrom, queryDateTo):
-        """Get EPG data for Italy."""
+        """Get EPG data for Italy for specific time."""
         queryDateFrom = queryDateFrom.strftime("%Y-%m-%dT%H:%M:%SZ")
         queryDateTo = queryDateTo.strftime("%Y-%m-%dT%H:%M:%SZ")
         return self._getData(sid, channelno, queryDateFrom, queryDateTo)

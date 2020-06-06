@@ -37,7 +37,8 @@ from .const import (
     APP_STATUS_VISIBLE,
     PVR,
     XSI,
-    PAST_END_OF_EPG,
+    EPG_ERROR_PAST_END,
+    EPG_ERROR_NO_DATA,
     CONNECTTIMEOUT,
     TIMEOUT,
     COMMANDS,
@@ -49,11 +50,11 @@ from .const import (
     APP_EPG,
     KNOWN_COUNTRIES,
 )
-from .const import TEST_CHANNEL_LIST
+from .const_test import TEST_CHANNEL_LIST
 from .classes.channelepg import ChannelEPG
 from .classes.channellist import ChannelList
 from .classes.channel import Channel
-from .classes.programme import RecordedProgramme
+from .classes.programme import Programme, RecordedProgramme
 from .classes.media import Media
 from .classes.device import Device
 
@@ -75,13 +76,14 @@ class SkyQRemote:
         self._serialNumber = None
         self._channel = None
         self._test_channel = None
+        # self._test = False
         self._port = port
         self._jsonport = jsonPort
         self._soapControlURL = None
         self._lastEpg = None
         self._lastProgramme = None
         self._lastSid = None
-        self._lastEpgDate = None
+        self._lastEpgDay = None
         self._currentApp = APP_EPG
         self._channels = []
         self._error = False
@@ -210,10 +212,11 @@ class SkyQRemote:
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
+        epgDay = epgDate.strftime("%Y%m%d")
         if (
             self._lastProgramme
             and sid == self._lastSid
-            and epgDate == self._lastEpgDate
+            and epgDay == self._lastEpgDay
             and queryDate < self._lastProgramme.endtime
         ):
             return self._lastProgramme
@@ -235,7 +238,7 @@ class SkyQRemote:
                 _LOGGER.info(
                     f"I0020 - Programme data not found for SID {sid} : {epgDate}"
                 )
-                return PAST_END_OF_EPG
+                return EPG_ERROR_NO_DATA
         else:
             self._error = False
 
@@ -248,27 +251,35 @@ class SkyQRemote:
 
             self._lastProgramme = programme
             self._lastSid = sid
-            self._lastEpgDate = epgDate
+            self._lastEpgDay = epgDay
             return programme
 
         except StopIteration:
-            return PAST_END_OF_EPG
+            return EPG_ERROR_PAST_END
 
     def getCurrentLiveTVProgramme(self, sid):
         """Get current live programme on the specified channel."""
         try:
             queryDate = datetime.utcnow()
-            # queryDate = datetime.strptime(
-            #     "2020-06-05 00:15:27.243860", "%Y-%m-%d %H:%M:%S.%f"
-            # )
+            # seconds = queryDate.strftime("%S")
+            # if not self._test:
+            #     queryDate = datetime.strptime(
+            #         "2020-06-06 23:59:" + seconds + ".0000", "%Y-%m-%d %H:%M:%S.%f"
+            #     )
+            #     self._test = True
+            # else:
+            #     queryDate = datetime.strptime(
+            #         "2020-06-07 00:00:" + seconds + ".0000", "%Y-%m-%d %H:%M:%S.%f"
+            #     )
+            # print(f"{self._overrideCountry} - {queryDate}")
             programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
-            if programme is None:
-                return PAST_END_OF_EPG
+            if not isinstance(programme, Programme):
+                return None
 
             return programme
         except Exception as err:
             _LOGGER.exception(f"X0030 - Error occurred: {self._host} : {sid} : {err}")
-            return PAST_END_OF_EPG
+            return None
 
     def getRecording(self, pvrId):
         """Get the recording details."""
