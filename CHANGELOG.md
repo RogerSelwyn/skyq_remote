@@ -1,8 +1,9 @@
 # Changelog
 
-## v0.2.21b1 (07/05/2020)
+## v0.2.21b2 (08/05/2020)
+- [Simplify code for retrieving full days EPG](https://github.com/RogerSelwyn/skyq_remote/commit/eb1d12096930dd01db2997a71eeb876e1109cc30) - @RogerSelwyn
 - [Fixed error over midnight in Italy](https://github.com/RogerSelwyn/skyq_remote/commit/88aed05aaca1157b5348121582b12aefb85fdadf) - @RogerSelwyn
-- [Bump to 0.2.21b1](https://github.com/RogerSelwyn/skyq_remote/commit/cd030ba6385c934fa95dc3daf8900c4d9d19dc76) - @RogerSelwyn
+- [Bump to 0.2.21b2](https://github.com/RogerSelwyn/skyq_remote/commit/7b334583524a39035bb55da386a454d43f0b939f) - @RogerSelwyn
 
 ## v0.2.20 (06/05/2020)
 - [Fixed issue with Italian EPG](https://github.com/RogerSelwyn/skyq_remote/commit/4ace174038ec2b09c9d8840ebfe68b58b99af97a) - @RogerSelwyn
