@@ -1,5 +1,5 @@
 """Italy specific code."""
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import requests
 
@@ -30,15 +30,14 @@ class SkyQCountry:
 
     def getEpgData(self, sid, channelno, epgDate):
         """Get EPG data for Italy."""
-        queryDateFrom = epgDate.strftime("%Y-%m-%dT00:00:00Z")
+        epgPrev = epgDate - timedelta(days=1)
+        queryDateFrom = epgPrev.strftime("%Y-%m-%dT22:00:00Z")
         queryDateTo = epgDate.strftime("%Y-%m-%dT23:59:59Z")
-        return self._getData(sid, channelno, queryDateFrom, queryDateTo)
+        epgData = self._getData(sid, channelno, queryDateFrom, queryDateTo)
 
-    def getTimeEpgData(self, sid, channelno, queryDateFrom, queryDateTo):
-        """Get EPG data for Italy for specific time."""
-        queryDateFrom = queryDateFrom.strftime("%Y-%m-%dT%H:%M:%SZ")
-        queryDateTo = queryDateTo.strftime("%Y-%m-%dT%H:%M:%SZ")
-        return self._getData(sid, channelno, queryDateFrom, queryDateTo)
+        midnight = datetime.combine(epgDate.date(), datetime.min.time())
+
+        return [p for p in epgData if p.endtime >= midnight]
 
     def _getData(self, sid, channelno, queryDateFrom, queryDateTo):
         cid = None
@@ -94,3 +93,11 @@ class SkyQCountry:
         resp = requests.get(CHANNEL_URL)
         if resp.status_code == RESPONSE_OK:
             self._channellist = resp.json()["channels"]
+
+    def _getMidnight(self, epgDate, epgData):
+        midnight = datetime.combine(epgDate.date(), datetime.min.time())
+        for p in epgData:
+            if p.starttime < midnight and p.endtime >= midnight:
+                return p
+
+        return list(epgData)[len(epgData) - 1]

@@ -42,6 +42,17 @@ TEST_CHANNEL_LIST = [
         "xsg": 1,
     },
     {
+        "c": "5472",
+        "dvbtriplet": "272.950.5178",
+        "servicetype": "DTT",
+        "servicetypes": ["DTT"],
+        "sf": "hd",
+        "sg": 10,
+        "sid": "M110-3b6-143a-ffff",
+        "t": "Sky Sport Uno HD",
+        "xsg": 65535,
+    },
+    {
         "c": "303",
         "dvbtriplet": "64511.6400.11074",
         "schedule": True,

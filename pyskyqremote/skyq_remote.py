@@ -74,16 +74,15 @@ class SkyQRemote:
         self._overrideCountry = None
         self._epgCountryCode = None
         self._serialNumber = None
-        self._channel = None
         self._test_channel = None
         # self._test = False
         self._port = port
         self._jsonport = jsonPort
         self._soapControlURL = None
+        self._channel = None
         self._lastEpg = None
-        self._lastProgramme = None
-        self._lastSid = None
-        self._lastEpgDay = None
+        self._programme = None
+        self._lastProgrammeEpg = None
         self._currentApp = APP_EPG
         self._channels = []
         self._error = False
@@ -172,10 +171,10 @@ class SkyQRemote:
 
         return media
 
-    def getEpgData(self, sid, epgDate, days=2, timeSpecific=False):
+    def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
-        epg = str(sid) + epgDate.strftime("%Y%m%d")
-        if self._lastEpg == epg and not timeSpecific:
+        epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epgDate.strftime('%Y%m%d')}"
+        if self._lastEpg == epg:
             return self._channel
         self._lastEpg = epg
 
@@ -190,19 +189,14 @@ class SkyQRemote:
             channelName = channelNode["channel"]
             channelImageUrl = self._buildChannelUrl(sid, channelName)
 
-            if not timeSpecific:
-                for n in range(days):
-                    programmesData = self._remoteCountry.getEpgData(
-                        sid, channelNo, epgDate + timedelta(days=n)
-                    )
-                    if len(programmesData) > 0:
-                        programmes = programmes.union(programmesData)
-                    else:
-                        break
-            else:
-                programmes = self._remoteCountry.getTimeEpgData(
-                    sid, channelNo, epgDate, epgDate + timedelta(hours=12)
+            for n in range(days):
+                programmesData = self._remoteCountry.getEpgData(
+                    sid, channelNo, epgDate + timedelta(days=n)
                 )
+                if len(programmesData) > 0:
+                    programmes = programmes.union(programmesData)
+                else:
+                    break
 
         self._channel = ChannelEPG(
             sid, channelNo, channelName, channelImageUrl, sorted(programmes)
@@ -212,25 +206,14 @@ class SkyQRemote:
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
-        epgDay = epgDate.strftime("%Y%m%d")
+        programmeEpg = f"{str(sid)} {epgDate.strftime('%Y%m%d')}"
         if (
-            self._lastProgramme
-            and sid == self._lastSid
-            and epgDay == self._lastEpgDay
-            and queryDate < self._lastProgramme.endtime
+            self._lastProgrammeEpg == programmeEpg
+            and queryDate < self._programme.endtime
         ):
-            return self._lastProgramme
+            return self._programme
 
         epgData = self.getEpgData(sid, epgDate)
-
-        timechange = 0
-        while (
-            len(epgData.programmes) > 0 and queryDate < epgData.programmes[0].starttime
-        ):
-            timechange += 1
-            epgData = self.getEpgData(
-                sid, epgDate - timedelta(hours=timechange), timeSpecific=True
-            )
 
         if len(epgData.programmes) == 0:
             if not self._error:
@@ -249,9 +232,8 @@ class SkyQRemote:
                 if p.starttime <= queryDate and p.endtime >= queryDate
             )
 
-            self._lastProgramme = programme
-            self._lastSid = sid
-            self._lastEpgDay = epgDay
+            self._programme = programme
+            self._lastProgrammeEpg = programmeEpg
             return programme
 
         except StopIteration:
