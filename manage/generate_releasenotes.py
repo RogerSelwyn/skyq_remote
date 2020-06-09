@@ -3,7 +3,7 @@ import sys
 import json
 from github import Github
 
-REPOSITORY = "skyqremote"
+REPOSITORY = "skyq_remote"
 
 BODY = """
 [![Downloads for this release](https://img.shields.io/github/downloads/rogerselwyn/{repository}/{version}/total.svg)](https://github.com/rogerselwyn/{repository}/releases/{version})
