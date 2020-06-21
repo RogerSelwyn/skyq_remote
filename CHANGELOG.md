@@ -1,9 +1,27 @@
 # Changelog
 
-## v0.2.21b2 (08/05/2020)
-- [Simplify code for retrieving full days EPG](https://github.com/RogerSelwyn/skyq_remote/commit/eb1d12096930dd01db2997a71eeb876e1109cc30) - @RogerSelwyn
+## v0.2.22 (21/06/2020)
+### Maintenance
+- [Delete requirements.txt](https://github.com/RogerSelwyn/skyq_remote/commit/daaa59a45409791daf36cb83b9089f883ddaf10d) - @RogerSelwyn
+- [Create dependabot.yml](https://github.com/RogerSelwyn/skyq_remote/commit/6cac31dd393f3226518d50ba2f3b9779c56429cf) - @RogerSelwyn
+- [Bump requests from 2.23.0 to 2.24.0](https://github.com/RogerSelwyn/skyq_remote/commit/457256ef7785b47bdba4b27e00c44f0eb54fd0d4) - @dependabot[bot]
+- [Bump to 0.2.22](https://github.com/RogerSelwyn/skyq_remote/commit/adb1b60760367c8deadcad8f703af61e1e5f27ae) - @RogerSelwyn
+
+## v0.2.21 (09/05/2020)
+### Fixes
+- [Reduced number of calls to get EPG data](https://github.com/RogerSelwyn/skyq_remote/commit/d8ec8dd7c710651923b5056cb7ee3bfc8129f741) - @RogerSelwyn
 - [Fixed error over midnight in Italy](https://github.com/RogerSelwyn/skyq_remote/commit/88aed05aaca1157b5348121582b12aefb85fdadf) - @RogerSelwyn
-- [Bump to 0.2.21b2](https://github.com/RogerSelwyn/skyq_remote/commit/7b334583524a39035bb55da386a454d43f0b939f) - @RogerSelwyn
+
+### Maintenance
+- [Added requirements.txt](https://github.com/RogerSelwyn/skyq_remote/commit/7238982e9a0fae4cf46afbdeb84a1b63aaa1e09b) - @RogerSelwyn
+- [Corrected repo name](https://github.com/RogerSelwyn/skyq_remote/commit/338cd053f291668c0c777b1a1f2f3f8fa070b2e7) - @RogerSelwyn
+- [Corrected release notes generation](https://github.com/RogerSelwyn/skyq_remote/commit/15bc3c48d1e719305c659319159c34a3dc6daafa) - @RogerSelwyn
+- [Simplify code for retrieving full days EPG](https://github.com/RogerSelwyn/skyq_remote/commit/eb1d12096930dd01db2997a71eeb876e1109cc30) - @RogerSelwyn
+- [Create skyqremote_release.yaml](https://github.com/RogerSelwyn/skyq_remote/commit/d994c16b8006adb4e384bdae61811e337f89d584) - @RogerSelwyn
+- [Added release notes generator](https://github.com/RogerSelwyn/skyq_remote/commit/8ce46dac6554bfaf9e7ff848209ae5031d4bbdd9) - @RogerSelwyn
+- [Bump to 0.2.21](https://github.com/RogerSelwyn/skyq_remote/commit/bb4c67e19617c7fb9f62f2725bbdc68202a6f906) - @RogerSelwyn
+
+
 
 ## v0.2.20 (06/05/2020)
 - [Fixed issue with Italian EPG](https://github.com/RogerSelwyn/skyq_remote/commit/4ace174038ec2b09c9d8840ebfe68b58b99af97a) - @RogerSelwyn
