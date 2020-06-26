@@ -1,7 +1,7 @@
 """Structure of a device information."""
 
-from dataclasses import dataclass, field
 import json
+from dataclasses import dataclass, field
 
 
 @dataclass

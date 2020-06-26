@@ -1,7 +1,7 @@
 """Structure of a media information."""
 
-from dataclasses import dataclass, field
 import json
+from dataclasses import dataclass, field
 from datetime import datetime
 
 

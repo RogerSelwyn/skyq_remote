@@ -1,21 +1,47 @@
 """Python module for accessing SkyQ box and EPG, and sending commands."""
-import time
+import importlib
+import json
+import logging
 import math
 import socket
-import requests
-import json
-import xmltodict
-import logging
-import importlib
-import pycountry
+import time
 from datetime import datetime, timedelta
 from http import HTTPStatus
 from operator import attrgetter
 
+import pycountry
+import requests
 import websocket
+import xmltodict
 
+from .classes.channel import Channel
+from .classes.channelepg import ChannelEPG
+from .classes.channellist import ChannelList
+from .classes.device import Device
+from .classes.media import Media
+from .classes.programme import Programme, RecordedProgramme
 from .const import (
+    APP_EPG,
+    APP_STATUS_VISIBLE,
+    COMMANDS,
+    CONNECTTIMEOUT,
+    CURRENT_TRANSPORT_STATE,
+    CURRENT_URI,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    KNOWN_COUNTRIES,
+    PVR,
+    REST_BASE_URL,
+    REST_CHANNEL_LIST,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    REST_RECORDING_DETAILS,
     SKY_PLAY_URN,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
     SKYCONTROL,
     SOAP_ACTION,
     SOAP_CONTROL_BASE_URL,
@@ -23,40 +49,14 @@ from .const import (
     SOAP_PAYLOAD,
     SOAP_RESPONSE,
     SOAP_USER_AGENT,
+    TIMEOUT,
     UPNP_GET_MEDIA_INFO,
     UPNP_GET_TRANSPORT_INFO,
     WS_BASE_URL,
     WS_CURRENT_APPS,
-    REST_BASE_URL,
-    REST_CHANNEL_LIST,
-    REST_RECORDING_DETAILS,
-    REST_PATH_SYSTEMINFO,
-    REST_PATH_DEVICEINFO,
-    CURRENT_URI,
-    CURRENT_TRANSPORT_STATE,
-    APP_STATUS_VISIBLE,
-    PVR,
     XSI,
-    EPG_ERROR_PAST_END,
-    EPG_ERROR_NO_DATA,
-    CONNECTTIMEOUT,
-    TIMEOUT,
-    COMMANDS,
-    SKY_STATE_PLAYING,
-    SKY_STATE_PAUSED,
-    SKY_STATE_STANDBY,
-    SKY_STATE_ON,
-    SKY_STATE_OFF,
-    APP_EPG,
-    KNOWN_COUNTRIES,
 )
 from .const_test import TEST_CHANNEL_LIST
-from .classes.channelepg import ChannelEPG
-from .classes.channellist import ChannelList
-from .classes.channel import Channel
-from .classes.programme import Programme, RecordedProgramme
-from .classes.media import Media
-from .classes.device import Device
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 """Structure of a standard EPG prorgramme."""
 
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
-import json
 
 from .programme import Programme
 

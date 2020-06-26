@@ -1,7 +1,7 @@
 """Structure of a standard EPG prorgramme."""
 
-from dataclasses import dataclass, field
 import json
+from dataclasses import dataclass, field
 
 from .channel import Channel
 

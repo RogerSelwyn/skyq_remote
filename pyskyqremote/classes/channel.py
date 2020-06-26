@@ -1,7 +1,7 @@
 """Structure of a standard channel."""
 
-from dataclasses import dataclass, field
 import json
+from dataclasses import dataclass, field
 
 AUDIO = "audio"
 VIDEO = "video"

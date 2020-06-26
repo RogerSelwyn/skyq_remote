@@ -1,12 +1,12 @@
 """UK specific code."""
-from datetime import datetime
 import logging
+from datetime import datetime
+
 import requests
 
-from ..const import RESPONSE_OK
 from ..classes.programme import Programme
-
-from .const_gb import CHANNEL_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL, LIVE_IMAGE_URL
+from ..const import RESPONSE_OK
+from .const_gb import CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
