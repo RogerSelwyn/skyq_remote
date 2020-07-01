@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.23 (01/07/2020)
+## Maintenance
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/0068d9a678f481b999c8749f5281fa7a97f61192) - @RogerSelwyn
+- [Format with Black](https://github.com/RogerSelwyn/skyq_remote/commit/ca3591ba74114392bf9b2ea00cbfa5708752464f) - @RogerSelwyn
+- [Bump to 0.2.23](https://github.com/RogerSelwyn/skyq_remote/commit/4a3f182b452a583f1d76b7acf110d67e1ea6e294) - @RogerSelwyn
+
 ## v0.2.22 (21/06/2020)
 ### Maintenance
 - [Delete requirements.txt](https://github.com/RogerSelwyn/skyq_remote/commit/daaa59a45409791daf36cb83b9089f883ddaf10d) - @RogerSelwyn
