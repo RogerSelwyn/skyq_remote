@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.24 (05/07/2020)
+## Maintenance
+- [Update generate_releasenotes.py](https://github.com/RogerSelwyn/skyq_remote/commit/8e33c5e343b979df34c22aac3a37e5072b137f5f) - @RogerSelwyn
+- [Change websocket to 0.56.0+](https://github.com/RogerSelwyn/skyq_remote/commit/53860a8e20136aac2d08c8a40d74372e2297b6ab) - @RogerSelwyn
+- [Bump to 0.2.24](https://github.com/RogerSelwyn/skyq_remote/commit/04ba9b788d134c144956455bb4301b9cc6b9a5bf) - @RogerSelwyn
+- [Bump pycountry to 20.7.3](https://github.com/RogerSelwyn/skyq_remote/commit/7b409bd530c89fe82a7fd6bd4c01f449006851e4) - @RogerSelwyn
+
 ## v0.2.23 (01/07/2020)
 ## Maintenance
 - [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/0068d9a678f481b999c8749f5281fa7a97f61192) - @RogerSelwyn
