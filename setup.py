@@ -19,7 +19,7 @@ setup(
     url='https://github.com/RogerSelwyn/skyq_remote',
     license='MIT',
     packages=find_namespace_packages(),
-    install_requires=['requests==2.24.0', 'websocket-client==0.57.0', 'xmltodict==0.12.0', 'pycountry==19.8.18'],
+    install_requires=['requests==2.24.0', 'websocket-client>=0.56.0', 'xmltodict==0.12.0', 'pycountry==19.8.18'],
     keywords='SKYQ Remote',
     include_package_data=True,
     zip_safe=False,
