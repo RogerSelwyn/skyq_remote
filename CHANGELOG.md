@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.25 (29/07/2020)
+### Fixes
+- [Fix channel sorting issue](https://github.com/RogerSelwyn/skyq_remote/commit/1f9fb4d10bacfbf80f50c8b0a17bab705111343e) - @RogerSelwyn
+
 ## v0.2.24 (05/07/2020)
 ## Maintenance
 - [Update generate_releasenotes.py](https://github.com/RogerSelwyn/skyq_remote/commit/8e33c5e343b979df34c22aac3a37e5072b137f5f) - @RogerSelwyn
