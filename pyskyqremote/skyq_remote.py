@@ -366,7 +366,7 @@ class SkyQRemote:
             channel = Channel(channelno, channelname, sf=sf)
             channelitems.add(channel)
 
-        channelnosorted = sorted(channelitems, key=attrgetter("channelno"))
+        channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
         self._channellist = ChannelList(
             sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True)
         )

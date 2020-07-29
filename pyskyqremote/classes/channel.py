@@ -18,6 +18,7 @@ class Channel:
         init=True, repr=True, compare=False,
     )
     channeltype: str = None
+    channelnoint: int = None
     sf: str = None
 
     def __post_init__(self):
@@ -26,6 +27,7 @@ class Channel:
             self.channeltype = AUDIO
         else:
             self.channeltype = VIDEO
+        self.channelnoint = int(self.channelno)
 
     def __hash__(self):
         """Calculate the hash of this object."""
