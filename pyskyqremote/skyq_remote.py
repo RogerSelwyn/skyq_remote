@@ -82,7 +82,9 @@ class SkyQRemote:
         self._channel = None
         self._lastEpg = None
         self._programme = None
+        self._recordedProgramme = None
         self._lastProgrammeEpg = None
+        self._lastPvrId = None
         self._currentApp = APP_EPG
         self._channels = []
         self._error = False
@@ -274,6 +276,10 @@ class SkyQRemote:
         imageUrl = None
         title = None
 
+        if self._lastPvrId == pvrId:
+            return self._recordedProgramme
+        self._lastPvrId = pvrId
+
         resp = self._http_json(REST_RECORDING_DETAILS.format(pvrId))
         if "details" not in resp:
             _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
@@ -301,11 +307,11 @@ class SkyQRemote:
         else:
             endtime = starttime
 
-        programme = RecordedProgramme(
+        self._recordedProgramme = RecordedProgramme(
             programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel
         )
 
-        return programme
+        return self._recordedProgramme
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
