@@ -102,7 +102,7 @@ Will return "POWERED OFF", "STANDBY or "ON"
 status = self.client.getCurrentState()
 ```
 
-Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK", "TRANSITIONING"
+Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK"
 
 ### Get the active application
 
