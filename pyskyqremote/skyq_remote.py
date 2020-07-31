@@ -42,6 +42,8 @@ from .const import (
     SKY_STATE_PAUSED,
     SKY_STATE_PLAYING,
     SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
     SKYCONTROL,
     SOAP_ACTION,
     SOAP_CONTROL_BASE_URL,
@@ -89,16 +91,12 @@ class SkyQRemote:
         self._channels = []
         self._error = False
 
-        self._setupDevice()
+        self._setupRemote()
 
     def powerStatus(self) -> str:
         """Get the power status of the Sky Q box."""
         if not self.deviceSetup:
-            self._setupDevice()
-
-        if not self._remoteCountry:
-            SkyQCountry = self._importCountry(self._epgCountryCode)
-            self._remoteCountry = SkyQCountry()
+            self._setupRemote()
 
         if self._soapControlURL is None:
             return SKY_STATE_OFF
@@ -113,18 +111,22 @@ class SkyQRemote:
 
     def getCurrentState(self):
         """Get current state of the SkyQ box."""
-        if self.powerStatus() == SKY_STATE_OFF:
+        if not self.deviceSetup:
+            self._setupRemote()
+
+        if self._soapControlURL is None:
             return SKY_STATE_OFF
-        if self.powerStatus() == SKY_STATE_STANDBY:
-            return SKY_STATE_STANDBY
+
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
-            if state == SKY_STATE_PLAYING:
+            if state == SKY_STATE_STOPPED:
+                return SKY_STATE_STANDBY
+            if state == SKY_STATE_PLAYING or state == SKY_STATE_TRANSITIONING:
                 return SKY_STATE_PLAYING
             if state == SKY_STATE_PAUSED:
                 return SKY_STATE_PAUSED
-        return SKY_STATE_STANDBY
+        return SKY_STATE_OFF
 
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
@@ -570,8 +572,16 @@ class SkyQRemote:
     def _getNodeFromChannels(self, sid):
         return next((s for s in self._channels if s["sid"] == str(sid)), None)
 
-    def _setupDevice(self):
+    def _setupRemote(self):
+        if not self.deviceSetup:
+            self._setupDevice()
+
         """Set the remote up."""
+        if not self._remoteCountry and self.deviceSetup:
+            SkyQCountry = self._importCountry(self._epgCountryCode)
+            self._remoteCountry = SkyQCountry()
+
+    def _setupDevice(self):
         deviceInfo = self.getDeviceInformation()
         if not deviceInfo:
             return
