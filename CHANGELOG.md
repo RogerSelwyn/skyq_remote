@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.26 beta1 (01/08/2020)
+### Fixes
+- [Fix handling of switched off](https://github.com/RogerSelwyn/skyq_remote/commit/4208c9cd09398f2dd0095fc3523c8fa276bea974) - @RogerSelwyn
+
 ## v0.2.26 beta0 (31/07/2020)
 ### Enhancements
 - [Reduce calls to Sky Box](https://github.com/RogerSelwyn/skyq_remote/commit/78fb708c7652a0704bd866d37af4f8b57a2e27f9) - @RogerSelwyn
