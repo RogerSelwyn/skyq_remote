@@ -37,6 +37,7 @@ from .const import (
     REST_PATH_SYSTEMINFO,
     REST_RECORDING_DETAILS,
     SKY_PLAY_URN,
+    SKY_STATE_NOMEDIA,
     SKY_STATE_OFF,
     SKY_STATE_ON,
     SKY_STATE_PAUSED,
@@ -120,7 +121,7 @@ class SkyQRemote:
         response = self._callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
-            if state == SKY_STATE_STOPPED:
+            if state == SKY_STATE_NOMEDIA or state == SKY_STATE_STOPPED:
                 return SKY_STATE_STANDBY
             if state == SKY_STATE_PLAYING or state == SKY_STATE_TRANSITIONING:
                 return SKY_STATE_PLAYING
