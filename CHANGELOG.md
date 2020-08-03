@@ -1,17 +1,16 @@
 # Changelog
 
-## v0.2.26 beta1 (01/08/2020)
-### Fixes
-- [Fix handling of switched off](https://github.com/RogerSelwyn/skyq_remote/commit/4208c9cd09398f2dd0095fc3523c8fa276bea974) - @RogerSelwyn
-
-## v0.2.26 beta0 (31/07/2020)
+## v0.2.26 (03/08/2020)
 ### Enhancements
 - [Reduce calls to Sky Box](https://github.com/RogerSelwyn/skyq_remote/commit/78fb708c7652a0704bd866d37af4f8b57a2e27f9) - @RogerSelwyn
 - [Enable use of getCurrentState instead of powerStatus](https://github.com/RogerSelwyn/skyq_remote/commit/8ce7140e17fe42742df356297a402e344e143d02) - @RogerSelwyn
 
 ### Maintenance
 - [Change minimum requirements for modules](https://github.com/RogerSelwyn/skyq_remote/commit/6db713509bb6bc6ac487e7c456db62c17e6f29d8) - @RogerSelwyn
-- [Bump to 0.2.26b0](https://github.com/RogerSelwyn/skyq_remote/commit/5c80efbed93e629bdbf7c6563b26205febcb3c46) - @RogerSelwyn
+- [Bump to 0.2.26](https://github.com/RogerSelwyn/skyq_remote/commit/55797ca7d1270148ed11c47f9157d95c2586cfbd) - @RogerSelwyn
+
+### Fixes
+- [Fix handling of switched off](https://github.com/RogerSelwyn/skyq_remote/commit/4208c9cd09398f2dd0095fc3523c8fa276bea974) 
 
 ## v0.2.25 (29/07/2020)
 ### Fixes
