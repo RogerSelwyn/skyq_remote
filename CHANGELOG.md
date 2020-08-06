@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.27 (06/08/2020)
+### Fixes
+- [Fix device setup after previous changes](https://github.com/RogerSelwyn/skyq_remote/commit/b95ee682642c22d26febf37630657b97d90dfa87) - @RogerSelwyn
+- [Bump to 0.2.27](https://github.com/RogerSelwyn/skyq_remote/commit/d13dd75faaf84daf746e34db2287492f5ddf7030) - @RogerSelwyn
+
 ## v0.2.26 (03/08/2020)
 ### Enhancements
 - [Reduce calls to Sky Box](https://github.com/RogerSelwyn/skyq_remote/commit/78fb708c7652a0704bd866d37af4f8b57a2e27f9) - @RogerSelwyn
