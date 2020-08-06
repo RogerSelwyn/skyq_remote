@@ -3,9 +3,9 @@
 import sys
 from datetime import datetime
 
-from pyskyqremote.skyq_remote import SkyQRemote
-from pyskyqremote.const import APP_EPG, SKY_STATE_STANDBY, SKY_STATE_OFF
 from pyskyqremote.classes.media import MediaDecoder
+from pyskyqremote.const import APP_EPG, SKY_STATE_OFF, SKY_STATE_STANDBY
+from pyskyqremote.skyq_remote import SkyQRemote
 
 # from pyskyqremote.device import DeviceDecoder
 # from pyskyqremote.channel import ChannelDecoder
@@ -70,8 +70,8 @@ print(sky.getProgrammeFromEpg(sid, queryDate, queryDate).as_json())
 print(f"----------- Current Live TV - {sid}")
 print(sky.getCurrentLiveTVProgramme(sid).as_json())
 
-print("----------- Channel list")
-print(sky.getChannelList().as_json())
+# print("----------- Channel list")
+# print(sky.getChannelList().as_json())
 
 # print("----------- Today's EPG")
 # print(sky.getEpgData(sid, queryDate).as_json())

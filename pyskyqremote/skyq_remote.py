@@ -92,11 +92,11 @@ class SkyQRemote:
         self._channels = []
         self._error = False
 
-        self._setupRemote()
+        self._setupDevice()
 
     def powerStatus(self) -> str:
         """Get the power status of the Sky Q box."""
-        if not self.deviceSetup:
+        if not self._remoteCountry:
             self._setupRemote()
 
         if self._soapControlURL is None:
@@ -112,7 +112,7 @@ class SkyQRemote:
 
     def getCurrentState(self):
         """Get current state of the SkyQ box."""
-        if not self.deviceSetup:
+        if not self._remoteCountry:
             self._setupRemote()
 
         if self._soapControlURL is None:
@@ -224,7 +224,7 @@ class SkyQRemote:
             if not self._error:
                 self._error = True
                 _LOGGER.info(
-                    f"I0020 - Programme data not found for SID {sid} : {epgDate}"
+                    f"I0020 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
                 )
                 return EPG_ERROR_NO_DATA
         else:
@@ -574,6 +574,10 @@ class SkyQRemote:
         return next((s for s in self._channels if s["sid"] == str(sid)), None)
 
     def _setupRemote(self):
+        deviceInfo = self.getDeviceInformation()
+        if not deviceInfo:
+            return
+
         if not self.deviceSetup:
             self._setupDevice()
 
@@ -583,9 +587,6 @@ class SkyQRemote:
             self._remoteCountry = SkyQCountry()
 
     def _setupDevice(self):
-        deviceInfo = self.getDeviceInformation()
-        if not deviceInfo:
-            return
 
         url_index = 0
         self._soapControlURL = None
