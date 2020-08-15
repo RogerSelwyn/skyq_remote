@@ -92,6 +92,10 @@ class SkyQRemote:
         self._channels = []
         self._error = False
 
+        deviceInfo = self.getDeviceInformation()
+        if not deviceInfo:
+            return None
+
         self._setupDevice()
 
     def powerStatus(self) -> str:
