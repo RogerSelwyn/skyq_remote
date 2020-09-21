@@ -386,6 +386,14 @@ class SkyQRemote:
 
         return self._channellist
 
+    def getChannelImage(self, source):
+        """Retrieve image for a channel."""
+        try:
+            channel = next(c for c in self._channels if c["t"] == source)
+            return self._buildChannelUrl(channel["sid"], channel["t"])
+        except StopIteration:
+            return None
+
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
         if isinstance(sequence, list):
