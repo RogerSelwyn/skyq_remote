@@ -408,20 +408,24 @@ class SkyQRemote:
 
     def getChannelInfo(self, channelNo):
         """Retrieve channel information for specified channelNo."""
+        if not channelNo.isnumeric():
+            return None
+
         try:
             channel = next(c for c in self._channels if c["c"] == channelNo)
-            channelno = channel["c"]
-            channelname = channel["t"]
-            channelsid = channel["sid"]
-            channelImageUrl = self._buildChannelUrl(channel["sid"], channel["t"])
-            sf = channel["sf"]
-            channelInfo = Channel(
-                channelno, channelname, channelsid, channelImageUrl, sf=sf
-            )
-
-            return channelInfo
         except StopIteration:
             return None
+
+        channelno = channel["c"]
+        channelname = channel["t"]
+        channelsid = channel["sid"]
+        channelImageUrl = self._buildChannelUrl(channel["sid"], channel["t"])
+        sf = channel["sf"]
+        channelInfo = Channel(
+            channelno, channelname, channelsid, channelImageUrl, sf=sf
+        )
+
+        return channelInfo
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
@@ -626,6 +630,9 @@ class SkyQRemote:
         if not self._remoteCountry and self.deviceSetup:
             SkyQCountry = self._importCountry(self._epgCountryCode)
             self._remoteCountry = SkyQCountry()
+
+        if len(self._channels) == 0 and self._remoteCountry:
+            self._channels = self._getChannels()
 
     def _setupDevice(self):
 
