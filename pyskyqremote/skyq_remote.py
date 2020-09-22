@@ -20,18 +20,45 @@ from .classes.channellist import ChannelList
 from .classes.device import Device
 from .classes.media import Media
 from .classes.programme import Programme, RecordedProgramme
-from .const import (APP_EPG, APP_STATUS_VISIBLE, COMMANDS, CONNECTTIMEOUT,
-                    CURRENT_TRANSPORT_STATE, CURRENT_URI, EPG_ERROR_NO_DATA,
-                    EPG_ERROR_PAST_END, KNOWN_COUNTRIES, PVR, REST_BASE_URL,
-                    REST_CHANNEL_LIST, REST_PATH_DEVICEINFO,
-                    REST_PATH_SYSTEMINFO, REST_RECORDING_DETAILS, SKY_PLAY_URN,
-                    SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_ON,
-                    SKY_STATE_PAUSED, SKY_STATE_PLAYING, SKY_STATE_STANDBY,
-                    SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING, SKYCONTROL,
-                    SOAP_ACTION, SOAP_CONTROL_BASE_URL,
-                    SOAP_DESCRIPTION_BASE_URL, SOAP_PAYLOAD, SOAP_RESPONSE,
-                    SOAP_USER_AGENT, TIMEOUT, UPNP_GET_MEDIA_INFO,
-                    UPNP_GET_TRANSPORT_INFO, WS_BASE_URL, WS_CURRENT_APPS, XSI)
+from .const import (
+    APP_EPG,
+    APP_STATUS_VISIBLE,
+    COMMANDS,
+    CONNECTTIMEOUT,
+    CURRENT_TRANSPORT_STATE,
+    CURRENT_URI,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    KNOWN_COUNTRIES,
+    PVR,
+    REST_BASE_URL,
+    REST_CHANNEL_LIST,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    REST_RECORDING_DETAILS,
+    SKY_PLAY_URN,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    SKYCONTROL,
+    SOAP_ACTION,
+    SOAP_CONTROL_BASE_URL,
+    SOAP_DESCRIPTION_BASE_URL,
+    SOAP_PAYLOAD,
+    SOAP_RESPONSE,
+    SOAP_USER_AGENT,
+    TIMEOUT,
+    UPNP_GET_MEDIA_INFO,
+    UPNP_GET_TRANSPORT_INFO,
+    WS_BASE_URL,
+    WS_CURRENT_APPS,
+    XSI,
+)
 from .const_test import TEST_CHANNEL_LIST
 
 _LOGGER = logging.getLogger(__name__)
@@ -363,7 +390,13 @@ class SkyQRemote:
         """Retrieve image for a channel."""
         try:
             channel = next(c for c in self._channels if c["c"] == source)
-            return self._buildChannelUrl(channel["sid"], channel["t"])
+            # thumbnail = self._buildChannelUrl(channel["sid"], channel["t"])
+            # return {"thumbnail": thumbnail, "title": None}
+            queryDate = datetime.utcnow()
+            programme = self.getProgrammeFromEpg(channel["sid"], queryDate, queryDate)
+            if not isinstance(programme, Programme):
+                return None
+            return {"thumbnail": programme.imageUrl, "title": programme.title}
         except StopIteration:
             return None
 

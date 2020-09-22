@@ -29,7 +29,7 @@ TEST_CHANNEL_LIST = [
         "xsg": 4,
     },
     {
-        "c": "201",
+        "c": "301",
         "dvbtriplet": "64511.6400.11074",
         "schedule": True,
         "servicetype": "DSAT",
