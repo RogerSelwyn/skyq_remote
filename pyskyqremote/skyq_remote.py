@@ -5,6 +5,7 @@ import logging
 import math
 import socket
 import time
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from http import HTTPStatus
 from operator import attrgetter
@@ -87,6 +88,7 @@ class SkyQRemote:
         self._programme = None
         self._recordedProgramme = None
         self._lastProgrammeEpg = None
+        self._epgCache = OrderedDict()
         self._lastPvrId = None
         self._currentApp = APP_EPG
         self._channels = []
@@ -183,8 +185,9 @@ class SkyQRemote:
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
         epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epgDate.strftime('%Y%m%d')}"
-        if self._lastEpg == epg:
-            return self._channel
+
+        if sid in self._epgCache and self._epgCache[sid]["epg"] == epg:
+            return self._epgCache[sid]["channel"]
         self._lastEpg = epg
 
         channelNo = None
@@ -210,19 +213,32 @@ class SkyQRemote:
         self._channel = ChannelEPG(
             sid, channelNo, channelName, channelImageUrl, sorted(programmes)
         )
+        self._epgCache[sid] = {
+            "epg": epg,
+            "channel": self._channel,
+            "updatetime": datetime.utcnow(),
+        }
+        self._epgCache = OrderedDict(
+            sorted(
+                self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True
+            )
+        )
+        while len(self._epgCache) > 20:
+            self._epgCache.popitem(last=True)
 
         return self._channel
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
-        programmeEpg = f"{str(sid)} {epgDate.strftime('%Y%m%d')}"
+        sidint = int(sid)
+        programmeEpg = f"{str(sidint)} {epgDate.strftime('%Y%m%d')}"
         if (
             self._lastProgrammeEpg == programmeEpg
             and queryDate < self._programme.endtime
         ):
             return self._programme
 
-        epgData = self.getEpgData(sid, epgDate)
+        epgData = self.getEpgData(sidint, epgDate)
 
         if len(epgData.programmes) == 0:
             if not self._error:
@@ -375,8 +391,12 @@ class SkyQRemote:
         for c in channels:
             channelno = c["c"]
             channelname = c["t"]
+            channelsid = c["sid"]
+            channelImageUrl = None  # Not available yet
             sf = c["sf"]
-            channel = Channel(channelno, channelname, sf=sf)
+            channel = Channel(
+                channelno, channelname, channelsid, channelImageUrl, sf=sf
+            )
             channelitems.add(channel)
 
         channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
@@ -386,17 +406,20 @@ class SkyQRemote:
 
         return self._channellist
 
-    def getChannelImage(self, source):
-        """Retrieve image for a channel."""
+    def getChannelInfo(self, channelNo):
+        """Retrieve channel information for specified channelNo."""
         try:
-            channel = next(c for c in self._channels if c["c"] == source)
-            # thumbnail = self._buildChannelUrl(channel["sid"], channel["t"])
-            # return {"thumbnail": thumbnail, "title": None}
-            queryDate = datetime.utcnow()
-            programme = self.getProgrammeFromEpg(channel["sid"], queryDate, queryDate)
-            if not isinstance(programme, Programme):
-                return None
-            return {"thumbnail": programme.imageUrl, "title": programme.title}
+            channel = next(c for c in self._channels if c["c"] == channelNo)
+            channelno = channel["c"]
+            channelname = channel["t"]
+            channelsid = channel["sid"]
+            channelImageUrl = self._buildChannelUrl(channel["sid"], channel["t"])
+            sf = channel["sf"]
+            channelInfo = Channel(
+                channelno, channelname, channelsid, channelImageUrl, sf=sf
+            )
+
+            return channelInfo
         except StopIteration:
             return None
 

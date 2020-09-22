@@ -12,10 +12,24 @@ class Channel:
     """SkyQ Channel Class."""
 
     channelno: str = field(
-        init=True, repr=True, compare=True,
+        init=True,
+        repr=True,
+        compare=True,
     )
     channelname: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    channelsid: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    channelimageurl: str = field(
+        init=True,
+        repr=True,
+        compare=False,
     )
     channeltype: str = None
     channelnoint: int = None
