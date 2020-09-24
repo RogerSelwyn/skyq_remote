@@ -1,11 +1,28 @@
 # Changelog
 
-# v0.2.28 (15/08/2020)
+## v0.2.30 (24/09/2020)
+### Enhancements
+@RogerSelwyn
+- [Add channel image retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/2e6057b471a853599681fcf5793a1b4067b44c04) - @RogerSelwyn
+- [Change to use channelno](https://github.com/RogerSelwyn/skyq_remote/commit/09ed95e0a4e5d2a84b2c743a77199ac5345c3525) - @RogerSelwyn
+- [Change to use live info for channel image](https://github.com/RogerSelwyn/skyq_remote/commit/992b185ccbbd9b76bac1e01ca63239b79308c0f8) - @RogerSelwyn
+- [Cache up to 20 EPGs](https://github.com/RogerSelwyn/skyq_remote/commit/d72f38985190b99248775000fa57dc0de3a2545c) - @RogerSelwyn
+
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/ccdd9329ef91aaedd6eb35de5f257cdabc42d323) - @RogerSelwyn
+- [Bump to 0.2.30](https://github.com/RogerSelwyn/skyq_remote/commit/12118f8203d508210cc525a260607bc6e18fa580) - @RogerSelwyn
+
+## v0.2.29 (01/09/2020)
+### Fixes
+- [Remove tests/manage from distribution package](https://github.com/RogerSelwyn/skyq_remote/commit/e3e8f28f68734a7b80628f9821d0b5864c1533de) - @RogerSelwyn
+- [Bump to 0.2.29](https://github.com/RogerSelwyn/skyq_remote/commit/31e421fc56ed155d7980873e9180664f9a0df302) - 
+
+## v0.2.28 (15/08/2020)
 ### Fixes
 - [Fix errors messages on startup](https://github.com/RogerSelwyn/skyq_remote/commit/210a8e48bdd54b19b5ca2bce876117f4aaee1985) - @RogerSelwyn
 - [Bump to 0.2.28](https://github.com/RogerSelwyn/skyq_remote/commit/1bfdcb803197f7996538019716c37a8c5fe0f99c) - @RogerSelwyn
 
-# v0.2.27 (06/08/2020)
+## v0.2.27 (06/08/2020)
 ### Fixes
 - [Fix device setup after previous changes](https://github.com/RogerSelwyn/skyq_remote/commit/b95ee682642c22d26febf37630657b97d90dfa87) - @RogerSelwyn
 - [Bump to 0.2.27](https://github.com/RogerSelwyn/skyq_remote/commit/d13dd75faaf84daf746e34db2287492f5ddf7030) - @RogerSelwyn
