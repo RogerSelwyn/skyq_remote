@@ -171,7 +171,7 @@ or for recording
       "imageUrl":null,
       "sid":null,
       "pvrId":"P12345ABC",
-      "live":faalse
+      "live":false
    }
 }
 ```
@@ -437,13 +437,19 @@ Will return an object with an array of channels.
       {
          'channelno':'101',
          'channelname':'BBC ONE',
+         'channelsid'='2153',
+         'channelimageurl'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
          'channeltype':'video',
+         'channelnoint':101,
          'sf':'sd'
       },
       {
          'channelno':'0102',
          'channelname':'BBC R2',
+         'channelsid'='2153',
+         'channelimageurl'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
          'channeltype':'audio',
+         'channelnoint':102,
          'sf':'au'
       },
       {...}
@@ -469,7 +475,10 @@ Will return a JSON structure with an array of channels.
          "attributes":{
             "channelno":"101",
             "channelname":"BBC ONE",
+            "channelsid":"2153",
+            "channelimageurl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
             "channeltype":"video",
+            "channelnoint":101,
             "sf":"sd"
          }
       },
@@ -478,12 +487,57 @@ Will return a JSON structure with an array of channels.
          "attributes":{
             "channelno":"0102",
             "channelname":"BBC R2",
+            "channelsid":"2153",
+            "channelimageurl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
             "channeltype":"audio",
+            "channelnoint":102,
             "sf":"au"
          }
       },
       {...},
    ]
+}
+```
+
+### Get Channel Information (for a specific channel number)
+
+```
+channelInfo = self.client.getChannelInfo(channelNo)
+```
+
+Will return an object such as below:
+
+```
+{
+   'channelno'='101',
+   'channelname'='BBC One South',
+   'channelsid'='2153',
+   'channelimageurl'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
+   'channeltype'='video',
+   'channelnoint'=101,
+   'sf'='sd'
+}
+```
+### Get Channel Information (for a specific channel number) (JSON)
+
+```
+channelInfo = self.client.getChannelInfo(channelNo).as_json()
+```
+
+Will return an object such as below:
+
+```
+{
+   "__type__":"__channel__",
+   "attributes":{
+      "channelno":"101",
+      "channelname":"BBC One South",
+      "channelsid":"2153",
+      "channelimageurl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
+      "channeltype":"video",
+      "channelnoint":101,
+      "sf":"sd"
+   }
 }
 ```
 
