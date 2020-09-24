@@ -70,6 +70,9 @@ print(sky.getProgrammeFromEpg(sid, queryDate, queryDate).as_json())
 print(f"----------- Current Live TV - {sid}")
 print(sky.getCurrentLiveTVProgramme(sid).as_json())
 
+print("----------- Get Channel Info - 101")
+print(sky.getChannelInfo("101").as_json())
+
 # print("----------- Channel list")
 # print(sky.getChannelList().as_json())
 
