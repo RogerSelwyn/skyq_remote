@@ -16,12 +16,15 @@ class SkyQCountry:
 
     def __init__(self):
         """Initialise UK remote."""
-        self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
 
     def getEpgData(self, sid, channelno, epgDate):
         """Get EPG data for UK."""
         return self._getData(sid, channelno, epgDate)
+
+    def buildChannelImageUrl(self, sid, channel):
+        """Build the channel image URL."""
+        return CHANNEL_IMAGE_URL.format(sid)
 
     def _getData(self, sid, channelno, epgDate):
         epgDateStr = epgDate.strftime("%Y%m%d")

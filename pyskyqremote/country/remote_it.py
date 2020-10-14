@@ -39,6 +39,11 @@ class SkyQCountry:
 
         return [p for p in epgData if p.endtime >= midnight]
 
+    def buildChannelImageUrl(self, sid, channel):
+        """Build the channel image URL."""
+        chid = "".join(e for e in channel.casefold() if e.isalnum())
+        return CHANNEL_IMAGE_URL.format(sid, chid)
+
     def _getData(self, sid, channelno, queryDateFrom, queryDateTo):
         cid = None
         for channel in self._channellist:

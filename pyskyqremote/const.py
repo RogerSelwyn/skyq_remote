@@ -101,6 +101,7 @@ COMMANDS = {
 RESPONSE_OK = 200
 
 KNOWN_COUNTRIES = {
+    "DEU": "DEU",
     "GBR": "GBR",
     "IRL": "GBR",
     "ITA": "ITA",

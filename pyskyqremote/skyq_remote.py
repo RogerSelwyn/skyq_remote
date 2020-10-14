@@ -173,7 +173,7 @@ class SkyQRemote:
                     channelNode = self._getChannelNode(sid)
                     if channelNode:
                         channel = channelNode["channel"]
-                        imageUrl = self._buildChannelUrl(sid, channel)
+                        imageUrl = self._buildChannelImageUrl(sid, channel)
                 elif PVR in currentURI:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
@@ -199,7 +199,7 @@ class SkyQRemote:
         if channelNode:
             channelNo = channelNode["channelno"]
             channelName = channelNode["channel"]
-            channelImageUrl = self._buildChannelUrl(sid, channelName)
+            channelImageUrl = self._buildChannelImageUrl(sid, channelName)
 
             for n in range(days):
                 programmesData = self._remoteCountry.getEpgData(
@@ -320,7 +320,7 @@ class SkyQRemote:
             imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
         elif "osid" in recording:
             sid = str(recording["osid"])
-            imageUrl = self._buildChannelUrl(sid, channel)
+            imageUrl = self._buildChannelImageUrl(sid, channel)
 
         starttime = datetime.utcfromtimestamp(recording["ast"])
         if "finald" in recording:
@@ -419,7 +419,7 @@ class SkyQRemote:
         channelno = channel["c"]
         channelname = channel["t"]
         channelsid = channel["sid"]
-        channelImageUrl = self._buildChannelUrl(channel["sid"], channel["t"])
+        channelImageUrl = self._buildChannelImageUrl(channelsid, channelname)
         sf = channel["sf"]
         channelInfo = Channel(
             channelno, channelname, channelsid, channelImageUrl, sf=sf
@@ -464,11 +464,9 @@ class SkyQRemote:
         return json.loads(response.content)
 
     def _getSoapControlURL(self, descriptionIndex):
+        descriptionUrl = SOAP_DESCRIPTION_BASE_URL.format(self._host, descriptionIndex)
+        headers = {"User-Agent": SOAP_USER_AGENT}
         try:
-            descriptionUrl = SOAP_DESCRIPTION_BASE_URL.format(
-                self._host, descriptionIndex
-            )
-            headers = {"User-Agent": SOAP_USER_AGENT}
             resp = requests.get(descriptionUrl, headers=headers, timeout=TIMEOUT)
             if resp.status_code == HTTPStatus.OK:
                 description = xmltodict.parse(resp.text)
@@ -585,10 +583,8 @@ class SkyQRemote:
                 )
                 break
 
-    def _buildChannelUrl(self, sid, channel):
-        chid = "".join(e for e in channel.casefold() if e.isalnum())
-        channel_image_url = self._remoteCountry.channel_image_url
-        return channel_image_url.format(sid, chid)
+    def _buildChannelImageUrl(self, sid, channel):
+        return self._remoteCountry.buildChannelImageUrl(sid, channel)
 
     def _getChannelNode(self, sid):
         channelNode = self._getNodeFromChannels(sid)
