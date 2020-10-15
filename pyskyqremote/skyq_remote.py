@@ -622,7 +622,6 @@ class SkyQRemote:
         if not self.deviceSetup:
             self._setupDevice()
 
-        """Set the remote up."""
         if not self._remoteCountry and self.deviceSetup:
             SkyQCountry = self._importCountry(self._epgCountryCode)
             self._remoteCountry = SkyQCountry()
@@ -639,8 +638,6 @@ class SkyQRemote:
             url_index += 1
 
         self.deviceSetup = True
-
-        return
 
     def _retrieveInformation(self, rest_path):
         try:
