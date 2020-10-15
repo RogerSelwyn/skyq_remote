@@ -8,5 +8,95 @@
     "sid": 117,
     "ci": 742,
     "clu": "/static/img/senderlogos_dark/742_sky_logo_serien-shows-hd_tvguide.png"
-  }
+  },
+  {
+    "sid": 23,
+    "ci": 753,
+    "clu": "/static/img/senderlogos_dark/753_sky_logo_skykrimi_hd_tvguide.png"
+  },
+  {
+    "sid": 110,
+    "ci": 2,
+    "clu": "/static/img/senderlogos_dark/2_sky_logo_skyatlantichd_tvguide.png"  
+  },
+  {
+    "sid": 124,
+    "ci": 4,
+    "clu": "static/img/senderlogos_dark/4_sky_logo_foxhd.png"
+  },
+  {
+    "sid": 123,
+    "ci": 6,
+    "clu": "/static/img/senderlogos_dark/6_sky_logo_tntseriehd.png"
+  },
+  {
+    "sid": 126,
+    "ci": 115,
+    "clu": "/static/img/senderlogos_dark/115_sky_logo_syfyhd_b.png"
+  },
+  {
+    "sid": 127,
+    "ci": 116,
+    "clu": "/static/img/senderlogos_dark/116_sky_logo_13thstreethd_b.png"
+  },
+  {
+    "sid": 101,
+    "ci": 172,
+    "clu": "/static/img/senderlogos_dark/172_sky_logo_universalchannelhd_b.png"
+  },
+  {
+    "sid": 136,
+    "ci": 522,
+    "clu": "/static/img/senderlogos_dark/522_sky_logo_tntcomedy-hd_b.png"
+  },
+  {
+    "sid": 128,
+    "ci": 117,
+    "clu": "/static/img/senderlogos_dark/117_sky_logo_entertainment_b.png"
+ },
+ {
+    "sid": 518,
+    "ci": 16,
+    "clu": "/static/img/senderlogos_dark/16_sky_logo_romancetv_b.png"
+ },
+ {
+    "sid": 131,
+    "ci": 16,
+    "clu": "/static/img/senderlogos_dark/788_sky_logo_cinema-premieren-hd_tvguide.png"
+ },
+ {
+    "sid": 135,
+    "ci": 791,
+    "clu": "/static/img/senderlogos_dark/791_sky_logo_cinema-premieren-24-hd_tvguide.png"
+ },
+ {
+    "sid": 135,
+    "ci": 107,
+    "clu": "/static/img/senderlogos_dark/792_sky_logo_cinema-best-of-hd_tvguide.png"
+ },
+ {
+    "sid": 11,
+    "ci": 784,
+    "clu": "/static/img/senderlogos_dark/784_sky_logo_cinema-thriller-hd_tvguide.png"
+ },
+ {
+    "sid": 116,
+    "ci": 60,
+    "clu": "/static/img/senderlogos_dark/60_sky_logo_skyactionhd_tvguide.png"
+ },
+ {
+    "sid": 139,
+    "ci": 533,
+    "clu": "/static/img/senderlogos_dark/533_sky_logo_skyfamilyhd.png"
+ },
+ {
+    "sid": 111,
+    "ci": 756,
+    "clu": "/static/img/senderlogos_dark/756_sky_logo_cinema_special_hd_tvguide.png"
+ },
+ {
+    "sid": 140,
+    "ci": 689,
+    "clu": "/static/img/senderlogos_dark/689_sky_logo_tntfilm_tvguide.png"
+ }
 ]
