@@ -22,7 +22,7 @@ class SkyQCountry:
         """Get EPG data for UK."""
         return self._getData(sid, channelno, epgDate)
 
-    def buildChannelImageUrl(self, sid, channel):
+    def buildChannelImageUrl(self, sid, channelname):
         """Build the channel image URL."""
         return CHANNEL_IMAGE_URL.format(sid)
 

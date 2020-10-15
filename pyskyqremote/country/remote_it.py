@@ -6,13 +6,8 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK
-from .const_it import (
-    CHANNEL_IMAGE_URL,
-    CHANNEL_URL,
-    LIVE_IMAGE_URL,
-    PVR_IMAGE_URL,
-    SCHEDULE_URL,
-)
+from .const_it import (CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL,
+                       PVR_IMAGE_URL, SCHEDULE_URL)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,9 +34,9 @@ class SkyQCountry:
 
         return [p for p in epgData if p.endtime >= midnight]
 
-    def buildChannelImageUrl(self, sid, channel):
+    def buildChannelImageUrl(self, sid, channelname):
         """Build the channel image URL."""
-        chid = "".join(e for e in channel.casefold() if e.isalnum())
+        chid = "".join(e for e in channelname.casefold() if e.isalnum())
         return CHANNEL_IMAGE_URL.format(sid, chid)
 
     def _getData(self, sid, channelno, queryDateFrom, queryDateTo):
