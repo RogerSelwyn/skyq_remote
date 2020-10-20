@@ -1,5 +1,4 @@
 """SKY Q Remote Utilities."""
-import importlib
 import json
 import logging
 import math
@@ -7,7 +6,6 @@ import socket
 import time
 from http import HTTPStatus
 
-import pycountry
 import requests
 import websocket
 import xmltodict
@@ -36,23 +34,6 @@ class deviceAccess:
     def __init__(self, host):
         """Initialise the utility setup."""
         self._host = host
-
-    def importCountry(self, countryCode):
-        """Work out the country for the Country Code."""
-        try:
-            country = pycountry.countries.get(alpha_3=countryCode).alpha_2.casefold()
-            SkyQCountry = importlib.import_module(
-                "pyskyqremote.country.remote_" + country
-            ).SkyQCountry
-
-        except (AttributeError, ModuleNotFoundError) as err:
-            _LOGGER.warning(
-                f"W0010U - Invalid country, defaulting to GBR: {self._host} : {countryCode} : {err}"
-            )
-
-            from pyskyqremote.country.remote_gb import SkyQCountry
-
-        return SkyQCountry
 
     def getSoapControlURL(self, descriptionIndex):
         """Get the sky control url."""

@@ -1,10 +1,12 @@
 """Python module for accessing SkyQ box and EPG, and sending commands."""
+import importlib
 import logging
 import time
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from operator import attrgetter
 
+import pycountry
 import requests
 
 from .classes.channel import Channel
@@ -13,16 +15,33 @@ from .classes.channellist import ChannelList
 from .classes.device import Device
 from .classes.media import Media
 from .classes.programme import Programme, RecordedProgramme
-from .const import (APP_EPG, APP_STATUS_VISIBLE, COMMANDS,
-                    CURRENT_TRANSPORT_STATE, CURRENT_URI, EPG_ERROR_NO_DATA,
-                    EPG_ERROR_PAST_END, KNOWN_COUNTRIES, PVR,
-                    REST_CHANNEL_LIST, REST_PATH_DEVICEINFO,
-                    REST_PATH_SYSTEMINFO, REST_RECORDING_DETAILS,
-                    SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_ON,
-                    SKY_STATE_PAUSED, SKY_STATE_PLAYING, SKY_STATE_STANDBY,
-                    SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING,
-                    UPNP_GET_MEDIA_INFO, UPNP_GET_TRANSPORT_INFO,
-                    WS_CURRENT_APPS, XSI)
+from .const import (
+    APP_EPG,
+    APP_STATUS_VISIBLE,
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    CURRENT_URI,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    KNOWN_COUNTRIES,
+    PVR,
+    REST_CHANNEL_LIST,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    REST_RECORDING_DETAILS,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    UPNP_GET_MEDIA_INFO,
+    UPNP_GET_TRANSPORT_INFO,
+    WS_CURRENT_APPS,
+    XSI,
+)
 from .const_test import TEST_CHANNEL_LIST
 from .utils import deviceAccess
 
@@ -34,7 +53,7 @@ class SkyQRemote:
 
     commands = COMMANDS
 
-    def __init__(self, host, port=49160, jsonPort=9006):
+    def __init__(self, host, epgCacheLen=20, port=49160, jsonPort=9006):
         """Stand up a new SkyQ box."""
         self.deviceSetup = False
         self._host = host
@@ -57,6 +76,7 @@ class SkyQRemote:
         self._channels = []
         self._error = False
         self._deviceAccess = deviceAccess(self._host)
+        self._epgCacheLen = epgCacheLen
 
         deviceInfo = self.getDeviceInformation()
         if not deviceInfo:
@@ -193,7 +213,7 @@ class SkyQRemote:
                 self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True
             )
         )
-        while len(self._epgCache) > 20:
+        while len(self._epgCache) > self._epgCacheLen:
             self._epgCache.popitem(last=True)
 
         return self._channel
@@ -281,7 +301,7 @@ class SkyQRemote:
             imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
         elif "osid" in recording:
             sid = str(recording["osid"])
-            imageUrl = self._buildChannelImageUrl(sid, channel)
+            imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
 
         starttime = datetime.utcfromtimestamp(recording["ast"])
         if "finald" in recording:
@@ -380,7 +400,9 @@ class SkyQRemote:
         channelno = channel["c"]
         channelname = channel["t"]
         channelsid = channel["sid"]
-        channelImageUrl = self._buildChannelImageUrl(channelsid, channelname)
+        channelImageUrl = self._remoteCountry.buildChannelImageUrl(
+            channelsid, channelname
+        )
         sf = channel["sf"]
         channelInfo = Channel(
             channelno, channelname, channelsid, channelImageUrl, sf=sf
@@ -457,7 +479,7 @@ class SkyQRemote:
             self._setupDevice()
 
         if not self._remoteCountry and self.deviceSetup:
-            SkyQCountry = self._deviceAccess.importCountry(self._epgCountryCode)
+            SkyQCountry = self.importCountry(self._epgCountryCode)
             self._remoteCountry = SkyQCountry()
 
         if len(self._channels) == 0 and self._remoteCountry:
@@ -488,3 +510,20 @@ class SkyQRemote:
         except Exception as err:
             _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")
             return None
+
+    def importCountry(self, countryCode):
+        """Work out the country for the Country Code."""
+        try:
+            country = pycountry.countries.get(alpha_3=countryCode).alpha_2.casefold()
+            SkyQCountry = importlib.import_module(
+                "pyskyqremote.country.remote_" + country
+            ).SkyQCountry
+
+        except (AttributeError, ModuleNotFoundError) as err:
+            _LOGGER.warning(
+                f"W0010 - Invalid country, defaulting to GBR: {self._host} : {countryCode} : {err}"
+            )
+
+            from pyskyqremote.country.remote_gb import SkyQCountry
+
+        return SkyQCountry
