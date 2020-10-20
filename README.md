@@ -27,6 +27,11 @@ from pyskyqremote import SkyQRemote
 
 self.client = SkyQRemote('192.168.1.99')
 ```
+Optional parameters:
+* epgCacheLen - Default = 20
+* port - Default = 49160
+* jsonPort - Default = 9006
+
 
 ### Get device information
 
