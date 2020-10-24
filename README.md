@@ -9,7 +9,7 @@ Python module for accessing SkyQ box and EPG, and sending commands
 
 ## Introduction
 
-This library enables access to SkyQ devices, primarily focused on the UK, but should lso work for Spoain and Germany.
+This library enables access to SkyQ devices, primarily focused on the UK, but should also work for Italy and Germany.
 
 ## Installing
 
