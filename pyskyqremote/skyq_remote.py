@@ -505,7 +505,8 @@ class SkyQRemote:
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ConnectionError,
             requests.exceptions.ReadTimeout,
-        ):
+        ):  # as err:
+            # _LOGGER.debug(f"D0010 - Connection error: {self._host} : {err}")
             return None
         except Exception as err:
             _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")

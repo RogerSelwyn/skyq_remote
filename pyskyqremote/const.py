@@ -35,11 +35,6 @@ APP_STATUS_VISIBLE = "VISIBLE"
 
 PVR = "pvr"
 XSI = "xsi"
-EPG_ERROR_PAST_END = "past end of epg"
-EPG_ERROR_NO_DATA = "no epg data found"
-
-CONNECTTIMEOUT = 1000
-TIMEOUT = 2
 
 SKY_STATE_NOMEDIA = "NO_MEDIA_PRESENT"
 SKY_STATE_OFF = "POWERED OFF"
@@ -50,9 +45,7 @@ SKY_STATE_STANDBY = "STANDBY"
 SKY_STATE_STOPPED = "STOPPED"
 SKY_STATE_TRANSITIONING = "TRANSITIONING"
 
-# Application Constants
 APP_EPG = "com.bskyb.epgui"
-
 
 COMMANDS = {
     "power": 0,
@@ -98,11 +91,18 @@ COMMANDS = {
     "sky": 241,
 }
 
-RESPONSE_OK = 200
-
 KNOWN_COUNTRIES = {
     "DEU": "DEU",
     "GBR": "GBR",
     "IRL": "GBR",
     "ITA": "ITA",
 }
+
+# Random set of other constants
+EPG_ERROR_PAST_END = "past end of epg"
+EPG_ERROR_NO_DATA = "no epg data found"
+
+RESPONSE_OK = 200
+CONNECT_TIMEOUT = 1000
+HTTP_TIMEOUT = 6
+SOAP_TIMEOUT = 2

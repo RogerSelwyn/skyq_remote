@@ -11,7 +11,8 @@ import websocket
 import xmltodict
 
 from .const import (
-    CONNECTTIMEOUT,
+    CONNECT_TIMEOUT,
+    HTTP_TIMEOUT,
     REST_BASE_URL,
     SKY_PLAY_URN,
     SKYCONTROL,
@@ -20,8 +21,8 @@ from .const import (
     SOAP_DESCRIPTION_BASE_URL,
     SOAP_PAYLOAD,
     SOAP_RESPONSE,
+    SOAP_TIMEOUT,
     SOAP_USER_AGENT,
-    TIMEOUT,
     WS_BASE_URL,
 )
 
@@ -40,7 +41,7 @@ class deviceAccess:
         descriptionUrl = SOAP_DESCRIPTION_BASE_URL.format(self._host, descriptionIndex)
         headers = {"User-Agent": SOAP_USER_AGENT}
         try:
-            resp = requests.get(descriptionUrl, headers=headers, timeout=TIMEOUT)
+            resp = requests.get(descriptionUrl, headers=headers, timeout=SOAP_TIMEOUT)
             if resp.status_code == HTTPStatus.OK:
                 description = xmltodict.parse(resp.text)
                 deviceType = description["root"]["device"]["deviceType"]
@@ -103,7 +104,7 @@ class deviceAccess:
                 headers=headers,
                 data=payload,
                 verify=True,
-                timeout=TIMEOUT,
+                timeout=SOAP_TIMEOUT,
             )
             if resp.status_code == HTTPStatus.OK:
                 xml = resp.text
@@ -118,7 +119,7 @@ class deviceAccess:
         """Make an HTTP call to the sky box."""
         response = requests.get(
             REST_BASE_URL.format(self._host, jsonport, path),
-            timeout=TIMEOUT,
+            timeout=HTTP_TIMEOUT,
             headers=headers,
         )
         return json.loads(response.content)
@@ -146,7 +147,7 @@ class deviceAccess:
             return
 
         strlen = 12
-        timeout = time.time() + CONNECTTIMEOUT
+        timeout = time.time() + CONNECT_TIMEOUT
 
         while 1:
             data = client.recv(1024)
