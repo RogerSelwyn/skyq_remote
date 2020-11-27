@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.2.33 (27/11/2020)
+### Fixes
+- [Increase http timeout to reduce errors](https://github.com/RogerSelwyn/skyq_remote/commit/d6a78f95c937aa5e5f242ee9e2debed0017dc87d) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.33](https://github.com/RogerSelwyn/skyq_remote/commit/abc278d39c796ee3c9516e18abfaff35b30e15ec) - @RogerSelwyn
+
+## v0.2.32 (20/10/2020)
+### Enhancements
+- [Add support for epg cache length](https://github.com/RogerSelwyn/skyq_remote/commit/0db20e083d6736488f0d1a2fc17916463de63a46) - @RogerSelwyn
+### Maintenance
+- [Code improvement based on Codefactor](https://github.com/RogerSelwyn/skyq_remote/commit/b7e4db77942779d5f7fd679ac968b7f0a7e51dea) - @RogerSelwyn
+- [Code refactoring](https://github.com/RogerSelwyn/skyq_remote/commit/be3959baf1650c32cab09959603555230e44e752) - @RogerSelwyn
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/6459f768de19053078cc1c9266aab448ac4f425d) - @RogerSelwyn
+- [Bump to 0.2.32](https://github.com/RogerSelwyn/skyq_remote/commit/273d7b31b672d85d975167496640cc012e9d9953) - @RogerSelwyn
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/9c6f01bdcd587e67854f1eead6017db57b18077f) - @RogerSelwyn
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/e0ac2d4afeac70c1f42d7c95c2f2d99da1a17cab) - @RogerSelwyn
+
+## v0.2.31 (15/10/2020)
+### Enhancements
+- [Add initial DE channel](https://github.com/RogerSelwyn/skyq_remote/commit/7eac90decde42d4ae251ad11f524279eb9f76c5e) - @RogerSelwyn
+- [Added extra DE channel](https://github.com/RogerSelwyn/skyq_remote/commit/f8be14b9f99e51f03196182002d357164028a4fe) - @RogerSelwyn
+- [Add functionality to support DEU](https://github.com/RogerSelwyn/skyq_remote/commit/75b56483554c4e919b2087772149e6b1dcf7eb97) - @RogerSelwyn
+- [Updated more German Channels](https://github.com/RogerSelwyn/skyq_remote/commit/a26004c9ecff06c6684b77a08c60b465362108ef) - @bluenazgul
+- [fixed "Sky Permieren HD" + more Channels added](https://github.com/RogerSelwyn/skyq_remote/commit/6078e5ba2c202b343369c3addb3c9256310a3b0b) - @bluenazgul
+
+### Fixes
+- [Correct test script](https://github.com/RogerSelwyn/skyq_remote/commit/199c5e3a2fe8c9c54e79cd8dbbae7ad695c2bbb1) - @RogerSelwyn
+
+### Maintenance
+- [Code improvement](https://github.com/RogerSelwyn/skyq_remote/commit/bd9a2ad4a501d29015c6cde54ec058c799f5b274) - @RogerSelwyn
+- [Bump to 0.2.31](https://github.com/RogerSelwyn/skyq_remote/commit/0f267efd5eaeede81f409178e5b94b541d81f06c) - @RogerSelwyn
+
 ## v0.2.30 (24/09/2020)
 ### Enhancements
 @RogerSelwyn
