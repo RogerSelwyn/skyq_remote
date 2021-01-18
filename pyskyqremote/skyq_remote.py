@@ -220,7 +220,19 @@ class SkyQRemote:
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
-        sidint = int(sid)
+        sidint = 0
+        try:
+            sidint = int(sid)
+        except ValueError:
+            if not self._error:
+                self._error = True
+                _LOGGER.info(
+                    f"I0010 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
+                )
+                return EPG_ERROR_NO_DATA
+            else:
+                self._error = False
+
         programmeEpg = f"{str(sidint)} {epgDate.strftime('%Y%m%d')}"
         if (
             self._lastProgrammeEpg == programmeEpg
@@ -234,7 +246,7 @@ class SkyQRemote:
             if not self._error:
                 self._error = True
                 _LOGGER.info(
-                    f"I0010 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
+                    f"I0020 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
                 )
                 return EPG_ERROR_NO_DATA
         else:
@@ -286,7 +298,7 @@ class SkyQRemote:
             self._jsonport, REST_RECORDING_DETAILS.format(pvrId)
         )
         if "details" not in resp:
-            _LOGGER.info(f"I0020 - Recording data not found for {pvrId}")
+            _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
             return None
 
         recording = resp["details"]
