@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.34 (20/01/2021)
+### Fixes
+- [Fix error from unprocessable SID](https://github.com/RogerSelwyn/skyq_remote/commit/55fe32fba5c951ab858d10f7a9eb498e0f1dec6d) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.34](https://github.com/RogerSelwyn/skyq_remote/commit/e1c8d305c7653c165e00336d477ef3e1719b70ba) - @RogerSelwyn
+
 ## v0.2.33 (27/11/2020)
 ### Fixes
 - [Increase http timeout to reduce errors](https://github.com/RogerSelwyn/skyq_remote/commit/d6a78f95c937aa5e5f242ee9e2debed0017dc87d) - @RogerSelwyn
