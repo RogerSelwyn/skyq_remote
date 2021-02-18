@@ -230,8 +230,8 @@ class SkyQRemote:
                     f"I0010 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
                 )
                 return EPG_ERROR_NO_DATA
-            else:
-                self._error = False
+
+            self._error = False
 
         programmeEpg = f"{str(sidint)} {epgDate.strftime('%Y%m%d')}"
         if (
