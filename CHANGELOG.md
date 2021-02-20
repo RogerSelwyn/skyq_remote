@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.35 (20/02/2021)
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/b836f334fa4af05b8510100bce7db343e4393b55) - @RogerSelwyn
+- [Minor correction based on codefactor](https://github.com/RogerSelwyn/skyq_remote/commit/3ce54340edfb54e768db09aaba197db549ee43a8) - @RogerSelwyn
+- [Bump to 0.2.35](https://github.com/RogerSelwyn/skyq_remote/commit/1d66735eb3554210954d4ceabb7eaa42e7304fbb) - @RogerSelwyn
+- [Create stale.yaml](https://github.com/RogerSelwyn/skyq_remote/commit/9d3be2fc425ea5c3496afc80ec367cefef3acf41) - @RogerSelwyn
+
 ## v0.2.34 (20/01/2021)
 ### Fixes
 - [Fix error from unprocessable SID](https://github.com/RogerSelwyn/skyq_remote/commit/55fe32fba5c951ab858d10f7a9eb498e0f1dec6d) - @RogerSelwyn
