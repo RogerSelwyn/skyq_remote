@@ -139,6 +139,7 @@ class SkyQRemote:
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
         channel = None
+        channelno = None
         imageUrl = None
         sid = None
         pvrId = None
@@ -161,6 +162,7 @@ class SkyQRemote:
                     channelNode = self._getChannelNode(sid)
                     if channelNode:
                         channel = channelNode["channel"]
+                        channelno = channelNode["channelno"]
                         imageUrl = self._remoteCountry.buildChannelImageUrl(
                             sid, channel
                         )
@@ -168,7 +170,7 @@ class SkyQRemote:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
                     live = False
-        media = Media(channel, imageUrl, sid, pvrId, live)
+        media = Media(channel, channelno, imageUrl, sid, pvrId, live)
 
         return media
 

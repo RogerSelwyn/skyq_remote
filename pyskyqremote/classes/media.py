@@ -10,19 +10,34 @@ class Media:
     """SkyQ Programme Class."""
 
     channel: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    channelno: str = field(
+        init=True,
+        repr=True,
+        compare=False,
     )
     imageUrl: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     sid: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     pvrId: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     live: bool = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
 
     def as_json(self) -> str:

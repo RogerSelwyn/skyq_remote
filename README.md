@@ -128,6 +128,7 @@ Will return an object such as below for live programme:
 ```
 {
    'channel':'Sky Comedy HD',
+   'channelno':'153',
    'imageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb1143.png',
    'sid':1143,
    'pvrId':None,
@@ -139,6 +140,7 @@ or for recording
 ```
 {
    'channel':None,
+   'channelno':'None',
    'imageUrl':None,
    'sid':None,
    'pvrId':'P12345ABC'
@@ -158,6 +160,7 @@ Will return a JSON structure such as below for live programme:
    "__type__":"__media__",
    "attributes":{
       "channel":"BBC One South",
+      "channelno":"101",
       "imageUrl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
       "sid":2153,
       "pvrId":null,
@@ -173,6 +176,7 @@ or for recording
    "__type__":"__media__",
    "attributes":{
       "channel":null,
+      "channelno":null,
       "imageUrl":null,
       "sid":null,
       "pvrId":"P12345ABC",
