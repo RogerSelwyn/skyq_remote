@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.36 (24/02/2021)
+### Enhancements
+- [Add channel no to getCurrentMedia](https://github.com/RogerSelwyn/skyq_remote/commit/f3460a2f6689f3270393f01ef89e79a0dd78ab12) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.36](https://github.com/RogerSelwyn/skyq_remote/commit/6633984948dc5daa30d6f02a4cfc9eeaa26389b2) - @RogerSelwyn
+
 ## v0.2.35 (20/02/2021)
 ### Maintenance
 - [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/b836f334fa4af05b8510100bce7db343e4393b55) - @RogerSelwyn
