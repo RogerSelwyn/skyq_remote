@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.38 (08/03/2021)
+### Enhancements
+- [Add filtering to recording retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/2955299dceba3a35c243eaa65f6d4c5993377e88) - @RogerSelwyn
+
+### Fixes
+- [Fix timestamp creation](https://github.com/RogerSelwyn/skyq_remote/commit/1cc51753c2a6f4aa0dbac3933084750d31d502ca) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.38](https://github.com/RogerSelwyn/skyq_remote/commit/2a5fdeab1858ada26817e961c3aad246a71582a8) - @RogerSelwyn
+
 ## v0.2.37 (08/03/2021)
 ### Enhancements
 - [Add method for getRecordings](https://github.com/RogerSelwyn/skyq_remote/commit/ed929d6c4c78c730f740db7f26544578d8939a56) - @RogerSelwyn
