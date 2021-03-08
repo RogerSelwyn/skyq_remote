@@ -15,6 +15,7 @@ from .classes.channellist import ChannelList
 from .classes.device import Device
 from .classes.media import Media
 from .classes.programme import Programme
+from .classes.recordings import Recordings
 from .const import (
     APP_EPG,
     APP_STATUS_VISIBLE,
@@ -29,6 +30,7 @@ from .const import (
     REST_PATH_DEVICEINFO,
     REST_PATH_SYSTEMINFO,
     REST_RECORDING_DETAILS,
+    REST_RECORDINGS_LIST,
     SKY_STATE_NOMEDIA,
     SKY_STATE_OFF,
     SKY_STATE_ON,
@@ -281,17 +283,19 @@ class SkyQRemote:
             _LOGGER.exception(f"X0010 - Error occurred: {self._host} : {sid} : {err}")
             return None
 
+    def getRecordings(self):
+        """Get the list of available Recordings."""
+        resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDINGS_LIST)
+        recData = resp["pvrItems"]
+        recordings = set()
+        for recording in recData:
+            if recording["status"] == "RECORDED":
+                recordings.add(self._buildRecording(recording))
+
+        return Recordings(recordings)
+
     def getRecording(self, pvrId):
         """Get the recording details."""
-        season = None
-        episode = None
-        starttime = None
-        endtime = None
-        programmeuuid = None
-        channel = None
-        imageUrl = None
-        title = None
-
         if self._lastPvrId == pvrId:
             return self._recordedProgramme
         self._lastPvrId = pvrId
@@ -304,6 +308,19 @@ class SkyQRemote:
             return None
 
         recording = resp["details"]
+
+        self._recordedProgramme = self._buildRecording(recording)
+        return self._recordedProgramme
+
+    def _buildRecording(self, recording):
+        season = None
+        episode = None
+        starttime = None
+        endtime = None
+        programmeuuid = None
+        channel = None
+        imageUrl = None
+        title = None
 
         channel = recording["cn"]
         title = recording["t"]
@@ -325,11 +342,9 @@ class SkyQRemote:
         else:
             endtime = starttime
 
-        self._recordedProgramme = Programme(
+        return Programme(
             programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel
         )
-
-        return self._recordedProgramme
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""

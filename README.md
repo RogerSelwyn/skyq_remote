@@ -386,6 +386,90 @@ Will return a JSON structure such as below:
 }
 ```
 
+### Get recordings
+
+```
+recordings = self.client.getRecordings()
+```
+
+Will return an object such as below:
+
+```
+{
+   'programmes':[
+      {
+        'programmeuuid':'54bfc205-c56e-4583-b03f-59c31f97f8c7',
+        'starttime':'2020-08-02T19:58:00Z',
+        'endtime':'2020-08-02T21:01:59Z',
+        'title':'New: Batwoman',
+        'season':1,
+        'episode':19,
+        'imageUrl':'https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9',
+        'channelname':'E4 HD'
+      },
+      {
+        'programmeuuid':'3cbe2aee-2491-4572-b9f4-fca9754d2cd4',
+        'starttime':'2020-07-26T19:58:00Z',
+        'endtime':'2020-07-26T21:02:00Z',
+        'title':'New: Batwoman',
+        'season':1,
+        'episode':18,
+        'imageUrl':'https://images.metadata.sky.com/pd-image/3cbe2aee-2491-4572-b9f4-fca9754d2cd4/16-9',
+        'channelname':'E4 HD'
+       },
+      {…}
+      }
+   ]
+}
+```
+
+### Get recordings (JSON)
+
+```
+recordings = self.client.getRecordings().as_json()
+```
+
+Will return an object such as below:
+
+```
+{
+   "__type__":"__recordings__",
+   "attributes":{
+      
+   },
+   "programmes":[
+      {
+         "__type__":"__programme__",
+         "attributes":{
+            "programmeuuid":"54bfc205-c56e-4583-b03f-59c31f97f8c7",
+            "starttime":"2020-08-02T19:58:00Z",
+            "endtime":"2020-08-02T21:01:59Z",
+            "title":"New: Batwoman",
+            "season":1,
+            "episode":19,
+            "imageUrl":"https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9",
+            "channelname":"E4 HD"
+         }
+      },
+      {
+         "__type__":"__programme__",
+         "attributes":{
+            "programmeuuid":"3cbe2aee-2491-4572-b9f4-fca9754d2cd4",
+            "starttime":"2020-07-26T19:58:00Z",
+            "endtime":"2020-07-26T21:02:00Z",
+            "title":"New: Batwoman",
+            "season":1,
+            "episode":18,
+            "imageUrl":"https://images.metadata.sky.com/pd-image/3cbe2aee-2491-4572-b9f4-fca9754d2cd4/16-9",
+            "channelname":"E4 HD"
+         }
+      },
+      {...}
+      }
+   ]
+}
+```
+
 ### Get recording
 
 ```
