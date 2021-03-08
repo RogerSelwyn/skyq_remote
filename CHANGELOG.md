@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.2.37 (08/03/2021)
+### Enhancements
+- [Add method for getRecordings](https://github.com/RogerSelwyn/skyq_remote/commit/ed929d6c4c78c730f740db7f26544578d8939a56) - @RogerSelwyn
+
+### Maintenance
+- [Consolidate Programme classes](https://github.com/RogerSelwyn/skyq_remote/commit/791a68683a14429b4801a8f804b4155880dfc4dc) - @RogerSelwyn
+- [Update readme for programme class change](https://github.com/RogerSelwyn/skyq_remote/commit/aca0f8d389b0972d7844e219fbaa068ac1bbae08) - @RogerSelwyn
+- [Fix channelname](https://github.com/RogerSelwyn/skyq_remote/commit/dee7097d63d65a75e4d6f8468781bff675bf9d4d) - @RogerSelwyn
+- [Bump to 0.2.37](https://github.com/RogerSelwyn/skyq_remote/commit/d84a4ba447438093998cf42316a165af9554a7c8) - @RogerSelwyn
+
 ## v0.2.36 (24/02/2021)
 ### Enhancements
 - [Add channel no to getCurrentMedia](https://github.com/RogerSelwyn/skyq_remote/commit/f3460a2f6689f3270393f01ef89e79a0dd78ab12) - @RogerSelwyn
