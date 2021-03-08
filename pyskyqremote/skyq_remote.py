@@ -16,34 +16,16 @@ from .classes.device import Device
 from .classes.media import Media
 from .classes.programme import Programme
 from .classes.recordings import Recordings
-from .const import (
-    APP_EPG,
-    APP_STATUS_VISIBLE,
-    COMMANDS,
-    CURRENT_TRANSPORT_STATE,
-    CURRENT_URI,
-    EPG_ERROR_NO_DATA,
-    EPG_ERROR_PAST_END,
-    KNOWN_COUNTRIES,
-    PVR,
-    REST_CHANNEL_LIST,
-    REST_PATH_DEVICEINFO,
-    REST_PATH_SYSTEMINFO,
-    REST_RECORDING_DETAILS,
-    REST_RECORDINGS_LIST,
-    SKY_STATE_NOMEDIA,
-    SKY_STATE_OFF,
-    SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
-    SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
-    UPNP_GET_MEDIA_INFO,
-    UPNP_GET_TRANSPORT_INFO,
-    WS_CURRENT_APPS,
-    XSI,
-)
+from .const import (APP_EPG, APP_STATUS_VISIBLE, COMMANDS,
+                    CURRENT_TRANSPORT_STATE, CURRENT_URI, EPG_ERROR_NO_DATA,
+                    EPG_ERROR_PAST_END, KNOWN_COUNTRIES, PVR,
+                    REST_CHANNEL_LIST, REST_PATH_DEVICEINFO,
+                    REST_PATH_SYSTEMINFO, REST_RECORDING_DETAILS,
+                    REST_RECORDINGS_LIST, SKY_STATE_NOMEDIA, SKY_STATE_OFF,
+                    SKY_STATE_ON, SKY_STATE_PAUSED, SKY_STATE_PLAYING,
+                    SKY_STATE_STANDBY, SKY_STATE_STOPPED,
+                    SKY_STATE_TRANSITIONING, UPNP_GET_MEDIA_INFO,
+                    UPNP_GET_TRANSPORT_INFO, WS_CURRENT_APPS, XSI)
 from .const_test import TEST_CHANNEL_LIST
 from .utils import deviceAccess
 
@@ -283,14 +265,15 @@ class SkyQRemote:
             _LOGGER.exception(f"X0010 - Error occurred: {self._host} : {sid} : {err}")
             return None
 
-    def getRecordings(self):
+    def getRecordings(self, status=None):
         """Get the list of available Recordings."""
         resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDINGS_LIST)
         recData = resp["pvrItems"]
-        recordings = set()
+        recordings = []
         for recording in recData:
-            if recording["status"] == "RECORDED":
-                recordings.add(self._buildRecording(recording))
+            if recording["status"] == status or not status:
+                built = self._buildRecording(recording)
+                recordings.append(built)
 
         return Recordings(recordings)
 
@@ -311,40 +294,6 @@ class SkyQRemote:
 
         self._recordedProgramme = self._buildRecording(recording)
         return self._recordedProgramme
-
-    def _buildRecording(self, recording):
-        season = None
-        episode = None
-        starttime = None
-        endtime = None
-        programmeuuid = None
-        channel = None
-        imageUrl = None
-        title = None
-
-        channel = recording["cn"]
-        title = recording["t"]
-        if "seasonnumber" in recording and "episodenumber" in recording:
-            season = recording["seasonnumber"]
-            episode = recording["episodenumber"]
-        if "programmeuuid" in recording:
-            programmeuuid = recording["programmeuuid"]
-            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
-        elif "osid" in recording:
-            sid = str(recording["osid"])
-            imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
-
-        starttime = datetime.utcfromtimestamp(recording["ast"])
-        if "finald" in recording:
-            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["finald"])
-        elif "schd" in recording:
-            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["schd"])
-        else:
-            endtime = starttime
-
-        return Programme(
-            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel
-        )
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
@@ -557,3 +506,41 @@ class SkyQRemote:
             from pyskyqremote.country.remote_gb import SkyQCountry
 
         return SkyQCountry
+
+    def _buildRecording(self, recording):
+        season = None
+        episode = None
+        starttime = None
+        endtime = None
+        programmeuuid = None
+        channel = None
+        imageUrl = None
+        title = None
+        status = None
+
+        channel = recording["cn"]
+        title = recording["t"]
+        if "seasonnumber" in recording and "episodenumber" in recording:
+            season = recording["seasonnumber"]
+            episode = recording["episodenumber"]
+        if "programmeuuid" in recording:
+            programmeuuid = recording["programmeuuid"]
+            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
+        elif "osid" in recording:
+            sid = str(recording["osid"])
+            imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
+
+        if "ast" in recording:
+            starttime = datetime.utcfromtimestamp(recording["ast"])
+        if "finald" in recording and "ast" in recording:
+            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["finald"])
+        elif "schd" in recording and "ast" in recording:
+            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["schd"])
+        else:
+            endtime = starttime
+
+        status = recording["status"]
+
+        return Programme(
+            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status
+        )

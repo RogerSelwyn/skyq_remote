@@ -7,7 +7,7 @@ import pytz
 import requests
 
 from ..classes.programme import Programme
-from ..const import RESPONSE_OK
+from ..const import RESPONSE_OK, SKY_STATUS_LIVE
 from .const_de import (
     CHANNEL_IMAGE_URL,
     CHANNEL_URL,
@@ -121,6 +121,7 @@ class SkyQCountry:
                 episode,
                 imageUrl,
                 channelName,
+                SKY_STATUS_LIVE,
             )
             programmes.add(programme)
 

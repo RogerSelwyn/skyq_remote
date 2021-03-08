@@ -218,7 +218,8 @@ Will return an object with an array of events including the specified number of 
          'season':7,
          'episode':119,
          'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9',
-         'channelname':'BBC One South'
+         'channelname':'BBC One South',
+         'status':'LIVE'
       },
       {
          'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
@@ -228,7 +229,8 @@ Will return an object with an array of events including the specified number of 
          'season':2020,
          'episode':89,
          'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9',
-         'channelname':'BBC One South'
+         'channelname':'BBC One South',
+         'status':'LIVE'
       },
       {...}
    ]
@@ -262,8 +264,9 @@ Will return a JSON structure with an array of events including the specified num
             "season":3,
             "episode":5,
             "imageUrl":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9",
-            "channelname":"BBC One South"
-         }
+            "channelname":"BBC One South",
+            "status":"LIVE"
+        }
       },
       {
          "__type__":"__programme__",
@@ -276,6 +279,7 @@ Will return a JSON structure with an array of events including the specified num
             "episode":4,
             "imageUrl":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9",
             "channelname":"BBC One South"
+            "status":"LIVE"
          }
       },
       {...},
@@ -310,7 +314,9 @@ Will return an object such as below:
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
+   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
+   'channelname':'Channel 5 HD',
+   'status':'LIVE'
 }
 ```
 ### Get programme at a point in time on a day (JSON)
@@ -333,7 +339,9 @@ Will return a JSON structure such as below:
       "title":"BBC News at Ten",
       "season":null,
       "episode":null,
-      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9"
+      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
+      "channelname":"BBC ONE HD",
+      "status":"LIVE"
    }
 }
 ```
@@ -360,7 +368,9 @@ Will return an object such as below:
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9'
+   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
+   'channelname':'Channel 5 HD',
+   'status':'LIVE'
 }
 ```
 ### Get current live TV programme on a channel (JSON)
@@ -381,8 +391,10 @@ Will return a JSON structure such as below:
       "title":"BBC News at Ten",
       "season":null,
       "episode":null,
-      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9"
-   }
+      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
+      "channelname":"BBC ONE HD",
+      "status":"LIVE"
+  }
 }
 ```
 
@@ -405,17 +417,19 @@ Will return an object such as below:
         'season':1,
         'episode':19,
         'imageUrl':'https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9',
-        'channelname':'E4 HD'
+        'channelname':'E4 HD',
+        'status':'RECORDED'
       },
       {
         'programmeuuid':'af9ecd2c-5026-4050-9c15-37598fe26713',
-        'starttime':'2021-03-03T13:13:00Z',
-        'endtime':'2021-03-03T13:46:59Z',
+        'starttime':null,
+        'endtime':'null,
         'title':'Home and Away',
-        'season':null,
-        'episode':null,
+        'season':35,
+        'episode':4,
         'imageUrl':'https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9',
-        'channelname':'Channel 5 HD'
+        'channelname':'Channel 5 HD',
+        'status':'SCHEDULED'
       },
       {…}
       }
@@ -448,21 +462,23 @@ Will return an object such as below:
             "season":1,
             "episode":19,
             "imageUrl":"https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9",
-            "channelname":"E4 HD"
-         }
+            "channelname":"E4 HD",
+            "status":"RECORDED"
+        }
       },
       {
          "__type__":"__programme__",
          "attributes":{
             "programmeuuid":"af9ecd2c-5026-4050-9c15-37598fe26713",
-            "starttime":"2021-03-03T13:13:00Z",
-            "endtime":"2021-03-03T13:46:59Z",
+            "starttime":"null",
+            "endtime":"null",
             "title":"Home and Away",
-            "season":null,
-            "episode":null,
+            "season":35,
+            "episode":4,
             "imageUrl":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
-            "channelname":"Channel 5 HD"
-      },
+            "channelname":"Channel 5 HD",
+            "status":"SCHEDULED"
+     },
       {...}
       }
    ]
@@ -482,11 +498,12 @@ Will return an object such as below:
    'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
    'starttime':datetime.datetime(2020,4,17,8,30),
    'endtime':datetime.datetime(2020,4,17,9,0),
-   'channel':'ITV HD',
+   'channelname':'ITV HD',
    'title':'Van Der Valk',
    'season':4,
    'episode':5,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9'
+   'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9',
+   'status':'RECORDED'
 }
 ```
 ### Get recording (JSON)
@@ -504,11 +521,12 @@ Will return an object such as below:
       "programmeuuid":"e11d9e93-0eec-4855-88f5-6ade9946d5dd",
       "starttime":"2020-04-28T21:00:00Z",
       "endtime":"2020-04-28T21:30:00Z",
-      "channel":"ITV HD",
+      "channelname":"ITV HD",
       "title":"BBC News at Ten",
       "season":null,
       "episode":null,
-      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9"
+      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
+      "status":"RECORDED"
    }
 }
 ```

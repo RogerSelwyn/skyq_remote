@@ -49,6 +49,11 @@ class Programme:
         repr=True,
         compare=False,
     )
+    status: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
 
     def __hash__(self):
         """Calculate the hash of this object."""

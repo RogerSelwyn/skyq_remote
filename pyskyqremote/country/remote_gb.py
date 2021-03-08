@@ -5,7 +5,7 @@ from datetime import datetime
 import requests
 
 from ..classes.programme import Programme
-from ..const import RESPONSE_OK
+from ..const import RESPONSE_OK, SKY_STATUS_LIVE
 from .const_gb import CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL
 
 _LOGGER = logging.getLogger(__name__)
@@ -70,6 +70,7 @@ class SkyQCountry:
                 episode,
                 imageUrl,
                 channelName,
+                SKY_STATUS_LIVE,
             )
             programmes.add(programme)
 
