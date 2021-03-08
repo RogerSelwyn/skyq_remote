@@ -44,7 +44,7 @@ class Programme:
         repr=True,
         compare=False,
     )
-    channel: str = field(
+    channelname: str = field(
         init=True,
         repr=True,
         compare=False,
