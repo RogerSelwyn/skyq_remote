@@ -30,9 +30,9 @@ class SkyQCountry:
 
         self._getChannels()
 
-    def getEpgData(self, sid, channelno, epgDate):
+    def getEpgData(self, sid, channelno, channelName, epgDate):
         """Get EPG data for DE."""
-        return self._getData(sid, channelno, epgDate)
+        return self._getData(sid, channelno, channelName, epgDate)
 
     def buildChannelImageUrl(self, sid, channelname):
         """Build the channel image URL."""
@@ -40,7 +40,7 @@ class SkyQCountry:
             if str(channel["sid"]) == str(sid):
                 return CHANNEL_IMAGE_URL.format(channel["clu"])
 
-    def _getData(self, sid, channelno, epgDate):
+    def _getData(self, sid, channelno, channelName, epgDate):
         cid = None
         for channel in self._channellist:
             if str(channel["sid"]) == str(sid):
@@ -113,7 +113,14 @@ class SkyQCountry:
                 imageUrl = LIVE_IMAGE_URL.format(p["clu"])
 
             programme = Programme(
-                programmeuuid, starttime, endtime, title, season, episode, imageUrl
+                programmeuuid,
+                starttime,
+                endtime,
+                title,
+                season,
+                episode,
+                imageUrl,
+                channelName,
             )
             programmes.add(programme)
 

@@ -14,7 +14,7 @@ from .classes.channelepg import ChannelEPG
 from .classes.channellist import ChannelList
 from .classes.device import Device
 from .classes.media import Media
-from .classes.programme import Programme, RecordedProgramme
+from .classes.programme import Programme
 from .const import (
     APP_EPG,
     APP_STATUS_VISIBLE,
@@ -195,7 +195,7 @@ class SkyQRemote:
 
             for n in range(days):
                 programmesData = self._remoteCountry.getEpgData(
-                    sid, channelNo, epgDate + timedelta(days=n)
+                    sid, channelNo, channelName, epgDate + timedelta(days=n)
                 )
                 if len(programmesData) > 0:
                     programmes = programmes.union(programmesData)
@@ -325,7 +325,7 @@ class SkyQRemote:
         else:
             endtime = starttime
 
-        self._recordedProgramme = RecordedProgramme(
+        self._recordedProgramme = Programme(
             programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel
         )
 

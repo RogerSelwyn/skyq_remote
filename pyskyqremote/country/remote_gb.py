@@ -6,8 +6,7 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK
-from .const_gb import (CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL,
-                       SCHEDULE_URL)
+from .const_gb import CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,15 +18,15 @@ class SkyQCountry:
         """Initialise UK remote."""
         self.pvr_image_url = PVR_IMAGE_URL
 
-    def getEpgData(self, sid, channelno, epgDate):
+    def getEpgData(self, sid, channelno, channelName, epgDate):
         """Get EPG data for UK."""
-        return self._getData(sid, channelno, epgDate)
+        return self._getData(sid, channelno, channelName, epgDate)
 
     def buildChannelImageUrl(self, sid, channelname):
         """Build the channel image URL."""
         return CHANNEL_IMAGE_URL.format(sid)
 
-    def _getData(self, sid, channelno, epgDate):
+    def _getData(self, sid, channelno, channelName, epgDate):
         epgDateStr = epgDate.strftime("%Y%m%d")
 
         epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
@@ -63,7 +62,14 @@ class SkyQCountry:
                 imageUrl = LIVE_IMAGE_URL.format(programmeuuid)
 
             programme = Programme(
-                programmeuuid, starttime, endtime, title, season, episode, imageUrl
+                programmeuuid,
+                starttime,
+                endtime,
+                title,
+                season,
+                episode,
+                imageUrl,
+                channelName,
             )
             programmes.add(programme)
 

@@ -6,8 +6,13 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK
-from .const_it import (CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL,
-                       PVR_IMAGE_URL, SCHEDULE_URL)
+from .const_it import (
+    CHANNEL_IMAGE_URL,
+    CHANNEL_URL,
+    LIVE_IMAGE_URL,
+    PVR_IMAGE_URL,
+    SCHEDULE_URL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,12 +28,12 @@ class SkyQCountry:
 
         self._getChannels()
 
-    def getEpgData(self, sid, channelno, epgDate):
+    def getEpgData(self, sid, channelno, channelName, epgDate):
         """Get EPG data for Italy."""
         epgPrev = epgDate - timedelta(days=1)
         queryDateFrom = epgPrev.strftime("%Y-%m-%dT22:00:00Z")
         queryDateTo = epgDate.strftime("%Y-%m-%dT23:59:59Z")
-        epgData = self._getData(sid, channelno, queryDateFrom, queryDateTo)
+        epgData = self._getData(sid, channelno, channelName, queryDateFrom, queryDateTo)
 
         midnight = datetime.combine(epgDate.date(), datetime.min.time())
 
@@ -39,7 +44,7 @@ class SkyQCountry:
         chid = "".join(e for e in channelname.casefold() if e.isalnum())
         return CHANNEL_IMAGE_URL.format(sid, chid)
 
-    def _getData(self, sid, channelno, queryDateFrom, queryDateTo):
+    def _getData(self, sid, channelno, channelName, queryDateFrom, queryDateTo):
         cid = None
         for channel in self._channellist:
             if str(channel["number"]) == str(channelno):
@@ -83,7 +88,14 @@ class SkyQCountry:
                 imageUrl = LIVE_IMAGE_URL.format(programmeuuid)
 
             programme = Programme(
-                programmeuuid, starttime, endtime, title, season, episode, imageUrl
+                programmeuuid,
+                starttime,
+                endtime,
+                title,
+                season,
+                episode,
+                imageUrl,
+                channelName,
             )
             programmes.add(programme)
 
