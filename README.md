@@ -217,7 +217,8 @@ Will return an object with an array of events including the specified number of 
          'title':'New: Tonight Show Starring. Jimmy Fallon',
          'season':7,
          'episode':119,
-         'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9'
+         'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9',
+         'channelname':'BBC One South'
       },
       {
          'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
@@ -226,7 +227,8 @@ Will return an object with an array of events including the specified number of 
          'title':'New: Late Late Show With...',
          'season':2020,
          'episode':89,
-         'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9'
+         'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9',
+         'channelname':'BBC One South'
       },
       {...}
    ]
@@ -259,7 +261,8 @@ Will return a JSON structure with an array of events including the specified num
             "title":"Man Like Mobeen",
             "season":3,
             "episode":5,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9"
+            "imageUrl":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9",
+            "channelname":"BBC One South"
          }
       },
       {
@@ -271,7 +274,8 @@ Will return a JSON structure with an array of events including the specified num
             "title":"Have I Got A Bit More News For You",
             "season":59,
             "episode":4,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9"
+            "imageUrl":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9",
+            "channelname":"BBC One South"
          }
       },
       {...},
