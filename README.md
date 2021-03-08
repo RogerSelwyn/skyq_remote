@@ -401,10 +401,10 @@ Will return a JSON structure such as below:
 ### Get recordings
 
 ```
-recordings = self.client.getRecordings()
+recordings = self.client.getRecordings(status)
 ```
 
-Will return an object such as below:
+Will return an object such as below for recordings with the provided status (default returns all):
 
 ```
 {
@@ -440,10 +440,10 @@ Will return an object such as below:
 ### Get recordings (JSON)
 
 ```
-recordings = self.client.getRecordings().as_json()
+recordings = self.client.getRecordings(status).as_json()
 ```
 
-Will return an object such as below:
+Will return an object such as below for recordings with the provided status (default returns all):
 
 ```
 {
