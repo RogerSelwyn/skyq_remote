@@ -408,15 +408,15 @@ Will return an object such as below:
         'channelname':'E4 HD'
       },
       {
-        'programmeuuid':'3cbe2aee-2491-4572-b9f4-fca9754d2cd4',
-        'starttime':'2020-07-26T19:58:00Z',
-        'endtime':'2020-07-26T21:02:00Z',
-        'title':'New: Batwoman',
-        'season':1,
-        'episode':18,
-        'imageUrl':'https://images.metadata.sky.com/pd-image/3cbe2aee-2491-4572-b9f4-fca9754d2cd4/16-9',
-        'channelname':'E4 HD'
-       },
+        'programmeuuid':'af9ecd2c-5026-4050-9c15-37598fe26713',
+        'starttime':'2021-03-03T13:13:00Z',
+        'endtime':'2021-03-03T13:46:59Z',
+        'title':'Home and Away',
+        'season':null,
+        'episode':null,
+        'imageUrl':'https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9',
+        'channelname':'Channel 5 HD'
+      },
       {…}
       }
    ]
@@ -454,15 +454,14 @@ Will return an object such as below:
       {
          "__type__":"__programme__",
          "attributes":{
-            "programmeuuid":"3cbe2aee-2491-4572-b9f4-fca9754d2cd4",
-            "starttime":"2020-07-26T19:58:00Z",
-            "endtime":"2020-07-26T21:02:00Z",
-            "title":"New: Batwoman",
-            "season":1,
-            "episode":18,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/3cbe2aee-2491-4572-b9f4-fca9754d2cd4/16-9",
-            "channelname":"E4 HD"
-         }
+            "programmeuuid":"af9ecd2c-5026-4050-9c15-37598fe26713",
+            "starttime":"2021-03-03T13:13:00Z",
+            "endtime":"2021-03-03T13:46:59Z",
+            "title":"Home and Away",
+            "season":null,
+            "episode":null,
+            "imageUrl":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
+            "channelname":"Channel 5 HD"
       },
       {...}
       }
