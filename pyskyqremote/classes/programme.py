@@ -27,7 +27,7 @@ class Programme:
     title: str = field(
         init=True,
         repr=True,
-        compare=False,
+        compare=True,
     )
     season: str = field(
         init=True,

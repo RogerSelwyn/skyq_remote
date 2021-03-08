@@ -269,11 +269,11 @@ class SkyQRemote:
         """Get the list of available Recordings."""
         resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDINGS_LIST)
         recData = resp["pvrItems"]
-        recordings = []
+        recordings = set()
         for recording in recData:
             if recording["status"] == status or not status:
                 built = self._buildRecording(recording)
-                recordings.append(built)
+                recordings.add(built)
 
         return Recordings(recordings)
 
@@ -530,17 +530,30 @@ class SkyQRemote:
             sid = str(recording["osid"])
             imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
 
+        starttimestamp = 0
         if "ast" in recording:
-            starttime = datetime.utcfromtimestamp(recording["ast"])
-        if "finald" in recording and "ast" in recording:
-            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["finald"])
-        elif "schd" in recording and "ast" in recording:
-            endtime = datetime.utcfromtimestamp(recording["ast"] + recording["schd"])
+            starttimestamp = recording["ast"]
+        elif "st" in recording:
+            starttimestamp = recording["st"]
+        starttime = datetime.utcfromtimestamp(starttimestamp)
+
+        if "finald" in recording:
+            endtime = datetime.utcfromtimestamp(starttimestamp + recording["finald"])
+        elif "schd" in recording:
+            endtime = datetime.utcfromtimestamp(starttimestamp + recording["schd"])
         else:
             endtime = starttime
 
         status = recording["status"]
 
         return Programme(
-            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status
+            programmeuuid,
+            starttime,
+            endtime,
+            title,
+            season,
+            episode,
+            imageUrl,
+            channel,
+            status,
         )
