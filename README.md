@@ -23,7 +23,7 @@ pip install pyskyqremote
 
 ### Base
 ```
-from pyskyqremote import SkyQRemote
+from pyskyqremote.skyq_remote import SkyQRemote
 
 self.client = SkyQRemote('192.168.1.99')
 ```
