@@ -16,16 +16,34 @@ from .classes.device import Device
 from .classes.media import Media
 from .classes.programme import Programme
 from .classes.recordings import Recordings
-from .const import (APP_EPG, APP_STATUS_VISIBLE, COMMANDS,
-                    CURRENT_TRANSPORT_STATE, CURRENT_URI, EPG_ERROR_NO_DATA,
-                    EPG_ERROR_PAST_END, KNOWN_COUNTRIES, PVR,
-                    REST_CHANNEL_LIST, REST_PATH_DEVICEINFO,
-                    REST_PATH_SYSTEMINFO, REST_RECORDING_DETAILS,
-                    REST_RECORDINGS_LIST, SKY_STATE_NOMEDIA, SKY_STATE_OFF,
-                    SKY_STATE_ON, SKY_STATE_PAUSED, SKY_STATE_PLAYING,
-                    SKY_STATE_STANDBY, SKY_STATE_STOPPED,
-                    SKY_STATE_TRANSITIONING, UPNP_GET_MEDIA_INFO,
-                    UPNP_GET_TRANSPORT_INFO, WS_CURRENT_APPS, XSI)
+from .const import (
+    APP_EPG,
+    APP_STATUS_VISIBLE,
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    CURRENT_URI,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    KNOWN_COUNTRIES,
+    PVR,
+    REST_CHANNEL_LIST,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    REST_RECORDING_DETAILS,
+    REST_RECORDINGS_LIST,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    UPNP_GET_MEDIA_INFO,
+    UPNP_GET_TRANSPORT_INFO,
+    WS_CURRENT_APPS,
+    XSI,
+)
 from .const_test import TEST_CHANNEL_LIST
 from .utils import deviceAccess
 
@@ -267,15 +285,19 @@ class SkyQRemote:
 
     def getRecordings(self, status=None):
         """Get the list of available Recordings."""
-        resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDINGS_LIST)
-        recData = resp["pvrItems"]
-        recordings = set()
-        for recording in recData:
-            if recording["status"] == status or not status:
-                built = self._buildRecording(recording)
-                recordings.add(built)
+        try:
+            recordings = set()
+            resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDINGS_LIST)
+            recData = resp["pvrItems"]
+            for recording in recData:
+                if recording["status"] == status or not status:
+                    built = self._buildRecording(recording)
+                    recordings.add(built)
 
-        return Recordings(recordings)
+            return Recordings(recordings)
+        except requests.exceptions.ReadTimeout as err:
+            _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._host}")
+            return Recordings(recordings)
 
     def getRecording(self, pvrId):
         """Get the recording details."""
