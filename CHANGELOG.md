@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.39 (26/03/2021)
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/6df03869a8f5360b21ff4648c1619828243a4a45) - @RogerSelwyn
+- [Catch unhandled exception](https://github.com/RogerSelwyn/skyq_remote/commit/a6b7be826d3d570bc648a745dc1a56057377dcc1) - @RogerSelwyn
+- [Fix linting error](https://github.com/RogerSelwyn/skyq_remote/commit/d6a89c91184811769e91bbf9d4377ee354fbe01e) - @RogerSelwyn
+- [Bump to 0.2.39](https://github.com/RogerSelwyn/skyq_remote/commit/34e3fee0da59fb5223ceefd130289f4fb2872f8a) - @RogerSelwyn
+
 ## v0.2.38 (08/03/2021)
 ### Enhancements
 - [Add filtering to recording retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/2955299dceba3a35c243eaa65f6d4c5993377e88) - @RogerSelwyn
