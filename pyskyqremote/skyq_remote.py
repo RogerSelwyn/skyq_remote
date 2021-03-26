@@ -295,7 +295,7 @@ class SkyQRemote:
                     recordings.add(built)
 
             return Recordings(recordings)
-        except requests.exceptions.ReadTimeout as err:
+        except requests.exceptions.ReadTimeout:
             _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._host}")
             return Recordings(recordings)
 
