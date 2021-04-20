@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.40 (20/04/2021)
+### Fixes
+- [Fix error generated when HA rebooted during SkyQ deep sleep](https://github.com/RogerSelwyn/skyq_remote/commit/4532cd51f8ed33e768fb8a40a9ef1428b82cedc6) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.40](https://github.com/RogerSelwyn/skyq_remote/commit/852bab22ab53e9795aae993d25782f3153650bf7) - @RogerSelwyn
+
 ## v0.2.39 (26/03/2021)
 ### Maintenance
 - [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/6df03869a8f5360b21ff4648c1619828243a4a45) - @RogerSelwyn
