@@ -463,7 +463,8 @@ class SkyQRemote:
             return TEST_CHANNEL_LIST
         channels = self._deviceAccess.http_json(self._jsonport, REST_CHANNEL_LIST)
         if channels:
-            return channels["services"]
+            if "services" in channels:
+                return channels["services"]
 
         return []
 
