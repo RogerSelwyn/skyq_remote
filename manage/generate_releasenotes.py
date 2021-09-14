@@ -91,6 +91,7 @@ def get_repo_commits(github, skip=True):
                 continue
             if "\n" in msg:
                 msg = msg.split("\n")[0]
+            print(commit)
             changes += CHANGE.format(
                 line=msg, link=commit.html_url, author=commit.author.login
             )
