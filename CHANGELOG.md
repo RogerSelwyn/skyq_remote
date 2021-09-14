@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.41 (14/09/2021)
+### Fixes
+- ['Refactored by Sourcery'](https://github.com/RogerSelwyn/skyq_remote/commit/0dfa7c3ec203a3cffa8163c348266d114cc7135c) - Sourcery AI
+- [Bump to 0.2.41](https://github.com/RogerSelwyn/skyq_remote/commit/c6b10a82df196ee16d0107b4de98e8ab864083e5) - @RogerSelwyn
+- [Update generate_releasenotes.py](https://github.com/RogerSelwyn/skyq_remote/commit/61a7f2dfe877ef7e1b6a29b63e5a118c9acab437) - @RogerSelwyn
+- [Fix release note generation for Sourcery AI](https://github.com/RogerSelwyn/skyq_remote/commit/d8d2fb246cdfa82b6e38781f6e6cdc51eb9133cb) - @RogerSelwyn
+ 
 ## v0.2.40 (20/04/2021)
 ### Fixes
 - [Fix error generated when HA rebooted during SkyQ deep sleep](https://github.com/RogerSelwyn/skyq_remote/commit/4532cd51f8ed33e768fb8a40a9ef1428b82cedc6) - @RogerSelwyn
