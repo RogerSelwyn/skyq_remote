@@ -1,7 +1,7 @@
 import re
 import sys
 import json
-from github import Github
+from github import Github, GithubException
 
 REPOSITORY = "skyq_remote"
 
@@ -36,6 +36,7 @@ Command | Description
 """
 
 CHANGE = "- [{line}]({link}) - @{author}\n"
+CHANGE2 = "- [{line}]({link}) - {author}\n"
 NOCHANGE = "_No changes in this release._"
 
 GITHUB = Github(sys.argv[2])
@@ -92,9 +93,16 @@ def get_repo_commits(github, skip=True):
             if "\n" in msg:
                 msg = msg.split("\n")[0]
             print(commit)
-            changes += CHANGE.format(
-                line=msg, link=commit.html_url, author=commit.author.login
-            )
+            html_url = commit.html_url
+            try:
+                changes += CHANGE.format(
+                    line=msg, link=commit.html_url, author=commit.author.login
+                )
+            except GithubException:
+                 changes += CHANGE2.format(
+                    line=msg, link=commit.html_url, author="Sourcery AI"
+                )
+
 
     return changes
 
