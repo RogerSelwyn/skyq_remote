@@ -90,8 +90,7 @@ class _ProgrammeJSONEncoder(json.JSONEncoder):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes.update({k: v})
 
-            result = {
+            return {
                 "__type__": "__programme__",
                 "attributes": attributes,
             }
-            return result

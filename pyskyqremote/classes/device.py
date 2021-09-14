@@ -59,8 +59,7 @@ class _DeviceJSONEncoder(json.JSONEncoder):
             for k, v in vars(obj).items():
                 attributes.update({k: v})
 
-            result = {
+            return {
                 "__type__": "__device__",
                 "attributes": attributes,
             }
-            return result

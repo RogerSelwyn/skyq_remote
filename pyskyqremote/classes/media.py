@@ -62,8 +62,7 @@ class _MediaJSONEncoder(json.JSONEncoder):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes.update({k: v})
 
-            result = {
+            return {
                 "__type__": "__media__",
                 "attributes": attributes,
             }
-            return result

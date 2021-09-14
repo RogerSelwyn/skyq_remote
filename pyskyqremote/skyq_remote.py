@@ -115,9 +115,9 @@ class SkyQRemote:
         )
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
-            if state == SKY_STATE_NOMEDIA or state == SKY_STATE_STOPPED:
+            if state in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
                 return SKY_STATE_STANDBY
-            if state == SKY_STATE_PLAYING or state == SKY_STATE_TRANSITIONING:
+            if state in [SKY_STATE_PLAYING, SKY_STATE_TRANSITIONING]:
                 return SKY_STATE_PLAYING
             if state == SKY_STATE_PAUSED:
                 return SKY_STATE_PAUSED
@@ -154,12 +154,7 @@ class SkyQRemote:
             currentURI = response[CURRENT_URI]
             if currentURI is not None:
                 if XSI in currentURI:
-                    # Live content
-                    sid = int(currentURI[6:], 16)
-
-                    if self._test_channel:
-                        sid = self._test_channel
-
+                    sid = self._test_channel or int(currentURI[6:], 16)
                     live = True
                     channelNode = self._getChannelNode(sid)
                     if channelNode:
@@ -172,9 +167,7 @@ class SkyQRemote:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
                     live = False
-        media = Media(channel, channelno, imageUrl, sid, pvrId, live)
-
-        return media
+        return Media(channel, channelno, imageUrl, sid, pvrId, live)
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
@@ -334,10 +327,7 @@ class SkyQRemote:
         serialNumber = deviceInfo["serialNumber"]
         versionNumber = deviceInfo["versionNumber"]
 
-        if self._overrideCountry:
-            epgCountryCode = self._overrideCountry
-        else:
-            epgCountryCode = countryCode.upper()
+        epgCountryCode = self._overrideCountry or countryCode.upper()
         if not epgCountryCode:
             _LOGGER.error(f"E0010 - No country identified: {self._host}")
             return None
@@ -347,7 +337,7 @@ class SkyQRemote:
 
         self._epgCountryCode = epgCountryCode
 
-        device = Device(
+        return Device(
             ASVersion,
             IPAddress,
             countryCode,
@@ -359,7 +349,6 @@ class SkyQRemote:
             serialNumber,
             versionNumber,
         )
-        return device
 
     def getChannelList(self):
         """Get Channel list for Sky Q box."""
@@ -404,11 +393,9 @@ class SkyQRemote:
             channelsid, channelname
         )
         sf = channel["sf"]
-        channelInfo = Channel(
+        return Channel(
             channelno, channelname, channelsid, channelImageUrl, sf=sf
         )
-
-        return channelInfo
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
@@ -421,13 +408,12 @@ class SkyQRemote:
                     self._port, self.commands[item.casefold()]
                 )
                 time.sleep(0.5)
+        elif sequence not in self.commands:
+            _LOGGER.error(f"E0030 - Invalid command: {self._host} : {sequence}")
         else:
-            if sequence not in self.commands:
-                _LOGGER.error(f"E0030 - Invalid command: {self._host} : {sequence}")
-            else:
-                self._deviceAccess.sendCommand(
-                    self._port, self.commands[sequence.casefold()]
-                )
+            self._deviceAccess.sendCommand(
+                self._port, self.commands[sequence.casefold()]
+            )
 
     def setOverrides(
         self, overrideCountry=None, test_channel=None, jsonPort=None, port=None
@@ -450,8 +436,8 @@ class SkyQRemote:
             # It's also possible the channels may have changed since last HA restart, so reload them
             self._channels = self._getChannels()
             channelNode = self._getNodeFromChannels(sid)
-            if not channelNode:
-                return None
+        if not channelNode:
+            return None
 
         channel = channelNode["t"]
         channelno = channelNode["c"]
@@ -462,9 +448,8 @@ class SkyQRemote:
         if self._test_channel:
             return TEST_CHANNEL_LIST
         channels = self._deviceAccess.http_json(self._jsonport, REST_CHANNEL_LIST)
-        if channels:
-            if "services" in channels:
-                return channels["services"]
+        if channels and "services" in channels:
+            return channels["services"]
 
         return []
 

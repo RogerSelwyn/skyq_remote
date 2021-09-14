@@ -78,10 +78,9 @@ class _ChannelEPGJSONEncoder(json.JSONEncoder):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes.update({k: v})
 
-            result = {
+            return {
                 "__type__": "__programme__",
                 "attributes": attributes,
             }
-            return result
 
         json.JSONEncoder.default(self, obj)  # pragma: no cover

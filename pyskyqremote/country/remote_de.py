@@ -51,7 +51,6 @@ class SkyQCountry:
         berlinDate = berlinDT.strftime("%Y-%m-%dT")
 
         epgUrl = SCHEDULE_URL
-        epgData = None
         programmes = set()
 
         headers = {
@@ -77,9 +76,7 @@ class SkyQCountry:
             verify=True,
             timeout=10,
         )
-        if resp.status_code == RESPONSE_OK:
-            epgData = resp.json()["el"]
-
+        epgData = resp.json()["el"] if resp.status_code == RESPONSE_OK else None
         if epgData is None:
             return programmes
 

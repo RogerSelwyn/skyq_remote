@@ -37,10 +37,7 @@ class Channel:
 
     def __post_init__(self):
         """Post process the channel setup."""
-        if self.sf == "au":
-            self.channeltype = AUDIO
-        else:
-            self.channeltype = VIDEO
+        self.channeltype = AUDIO if self.sf == "au" else VIDEO
         self.channelnoint = int(self.channelno)
 
     def __hash__(self):
@@ -68,8 +65,7 @@ class _ChannelJSONEncoder(json.JSONEncoder):
             for k, v in vars(obj).items():
                 attributes.update({k: v})
 
-            result = {
+            return {
                 "__type__": "__channel__",
                 "attributes": attributes,
             }
-            return result
