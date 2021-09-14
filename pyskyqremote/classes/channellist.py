@@ -59,10 +59,9 @@ class _ChannelListJSONEncoder(json.JSONEncoder):
             for k, v in vars(obj).items():
                 attributes.update({k: v})
 
-            result = {
+            return {
                 "__type__": "__channel__",
                 "attributes": attributes,
             }
-            return result
 
         json.JSONEncoder.default(self, obj)  # pragma: no cover

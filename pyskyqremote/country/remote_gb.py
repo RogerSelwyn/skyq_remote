@@ -30,13 +30,10 @@ class SkyQCountry:
         epgDateStr = epgDate.strftime("%Y%m%d")
 
         epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
-        epgData = None
         programmes = set()
 
         resp = requests.get(epgUrl)
-        if resp.status_code == RESPONSE_OK:
-            epgData = resp.json()["schedule"]
-
+        epgData = resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
         if epgData is None:
             return programmes
 
@@ -48,13 +45,11 @@ class SkyQCountry:
             endtime = datetime.utcfromtimestamp(p["st"] + p["d"])
             title = p["t"]
             season = None
-            if "seasonnumber" in p:
-                if p["seasonnumber"] > 0:
-                    season = p["seasonnumber"]
+            if "seasonnumber" in p and p["seasonnumber"] > 0:
+                season = p["seasonnumber"]
             episode = None
-            if "episodenumber" in p:
-                if p["episodenumber"] > 0:
-                    episode = p["episodenumber"]
+            if "episodenumber" in p and p["episodenumber"] > 0:
+                episode = p["episodenumber"]
             programmeuuid = None
             imageUrl = None
             if "programmeuuid" in p:

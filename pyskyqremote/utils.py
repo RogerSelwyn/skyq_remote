@@ -164,7 +164,5 @@ class deviceAccess:
                 break
 
             if time.time() > timeout:
-                _LOGGER.error(
-                    f"E0030U - Timeout error sending command: {self._host} : {str(code)}"
-                )
+                _LOGGER.error(f'E0030U - Timeout error sending command: {self._host} : {code}')
                 break
