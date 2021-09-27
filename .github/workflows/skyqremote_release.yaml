@@ -7,20 +7,10 @@ on:
 jobs:
   releasenotes:
     name: Prepare release notes
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v1
-
-      - name: Enable version 3.7 of Python
-        uses: actions/setup-python@v1
+      - uses: "actions/checkout@v2"
+      - name: Release Asset
+        uses: "rogerselwyn/actions/release-notes@main"
         with:
-          python-version: 3.7
-
-      - name: Install requirements
-        run: |
-          python3 -m pip install setuptools wheel
-          python3 -m pip install -r /home/runner/work/skyq_remote/skyq_remote/requirements_release.txt
-
-      - name: Update release notes
-        run: python3 /home/runner/work/skyq_remote/skyq_remote/manage/generate_releasenotes.py --token ${{ secrets.GITHUB_TOKEN }} --release yes --tag ${{ github.ref }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
