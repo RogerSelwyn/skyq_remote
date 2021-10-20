@@ -449,8 +449,7 @@ class SkyQRemote:
 
     def _retrieveInformation(self, rest_path):
         try:
-            resp = self._deviceAccess.http_json(self._jsonport, rest_path)
-            return resp
+            return self._deviceAccess.http_json(self._jsonport, rest_path)
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ConnectionError,

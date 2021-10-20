@@ -61,10 +61,7 @@ def ChannelDecoder(obj):
 class _ChannelJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Channel):
-            attributes = {}
-            for k, v in vars(obj).items():
-                attributes.update({k: v})
-
+            attributes = {k: v for k, v in vars(obj).items()}
             return {
                 "__type__": "__channel__",
                 "attributes": attributes,

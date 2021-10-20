@@ -55,10 +55,7 @@ def DeviceDecoder(obj):
 class _DeviceJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Device):
-            attributes = {}
-            for k, v in vars(obj).items():
-                attributes.update({k: v})
-
+            attributes = {k: v for k, v in vars(obj).items()}
             return {
                 "__type__": "__device__",
                 "attributes": attributes,

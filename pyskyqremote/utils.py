@@ -45,7 +45,7 @@ class deviceAccess:
             if resp.status_code == HTTPStatus.OK:
                 description = xmltodict.parse(resp.text)
                 deviceType = description["root"]["device"]["deviceType"]
-                if not (SKYCONTROL in deviceType):
+                if SKYCONTROL not in deviceType:
                     return {"url": None, "status": "Not Found"}
                 services = description["root"]["device"]["serviceList"]["service"]
                 if not isinstance(services, list):

@@ -35,10 +35,7 @@ def AppDecoder(obj):
 class _AppJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, App):
-            attributes = {}
-            for k, v in vars(obj).items():
-                attributes.update({k: v})
-
+            attributes = {k: v for k, v in vars(obj).items()}
             return {
                 "__type__": "__app__",
                 "attributes": attributes,
