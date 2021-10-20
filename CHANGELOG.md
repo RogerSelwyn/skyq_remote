@@ -1,10 +1,22 @@
 # Changelog
 
+## v0.2.42 (20/10/2021)
+### Enhancements
+- [Return App object](https://github.com/RogerSelwyn/skyq_remote/commit/78c530edbd7f75d91b4c9118c277b5cfb3b7ff98) - @RogerSelwyn
+
+### Maintenance
+- [Update to use rogerselwyn/actions](https://github.com/RogerSelwyn/skyq_remote/commit/71dfd5484439cc6df6de541d19dbfc370fcd26fc) - @RogerSelwyn
+- [Correct step name in release](https://github.com/RogerSelwyn/skyq_remote/commit/aefee90dcf452f61851c576fe68051ee77aeb699) - @RogerSelwyn
+- [Update test script](https://github.com/RogerSelwyn/skyq_remote/commit/f84fdb4ce9a89293f0b3acc739f8f194cdd9e5fc) - @RogerSelwyn
+- [Bump to 0.2.42](https://github.com/RogerSelwyn/skyq_remote/commit/f1ce6825798695de81eb0ffed4a3da75e198fa2d) - @RogerSelwyn
+
 ## v0.2.41 (14/09/2021)
-### Fixes
+### Maintenance
 - ['Refactored by Sourcery'](https://github.com/RogerSelwyn/skyq_remote/commit/0dfa7c3ec203a3cffa8163c348266d114cc7135c) - Sourcery AI
 - [Bump to 0.2.41](https://github.com/RogerSelwyn/skyq_remote/commit/c6b10a82df196ee16d0107b4de98e8ab864083e5) - @RogerSelwyn
 - [Update generate_releasenotes.py](https://github.com/RogerSelwyn/skyq_remote/commit/61a7f2dfe877ef7e1b6a29b63e5a118c9acab437) - @RogerSelwyn
+
+### Fixes
 - [Fix release note generation for Sourcery AI](https://github.com/RogerSelwyn/skyq_remote/commit/d8d2fb246cdfa82b6e38781f6e6cdc51eb9133cb) - @RogerSelwyn
  
 ## v0.2.40 (20/04/2021)
