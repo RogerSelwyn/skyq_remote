@@ -147,21 +147,26 @@ class SkyQRemote:
         live = False
 
         response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_MEDIA_INFO)
-        if response is not None:
-            currentURI = response[CURRENT_URI]
-            if currentURI is not None:
-                if XSI in currentURI:
-                    sid = self._test_channel or int(currentURI[6:], 16)
-                    live = True
-                    channelNode = self._getChannelNode(sid)
-                    if channelNode:
-                        channel = channelNode["channel"]
-                        channelno = channelNode["channelno"]
-                        imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
-                elif PVR in currentURI:
-                    # Recorded content
-                    pvrId = "P" + currentURI[11:]
-                    live = False
+        if response is None:
+            return None
+
+        currentURI = response[CURRENT_URI]
+        if currentURI is None:
+            return None
+
+        if XSI in currentURI:
+            sid = self._test_channel or int(currentURI[6:], 16)
+            live = True
+            channelNode = self._getChannelNode(sid)
+            if channelNode:
+                channel = channelNode["channel"]
+                channelno = channelNode["channelno"]
+                imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
+        elif PVR in currentURI:
+            # Recorded content
+            pvrId = "P" + currentURI[11:]
+            live = False
+
         return Media(channel, channelno, imageUrl, sid, pvrId, live)
 
     def getEpgData(self, sid, epgDate, days=2):
@@ -231,9 +236,9 @@ class SkyQRemote:
                 _LOGGER.info(
                     f"I0020 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
                 )
-                return EPG_ERROR_NO_DATA
-        else:
-            self._error = False
+            return EPG_ERROR_NO_DATA
+
+        self._error = False
 
         try:
             programme = next(p for p in epgData.programmes if p.starttime <= queryDate and p.endtime >= queryDate)

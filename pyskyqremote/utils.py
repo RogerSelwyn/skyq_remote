@@ -40,40 +40,34 @@ class deviceAccess:
         """Get the sky control url."""
         descriptionUrl = SOAP_DESCRIPTION_BASE_URL.format(self._host, descriptionIndex)
         headers = {"User-Agent": SOAP_USER_AGENT}
+        empty_return = {"url": None, "status": "Not Found"}
         try:
             resp = requests.get(descriptionUrl, headers=headers, timeout=SOAP_TIMEOUT)
             if resp.status_code == HTTPStatus.OK:
                 description = xmltodict.parse(resp.text)
                 deviceType = description["root"]["device"]["deviceType"]
                 if SKYCONTROL not in deviceType:
-                    return {"url": None, "status": "Not Found"}
-                services = description["root"]["device"]["serviceList"]["service"]
-                if not isinstance(services, list):
-                    services = [services]
-                playService = None
-                for s in services:
-                    if s["serviceId"] == SKY_PLAY_URN:
-                        playService = s
+                    return empty_return
+
+                playService = self._findPlayService(description)
+
                 if playService is None:
-                    return {"url": None, "status": "Not Found"}
+                    return empty_return
+
                 return {
-                    "url": SOAP_CONTROL_BASE_URL.format(
-                        self._host, playService["controlURL"]
-                    ),
+                    "url": SOAP_CONTROL_BASE_URL.format(self._host, playService["controlURL"]),
                     "status": "OK",
                 }
-            return {"url": None, "status": "Not Found"}
+            return empty_return
         except (requests.exceptions.Timeout):
-            _LOGGER.warning(
-                f"W0020U - Control URL not accessible: {self._host} : {descriptionUrl}"
-            )
+            _LOGGER.warning(f"W0020U - Control URL not accessible: {self._host} : {descriptionUrl}")
             return {"url": None, "status": "Error"}
         except (requests.exceptions.ConnectionError) as err:
             _LOGGER.exception(f"X0010U - Connection error: {self._host} : {err}")
-            return {"url": None, "status": "Error"}
+            return empty_return
         except Exception as err:
             _LOGGER.exception(f"X0020U - Other error occurred: {self._host} : {err}")
-            return {"url": None, "status": "Error"}
+            return empty_return
 
     def callSkyWebSocket(self, method):
         """Make a websocket call to the sky box."""
@@ -83,9 +77,7 @@ class deviceAccess:
             ws.close()
             return response
         except (TimeoutError) as err:
-            _LOGGER.warning(
-                f"W0030U - Websocket call failed: {self._host} : {method} : {err}"
-            )
+            _LOGGER.warning(f"W0030U - Websocket call failed: {self._host} : {method} : {err}")
             return {"url": None, "status": "Error"}
         except Exception as err:
             _LOGGER.exception(f"X0030U - Error occurred: {self._host} : {err}")
@@ -108,9 +100,7 @@ class deviceAccess:
             )
             if resp.status_code == HTTPStatus.OK:
                 xml = resp.text
-                return xmltodict.parse(xml)["s:Envelope"]["s:Body"][
-                    SOAP_RESPONSE.format(method)
-                ]
+                return xmltodict.parse(xml)["s:Envelope"]["s:Body"][SOAP_RESPONSE.format(method)]
             return None
         except requests.exceptions.RequestException:
             return None
@@ -126,24 +116,18 @@ class deviceAccess:
 
     def sendCommand(self, port, code):
         """Send a command to the sky box."""
-        commandBytes = bytearray(
-            [4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16]
-        )
+        commandBytes = bytearray([4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16])
 
         try:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error as err:
-            _LOGGER.exception(
-                f"X0040U - Failed to create socket when sending command: {self._host} : {err}"
-            )
+            _LOGGER.exception(f"X0040U - Failed to create socket when sending command: {self._host} : {err}")
             return
 
         try:
             client.connect((self._host, port))
         except Exception as err:
-            _LOGGER.exception(
-                f"X0050U - Failed to connect to client when sending command: {self._host} : {err}"
-            )
+            _LOGGER.exception(f"X0050U - Failed to connect to client when sending command: {self._host} : {err}")
             return
 
         strlen = 12
@@ -164,5 +148,16 @@ class deviceAccess:
                 break
 
             if time.time() > timeout:
-                _LOGGER.error(f'E0030U - Timeout error sending command: {self._host} : {code}')
+                _LOGGER.error(f"E0030U - Timeout error sending command: {self._host} : {code}")
                 break
+
+    def _findPlayService(self, description):
+        services = description["root"]["device"]["serviceList"]["service"]
+        if not isinstance(services, list):
+            services = [services]
+        playService = None
+        for s in services:
+            if s["serviceId"] == SKY_PLAY_URN:
+                playService = s
+
+        return playService
