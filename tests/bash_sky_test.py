@@ -43,7 +43,7 @@ if currentState == SKY_STATE_STANDBY:
     exit()
 
 print("----------- Active Application")
-app = sky.getActiveApplication()
+app = sky.getActiveApplication().as_json()
 print(str(app))
 if app != APP_EPG:
     exit()
