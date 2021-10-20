@@ -122,6 +122,7 @@ Will return an object such as below for the running application name:
    'appId':'com.bskyb.beehive',
    'title':'Beehive Bedlam'
 }
+```
 
 ### Get the active application (JSON)
 
