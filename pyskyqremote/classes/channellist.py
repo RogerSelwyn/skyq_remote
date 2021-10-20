@@ -41,10 +41,7 @@ class _ChannelListJSONEncoder(json.JSONEncoder):
         if isinstance(obj, ChannelList):
             type_ = "__channellist__"
             channels = obj.channels
-            attributes = {}
-            for k, v in vars(obj).items():
-                if k not in {"channels"}:
-                    attributes.update({k: v})
+            attributes = {k: v for k, v in vars(obj).items() if k not in {"channels"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
@@ -55,10 +52,7 @@ class _ChannelListJSONEncoder(json.JSONEncoder):
             return list(obj)
 
         if isinstance(obj, Channel):
-            attributes = {}
-            for k, v in vars(obj).items():
-                attributes.update({k: v})
-
+            attributes = {k: v for k, v in vars(obj).items()}
             return {
                 "__type__": "__channel__",
                 "attributes": attributes,

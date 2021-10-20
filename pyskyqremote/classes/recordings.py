@@ -48,10 +48,7 @@ class _RecordingsJSONEncoder(json.JSONEncoder):
         if isinstance(obj, Recordings):
             type_ = "__recordings__"
             programmes = obj.programmes
-            attributes = {}
-            for k, v in vars(obj).items():
-                if k not in {"programmes"}:
-                    attributes.update({k: v})
+            attributes = {k: v for k, v in vars(obj).items() if k not in {"programmes"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
@@ -66,8 +63,7 @@ class _RecordingsJSONEncoder(json.JSONEncoder):
             for k, v in vars(obj).items():
                 if isinstance(v, datetime):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
-                attributes.update({k: v})
-
+                attributes[k] = v
             return {
                 "__type__": "__programme__",
                 "attributes": attributes,

@@ -88,8 +88,7 @@ class _ProgrammeJSONEncoder(json.JSONEncoder):
             for k, v in vars(obj).items():
                 if isinstance(v, datetime):
                     v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
-                attributes.update({k: v})
-
+                attributes[k] = v
             return {
                 "__type__": "__programme__",
                 "attributes": attributes,
