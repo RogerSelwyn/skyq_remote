@@ -9,6 +9,7 @@ from operator import attrgetter
 import pycountry
 import requests
 
+from .classes.app import App
 from .classes.channel import Channel
 from .classes.channelepg import ChannelEPG
 from .classes.channellist import ChannelList
@@ -27,6 +28,7 @@ from .const import (
     KNOWN_COUNTRIES,
     PVR,
     REST_CHANNEL_LIST,
+    REST_PATH_APPS,
     REST_PATH_DEVICEINFO,
     REST_PATH_SYSTEMINFO,
     REST_RECORDING_DETAILS,
@@ -76,6 +78,7 @@ class SkyQRemote:
         self._lastPvrId = None
         self._currentApp = APP_EPG
         self._channels = []
+        self._apps = {}
         self._error = False
         self._deviceAccess = deviceAccess(self._host)
         self._epgCacheLen = epgCacheLen
@@ -110,9 +113,7 @@ class SkyQRemote:
         if self._soapControlURL is None:
             return SKY_STATE_OFF
 
-        response = self._deviceAccess.callSkySOAPService(
-            self._soapControlURL, UPNP_GET_TRANSPORT_INFO
-        )
+        response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_TRANSPORT_INFO)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
             if state in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
@@ -130,13 +131,11 @@ class SkyQRemote:
             if apps is None:
                 return self._currentApp
 
-            self._currentApp = next(
-                a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE
-            )["appId"]
+            self._currentApp = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)["appId"]
 
-            return self._currentApp
+            return App(self._currentApp, self._get_app_title(self._currentApp))
         except Exception:
-            return self._currentApp
+            return App(self._currentApp, self._get_app_title(self._currentApp))
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
@@ -147,9 +146,7 @@ class SkyQRemote:
         pvrId = None
         live = False
 
-        response = self._deviceAccess.callSkySOAPService(
-            self._soapControlURL, UPNP_GET_MEDIA_INFO
-        )
+        response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_MEDIA_INFO)
         if response is not None:
             currentURI = response[CURRENT_URI]
             if currentURI is not None:
@@ -160,9 +157,7 @@ class SkyQRemote:
                     if channelNode:
                         channel = channelNode["channel"]
                         channelno = channelNode["channelno"]
-                        imageUrl = self._remoteCountry.buildChannelImageUrl(
-                            sid, channel
-                        )
+                        imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
                 elif PVR in currentURI:
                     # Recorded content
                     pvrId = "P" + currentURI[11:]
@@ -197,19 +192,13 @@ class SkyQRemote:
                 else:
                     break
 
-        self._channel = ChannelEPG(
-            sid, channelNo, channelName, channelImageUrl, sorted(programmes)
-        )
+        self._channel = ChannelEPG(sid, channelNo, channelName, channelImageUrl, sorted(programmes))
         self._epgCache[sid] = {
             "epg": epg,
             "channel": self._channel,
             "updatetime": datetime.utcnow(),
         }
-        self._epgCache = OrderedDict(
-            sorted(
-                self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True
-            )
-        )
+        self._epgCache = OrderedDict(sorted(self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True))
         while len(self._epgCache) > self._epgCacheLen:
             self._epgCache.popitem(last=True)
 
@@ -231,10 +220,7 @@ class SkyQRemote:
             self._error = False
 
         programmeEpg = f"{str(sidint)} {epgDate.strftime('%Y%m%d')}"
-        if (
-            self._lastProgrammeEpg == programmeEpg
-            and queryDate < self._programme.endtime
-        ):
+        if self._lastProgrammeEpg == programmeEpg and queryDate < self._programme.endtime:
             return self._programme
 
         epgData = self.getEpgData(sidint, epgDate)
@@ -250,11 +236,7 @@ class SkyQRemote:
             self._error = False
 
         try:
-            programme = next(
-                p
-                for p in epgData.programmes
-                if p.starttime <= queryDate and p.endtime >= queryDate
-            )
+            programme = next(p for p in epgData.programmes if p.starttime <= queryDate and p.endtime >= queryDate)
 
             self._programme = programme
             self._lastProgrammeEpg = programmeEpg
@@ -298,9 +280,7 @@ class SkyQRemote:
             return self._recordedProgramme
         self._lastPvrId = pvrId
 
-        resp = self._deviceAccess.http_json(
-            self._jsonport, REST_RECORDING_DETAILS.format(pvrId)
-        )
+        resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDING_DETAILS.format(pvrId))
         if "details" not in resp:
             _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
             return None
@@ -364,15 +344,11 @@ class SkyQRemote:
             channelsid = c["sid"]
             channelImageUrl = None  # Not available yet
             sf = c["sf"]
-            channel = Channel(
-                channelno, channelname, channelsid, channelImageUrl, sf=sf
-            )
+            channel = Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
             channelitems.add(channel)
 
         channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
-        self._channellist = ChannelList(
-            sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True)
-        )
+        self._channellist = ChannelList(sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True))
 
         return self._channellist
 
@@ -389,13 +365,9 @@ class SkyQRemote:
         channelno = channel["c"]
         channelname = channel["t"]
         channelsid = channel["sid"]
-        channelImageUrl = self._remoteCountry.buildChannelImageUrl(
-            channelsid, channelname
-        )
+        channelImageUrl = self._remoteCountry.buildChannelImageUrl(channelsid, channelname)
         sf = channel["sf"]
-        return Channel(
-            channelno, channelname, channelsid, channelImageUrl, sf=sf
-        )
+        return Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
@@ -404,20 +376,14 @@ class SkyQRemote:
                 if item.casefold() not in self.commands:
                     _LOGGER.error(f"E0020 - Invalid command: {self._host} : {item}")
                     break
-                self._deviceAccess.sendCommand(
-                    self._port, self.commands[item.casefold()]
-                )
+                self._deviceAccess.sendCommand(self._port, self.commands[item.casefold()])
                 time.sleep(0.5)
         elif sequence not in self.commands:
             _LOGGER.error(f"E0030 - Invalid command: {self._host} : {sequence}")
         else:
-            self._deviceAccess.sendCommand(
-                self._port, self.commands[sequence.casefold()]
-            )
+            self._deviceAccess.sendCommand(self._port, self.commands[sequence.casefold()])
 
-    def setOverrides(
-        self, overrideCountry=None, test_channel=None, jsonPort=None, port=None
-    ):
+    def setOverrides(self, overrideCountry=None, test_channel=None, jsonPort=None, port=None):
         """Override various items."""
         if overrideCountry:
             self._overrideCountry = overrideCountry
@@ -476,9 +442,7 @@ class SkyQRemote:
         url_index = 0
         self._soapControlURL = None
         while self._soapControlURL is None and url_index < 50:
-            self._soapControlURL = self._deviceAccess.getSoapControlURL(url_index)[
-                "url"
-            ]
+            self._soapControlURL = self._deviceAccess.getSoapControlURL(url_index)["url"]
             url_index += 1
 
         self.deviceSetup = True
@@ -502,14 +466,10 @@ class SkyQRemote:
         """Work out the country for the Country Code."""
         try:
             country = pycountry.countries.get(alpha_3=countryCode).alpha_2.casefold()
-            SkyQCountry = importlib.import_module(
-                "pyskyqremote.country.remote_" + country
-            ).SkyQCountry
+            SkyQCountry = importlib.import_module("pyskyqremote.country.remote_" + country).SkyQCountry
 
         except (AttributeError, ModuleNotFoundError) as err:
-            _LOGGER.warning(
-                f"W0010 - Invalid country, defaulting to GBR: {self._host} : {countryCode} : {err}"
-            )
+            _LOGGER.warning(f"W0010 - Invalid country, defaulting to GBR: {self._host} : {countryCode} : {err}")
 
             from pyskyqremote.country.remote_gb import SkyQCountry
 
@@ -565,3 +525,13 @@ class SkyQRemote:
             channel,
             status,
         )
+
+    def _get_app_title(self, appId):
+        if len(self._apps) == 0:
+            apps = self._retrieveInformation(REST_PATH_APPS)
+            if not apps:
+                return None
+            for a in apps["apps"]:
+                self._apps[a["appId"]] = a["title"]
+
+        return self._apps[appId] if appId in self._apps else None

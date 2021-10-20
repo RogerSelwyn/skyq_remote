@@ -28,6 +28,7 @@ REST_RECORDING_DETAILS = "pvr/details/{0}"
 REST_RECORDINGS_LIST = "pvr/?limit=1000&offset=0"
 REST_PATH_SYSTEMINFO = "system/information"
 REST_PATH_DEVICEINFO = "system/deviceinformation"
+REST_PATH_APPS = "apps"
 
 # Sky specific constants
 CURRENT_URI = "CurrentURI"

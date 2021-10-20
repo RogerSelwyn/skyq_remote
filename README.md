@@ -115,7 +115,30 @@ Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK"
 app = self.client.getActiveApplication()
 ```
 
-Will return the running application name or 'com.bskyb.epgui'
+Will return an object such as below for the running application name:
+
+```
+{
+   'appId':'com.bskyb.beehive',
+   'title':'Beehive Bedlam'
+}
+
+### Get the active application (JSON)
+
+```
+app = self.client.getActiveApplication().as_json()
+```
+
+Will return a JSON structure such as below for the running application name:
+
+```
+{
+   "__type__":"__app__",
+   "attributes":{
+      "appId":"com.bskyb.beehive",
+      "title":"Beehive Bedlam"
+   }
+}
 
 ### Get current media
 
