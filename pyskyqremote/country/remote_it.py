@@ -6,13 +6,7 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_it import (
-    CHANNEL_IMAGE_URL,
-    CHANNEL_URL,
-    LIVE_IMAGE_URL,
-    PVR_IMAGE_URL,
-    SCHEDULE_URL,
-)
+from .const_it import CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +47,11 @@ class SkyQCountry:
         epgUrl = SCHEDULE_URL.format(cid, queryDateFrom, queryDateTo)
         programmes = set()
 
-        resp = requests.get(epgUrl)
+        try:
+            resp = requests.get(epgUrl)
+        except requests.exceptions.ConnectionError:
+            return programmes
+
         epgData = resp.json()["events"] if resp.status_code == RESPONSE_OK else None
         if epgData is None:
             return programmes
@@ -74,10 +72,7 @@ class SkyQCountry:
             if "seasonNumber" in p["content"] and p["content"]["seasonNumber"] > 0:
                 season = p["content"]["seasonNumber"]
             episode = None
-            if (
-                "episodeNumber" in p["content"]
-                and p["content"]["episodeNumber"] > 0
-            ):
+            if "episodeNumber" in p["content"] and p["content"]["episodeNumber"] > 0:
                 episode = p["content"]["episodeNumber"]
             programmeuuid = None
             imageUrl = None
