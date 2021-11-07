@@ -7,7 +7,7 @@
 
 ### Maintenance
 - [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/c507ae6bd02a7170932f6e603e7bf28108e8a9b3) - @RogerSelwyn
-- ['Refactored by Sourcery'](https://github.com/RogerSelwyn/skyq_remote/commit/07fc2d8b929359596f6cce4dde7d7c600000ca1d) - @None
+- ['Refactored by Sourcery'](https://github.com/RogerSelwyn/skyq_remote/commit/07fc2d8b929359596f6cce4dde7d7c600000ca1d) - Sourcery AI
 - [Simplify code from sourcery recommendations](https://github.com/RogerSelwyn/skyq_remote/commit/6e3a6b2d1e29401e1d71b70987d1b75a7659b7ad) - @RogerSelwyn
 - [Catch connection error](https://github.com/RogerSelwyn/skyq_remote/commit/a504023ba1edf605bc141a538708ea27d2de8d3e) - @RogerSelwyn
 - [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/a67e942007cb86f8032456affa04c4c9f922be7a) - @RogerSelwyn
