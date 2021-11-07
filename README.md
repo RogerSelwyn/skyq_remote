@@ -99,7 +99,7 @@ Will decode the JSON structure to a python object.
 status = self.client.powerStatus()
 ```
 
-Will return "POWERED OFF", "STANDBY or "ON" 
+Will return "POWERED OFF", "STANDBY or "ON"
 
 ### Get current state
 
@@ -321,9 +321,9 @@ channel = ChannelDecoder(channelJSON)
 
 Will decode the JSON structure to a python object.
 
-### Get programme at a point in time on a day 
+### Get programme at a point in time on a day
 
-Note that at the end of a day, the programme may appear on the next day's schedule. 
+Note that at the end of a day, the programme may appear on the next day's schedule.
 
 ```
 programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate)
@@ -346,7 +346,7 @@ Will return an object such as below:
 ```
 ### Get programme at a point in time on a day (JSON)
 
-Note that at the end of a day, the programme may appear on the next day's schedule. 
+Note that at the end of a day, the programme may appear on the next day's schedule.
 
 ```
 programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate).as_json()
@@ -474,7 +474,7 @@ Will return an object such as below for recordings with the provided status (def
 {
    "__type__":"__recordings__",
    "attributes":{
-      
+
    },
    "programmes":[
       {
@@ -680,6 +680,70 @@ Will return an object such as below:
 }
 ```
 
+### Get Favourite List
+
+```
+favouriteList = self.client.getFavouriteList()
+```
+
+Will return an object with an array of favourites.
+
+```
+{
+   'favourites':[
+      {
+         'lcn': 1,
+         'channelno':'101',
+         'channelname':'BBC ONE',
+         'sid'='2153'
+      },
+      {
+         'lcn': 2,
+         'channelno':'0102',
+         'channelname':'BBC R2',
+         'sid'='2153'
+      },
+      {...}
+   ]
+}
+```
+### Get Favorite List (JSON)
+
+```
+favouriteList = self.client.getFavouriteList().as_json()
+```
+
+Will return a JSON structure with an array of channels.
+
+```
+{
+   "__type__":"__favouritelist__",
+   "attributes":{
+   },
+   "favourites":[
+      {
+         "__type__":"__favourite__",
+         "attributes":{
+            "lcn": 1,
+            "channelno":"101",
+            "channelname":"BBC ONE",
+            "sid":"2153"
+         }
+      },
+      {
+         "__type__":"__favourite__",
+         "attributes":{
+            "lcn": 2,
+            "channelno":"0102",
+            "channelname":"BBC R2",
+            "sid":"2153"
+         }
+      },
+      {...},
+   ]
+}
+```
+
 ### Decode EPG information (JSON)
 
 ```
@@ -699,45 +763,45 @@ Allows the sending of a sequence of key presses which are submitted at 1/2 secon
 
 Valid values are:
 ```
-power 
-select 
-backup 
-dismiss 
-channelup 
-channeldown 
-interactive 
-sidebar 
-help 
-services 
-search 
-tvguide 
-home 
-i 
-text 
-up 
-down 
-left 
-right 
-red 
-green 
-yellow 
-blue 
-0 
-1 
-2 
-3 
+power
+select
+backup
+dismiss
+channelup
+channeldown
+interactive
+sidebar
+help
+services
+search
+tvguide
+home
+i
+text
+up
+down
+left
+right
+red
+green
+yellow
+blue
+0
+1
+2
+3
 4
-5 
-6 
-7 
-8 
+5
+6
+7
+8
 9,
-play 
-pause 
-stop 
-record 
-fastforward 
-rewind 
-boxoffice 
-sky 
+play
+pause
+stop
+record
+fastforward
+rewind
+boxoffice
+sky
 ```
