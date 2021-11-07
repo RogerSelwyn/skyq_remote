@@ -24,6 +24,7 @@ WS_CURRENT_APPS = "apps/status"
 # REST Constants
 REST_BASE_URL = "http://{0}:{1}/as/{2}"
 REST_CHANNEL_LIST = "services"
+REST_FAVOURITES = "services/favourites"
 REST_RECORDING_DETAILS = "pvr/details/{0}"
 REST_RECORDINGS_LIST = "pvr/?limit=1000&offset=0"
 REST_PATH_SYSTEMINFO = "system/information"

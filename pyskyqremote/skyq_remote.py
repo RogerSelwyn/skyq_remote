@@ -14,6 +14,8 @@ from .classes.channel import Channel
 from .classes.channelepg import ChannelEPG
 from .classes.channellist import ChannelList
 from .classes.device import Device
+from .classes.favourite import Favourite
+from .classes.favouritelist import FavouriteList
 from .classes.media import Media
 from .classes.programme import Programme
 from .classes.recordings import Recordings
@@ -28,6 +30,7 @@ from .const import (
     KNOWN_COUNTRIES,
     PVR,
     REST_CHANNEL_LIST,
+    REST_FAVOURITES,
     REST_PATH_APPS,
     REST_PATH_DEVICEINFO,
     REST_PATH_SYSTEMINFO,
@@ -82,6 +85,8 @@ class SkyQRemote:
         self._error = False
         self._deviceAccess = deviceAccess(self._host)
         self._epgCacheLen = epgCacheLen
+        self._channellist = None
+        self._favouritelist = None
 
         deviceInfo = self.getDeviceInformation()
         if not deviceInfo:
@@ -212,6 +217,7 @@ class SkyQRemote:
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
         sidint = 0
+        print(sid)
         try:
             sidint = int(sid)
         except ValueError:
@@ -373,6 +379,34 @@ class SkyQRemote:
         channelImageUrl = self._remoteCountry.buildChannelImageUrl(channelsid, channelname)
         sf = channel["sf"]
         return Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
+
+    def getFavouriteList(self):
+        """Retrieve the list of favourites."""
+        favourites = self._deviceAccess.http_json(self._jsonport, REST_FAVOURITES)
+        if not favourites or "favourites" not in favourites:
+            return []
+
+        if not self._channellist:
+            self.getChannelList()
+
+        favitems = set()
+
+        for f in favourites["favourites"]:
+            favlcn = f["lcn"]
+            favsid = f["sid"]
+            channelno = None
+            channelname = None
+            channel = next(c for c in self._channellist.channels if c.channelsid == f["sid"])
+            if channel:
+                channelno = channel.channelno
+                channelname = channel.channelname
+            favourite = Favourite(favlcn, channelno, channelname, favsid)
+            favitems.add(favourite)
+
+        favouritesorted = sorted(favitems, key=attrgetter("lcn"))
+        self._favouritelist = FavouriteList(favouritesorted)
+
+        return self._favouritelist
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""

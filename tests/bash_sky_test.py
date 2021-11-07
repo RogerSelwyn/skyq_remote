@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Test script."""
 
+import json
 import sys
 from datetime import datetime
 
@@ -43,8 +44,9 @@ if currentState == SKY_STATE_STANDBY:
     exit()
 
 print("----------- Active Application")
-app = sky.getActiveApplication().as_json()
-print(str(app))
+appJSON = sky.getActiveApplication().as_json()
+print(appJSON)
+app = json.loads(appJSON)["attributes"]["appId"]
 if app != APP_EPG:
     exit()
 
@@ -58,11 +60,12 @@ if not media.live:
     print(sky.getRecording(media.pvrId).as_json())
 
 sid = test_channel or media.sid
-print(f"----------- Programme from Epg - {queryDate} - {sid}")
-print(sky.getProgrammeFromEpg(sid, queryDate, queryDate).as_json())
+if sid:
+    print(f"----------- Programme from Epg - {queryDate} - {sid}")
+    print(sky.getProgrammeFromEpg(sid, queryDate, queryDate).as_json())
 
-print(f"----------- Current Live TV - {sid}")
-print(sky.getCurrentLiveTVProgramme(sid).as_json())
+    print(f"----------- Current Live TV - {sid}")
+    print(sky.getCurrentLiveTVProgramme(sid).as_json())
 
 print("----------- Get Channel Info - 101")
 print(sky.getChannelInfo("101").as_json())
@@ -70,8 +73,11 @@ print(sky.getChannelInfo("101").as_json())
 # print("----------- Channel list")
 # print(sky.getChannelList().as_json())
 
+print("----------- Favourites")
+print(sky.getFavouriteList().as_json())
+
 # print("----------- Today's EPG")
 # print(sky.getEpgData(sid, queryDate).as_json())
 
-print("----------- Get scheduled recordings")
-print(sky.getRecordings("SCHEDULED").as_json())
+# print("----------- Get scheduled recordings")
+# print(sky.getRecordings("SCHEDULED").as_json())
