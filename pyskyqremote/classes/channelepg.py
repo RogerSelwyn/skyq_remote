@@ -1,4 +1,4 @@
-"""Structure of a standard EPG prorgramme."""
+"""Structure of a standard EPG programme."""
 
 import json
 from dataclasses import dataclass, field
@@ -12,19 +12,29 @@ class ChannelEPG:
     """SkyQ Channel EPG Class."""
 
     sid: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     channelno: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     channelname: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     channelImageUrl: str = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
     programmes: set = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
 
     def as_json(self) -> str:
@@ -36,9 +46,7 @@ def ChannelEPGDecoder(obj):
     """Decode channel object from json."""
     channelepg = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in channelepg and channelepg["__type__"] == "__channelepg__":
-        return ChannelEPG(
-            programmes=channelepg["programmes"], **channelepg["attributes"]
-        )
+        return ChannelEPG(programmes=channelepg["programmes"], **channelepg["attributes"])
     return channelepg
 
 

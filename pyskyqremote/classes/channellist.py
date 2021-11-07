@@ -1,4 +1,4 @@
-"""Structure of a standard EPG prorgramme."""
+"""List of channels available on the Sky Q box."""
 
 import json
 from dataclasses import dataclass, field
@@ -11,21 +11,21 @@ class ChannelList:
     """SkyQ Channel List Class."""
 
     channels: set = field(
-        init=True, repr=True, compare=False,
+        init=True,
+        repr=True,
+        compare=False,
     )
 
     def as_json(self) -> str:
-        """Return a JSON string representing this Channel."""
+        """Return a JSON string representing the Channel list."""
         return json.dumps(self, cls=_ChannelListJSONEncoder)
 
 
 def ChannelListDecoder(obj):
-    """Decode channel object from json."""
+    """Decode the channel list object from json."""
     channellist = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in channellist and channellist["__type__"] == "__channellist__":
-        return ChannelList(
-            channels=channellist["channels"], **channellist["attributes"]
-        )
+        return ChannelList(channels=channellist["channels"], **channellist["attributes"])
     return channellist
 
 
