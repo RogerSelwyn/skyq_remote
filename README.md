@@ -140,6 +140,7 @@ Will return a JSON structure such as below for the running application name:
       "title":"Beehive Bedlam"
    }
 }
+```
 
 ### Get current media
 
