@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.2.43 (07/11/2021)
+### Enhancements
+- [Add getFavouriteList](https://github.com/RogerSelwyn/skyq_remote/commit/c0b868a8eaa4788cfe1d6ee5f6628d9e31cd3d24) - @RogerSelwyn
+- [Add Favourites documentation](https://github.com/RogerSelwyn/skyq_remote/commit/4ccb9c12ac812ae07bc0f708e14c0b7eed25bfbe) - @RogerSelwyn
+
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/c507ae6bd02a7170932f6e603e7bf28108e8a9b3) - @RogerSelwyn
+- ['Refactored by Sourcery'](https://github.com/RogerSelwyn/skyq_remote/commit/07fc2d8b929359596f6cce4dde7d7c600000ca1d) - @None
+- [Simplify code from sourcery recommendations](https://github.com/RogerSelwyn/skyq_remote/commit/6e3a6b2d1e29401e1d71b70987d1b75a7659b7ad) - @RogerSelwyn
+- [Catch connection error](https://github.com/RogerSelwyn/skyq_remote/commit/a504023ba1edf605bc141a538708ea27d2de8d3e) - @RogerSelwyn
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/a67e942007cb86f8032456affa04c4c9f922be7a) - @RogerSelwyn
+- [Documentation correction](https://github.com/RogerSelwyn/skyq_remote/commit/849a6ba99ec0d1ec8198857e3a243ccf736c5987) - @RogerSelwyn
+- [Bump to 0.2.43](https://github.com/RogerSelwyn/skyq_remote/commit/dda4d37a0798cec6346b85642f2317f9ebe0c945) - @RogerSelwyn
+
 ## v0.2.42 (20/10/2021)
 ### Enhancements
 - [Return App object](https://github.com/RogerSelwyn/skyq_remote/commit/78c530edbd7f75d91b4c9118c277b5cfb3b7ff98) - @RogerSelwyn
