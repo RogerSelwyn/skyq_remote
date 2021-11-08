@@ -217,7 +217,6 @@ class SkyQRemote:
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
         sidint = 0
-        print(sid)
         try:
             sidint = int(sid)
         except ValueError:
