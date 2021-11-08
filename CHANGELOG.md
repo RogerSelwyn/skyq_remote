@@ -1,5 +1,12 @@
 # Changelog
 
+
+## v0.2.44 (08/11/2021)
+### Fixes
+- [Removed print statement](https://github.com/RogerSelwyn/skyq_remote/commit/340104bc924ecf8d3be3264e715f0a32991422ba) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.2.44](https://github.com/RogerSelwyn/skyq_remote/commit/779572488776183bbe3184637817fac750cb30bd) - @RogerSelwyn
+ 
 ## v0.2.43 (07/11/2021)
 ### Enhancements
 - [Add getFavouriteList](https://github.com/RogerSelwyn/skyq_remote/commit/c0b868a8eaa4788cfe1d6ee5f6628d9e31cd3d24) - @RogerSelwyn
