@@ -349,12 +349,7 @@ class SkyQRemote:
         channelitems = set()
 
         for c in channels:
-            channelno = c["c"]
-            channelname = c["t"]
-            channelsid = c["sid"]
-            channelImageUrl = None  # Not available yet
-            sf = c["sf"]
-            channel = Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
+            channel = Channel(c["c"], c["t"], c["sid"], None, sf=c["sf"])
             channelitems.add(channel)
 
         channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
@@ -385,21 +380,14 @@ class SkyQRemote:
         if not favourites or "favourites" not in favourites:
             return []
 
-        if not self._channellist:
-            self.getChannelList()
-
         favitems = set()
 
         for f in favourites["favourites"]:
-            favlcn = f["lcn"]
             favsid = f["sid"]
-            channelno = None
-            channelname = None
-            channel = next(c for c in self._channellist.channels if c.channelsid == f["sid"])
-            if channel:
-                channelno = channel.channelno
-                channelname = channel.channelname
-            favourite = Favourite(favlcn, channelno, channelname, favsid)
+            channel = self._getFavChannel(favsid)
+            channelno = channel.channelno if channel else None
+            channelname = channel.channelname if channel else None
+            favourite = Favourite(f["lcn"], channelno, channelname, favsid)
             favitems.add(favourite)
 
         favouritesorted = sorted(favitems, key=attrgetter("lcn"))
@@ -431,6 +419,14 @@ class SkyQRemote:
             self._jsonport = jsonPort
         if port:
             self.port = port
+
+    def _getFavChannel(self, sid):
+        if not self._channellist:
+            self.getChannelList()
+        try:
+            return next(c for c in self._channellist.channels if c.channelsid == sid)
+        except StopIteration:
+            return None
 
     def _getChannelNode(self, sid):
         channelNode = self._getNodeFromChannels(sid)
