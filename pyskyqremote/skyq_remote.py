@@ -465,7 +465,7 @@ class SkyQRemote:
             self._setupDevice()
 
         if not self._remoteCountry and self.deviceSetup:
-            SkyQCountry = self.importCountry(self._epgCountryCode)
+            SkyQCountry = self._importCountry(self._epgCountryCode)
             self._remoteCountry = SkyQCountry()
 
         if len(self._channels) == 0 and self._remoteCountry:
@@ -495,7 +495,7 @@ class SkyQRemote:
             _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")
             return None
 
-    def importCountry(self, countryCode):
+    def _importCountry(self, countryCode):
         """Work out the country for the Country Code."""
         try:
             country = pycountry.countries.get(alpha_3=countryCode).alpha_2.casefold()
