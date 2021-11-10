@@ -8,14 +8,7 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_de import (
-    CHANNEL_IMAGE_URL,
-    CHANNEL_URL,
-    LIVE_IMAGE_URL,
-    PVR_IMAGE_URL,
-    SCHEDULE_URL,
-    TIMEZONE,
-)
+from .const_de import CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL, TIMEZONE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -85,11 +78,7 @@ class SkyQCountry:
 
         for p in epgData:
             starttimede = datetime.strptime(berlinDate + p["bst"], "%Y-%m-%dT%H:%M")
-            starttime = (
-                starttimede.replace(tzinfo=berlinDT.tzinfo)
-                .astimezone(pytz.utc)
-                .replace(tzinfo=None)
-            )
+            starttime = starttimede.replace(tzinfo=berlinDT.tzinfo).astimezone(pytz.utc).replace(tzinfo=None)
             endtime = starttime + timedelta(minutes=p["len"])
             title = p["et"]
             season = None
