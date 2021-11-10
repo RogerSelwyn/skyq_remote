@@ -70,6 +70,11 @@ class SkyQRemote:
         self._channellist = None
         self._favouritelist = None
 
+        self._appInformation = None
+        self._favouriteInformation = None
+        self._mediaInformation = None
+        self._recordingsInformation = None
+
         deviceInfo = self.getDeviceInformation()
         if not deviceInfo:
             return None
@@ -113,10 +118,16 @@ class SkyQRemote:
 
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
+        if not self._appInformation:
+            self._appInformation = AppInformation(self._deviceAccess)
+
         return self._appInformation.getActiveApplication()
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
+        if not self._mediaInformation:
+            self._mediaInformation = MediaInformation(self._deviceAccess, self._soapControlURL, self._remoteCountry)
+
         return self._mediaInformation.getCurrentMedia(self._test_channel, self._getChannelNode)
 
     def getEpgData(self, sid, epgDate, days=2):
@@ -214,10 +225,16 @@ class SkyQRemote:
 
     def getRecordings(self, status=None):
         """Get the list of available Recordings."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
+
         return self._recordingsInformation.getRecordings()
 
     def getRecording(self, pvrId):
         """Get the recording details."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
+
         if self._lastPvrId == pvrId:
             return self._recordedProgramme
         self._lastPvrId = pvrId
@@ -301,6 +318,9 @@ class SkyQRemote:
 
     def getFavouriteList(self):
         """Retrieve the list of favourites."""
+        if not self._favouriteInformation:
+            self._favouriteInformation = FavouriteInformation(self._deviceAccess)
+
         if not self._channellist:
             self.getChannelList()
         return self._favouriteInformation.getFavouriteList(self._channellist)
@@ -372,12 +392,6 @@ class SkyQRemote:
 
         if len(self._channels) == 0 and self._remoteCountry:
             self._channels = self._getChannels()
-
-        if self._remoteCountry and self._soapControlURL:
-            self._appInformation = AppInformation(self._deviceAccess)
-            self._favouriteInformation = FavouriteInformation(self._deviceAccess)
-            self._mediaInformation = MediaInformation(self._deviceAccess, self._soapControlURL, self._remoteCountry)
-            self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
 
     def _setupDevice(self):
 
