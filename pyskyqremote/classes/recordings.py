@@ -1,4 +1,4 @@
-"""Structure of a standard EPG prorgramme."""
+"""Methods for retrieving recording information."""
 
 import json
 import logging

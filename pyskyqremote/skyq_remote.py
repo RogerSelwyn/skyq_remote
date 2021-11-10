@@ -11,7 +11,7 @@ import pycountry
 from .classes.app import AppInformation
 from .classes.channel import Channel, ChannelList
 from .classes.channelepg import ChannelEPG
-from .classes.device import Device
+from .classes.device import DeviceInformation
 from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
@@ -22,10 +22,7 @@ from .const import (
     CURRENT_TRANSPORT_STATE,
     EPG_ERROR_NO_DATA,
     EPG_ERROR_PAST_END,
-    KNOWN_COUNTRIES,
     REST_CHANNEL_LIST,
-    REST_PATH_DEVICEINFO,
-    REST_PATH_SYSTEMINFO,
     SKY_STATE_NOMEDIA,
     SKY_STATE_OFF,
     SKY_STATE_ON,
@@ -71,6 +68,7 @@ class SkyQRemote:
         self._favouritelist = None
 
         self._appInformation = None
+        self._deviceInformation = None
         self._favouriteInformation = None
         self._mediaInformation = None
         self._recordingsInformation = None
@@ -89,7 +87,11 @@ class SkyQRemote:
         if self._soapControlURL is None:
             return SKY_STATE_OFF
 
-        output = self._deviceAccess.retrieveInformation(REST_PATH_SYSTEMINFO)
+        if not self._deviceInformation:
+            self._deviceInformation = DeviceInformation(self._deviceAccess)
+
+        output = self._deviceInformation.getSystemInformation()
+
         if output is None:
             return SKY_STATE_OFF
         if "activeStandby" in output and output["activeStandby"] is True:
@@ -244,43 +246,12 @@ class SkyQRemote:
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
-        deviceInfo = self._deviceAccess.retrieveInformation(REST_PATH_DEVICEINFO)
-        if not deviceInfo:
-            return None
+        if not self._deviceInformation:
+            self._deviceInformation = DeviceInformation(self._deviceAccess)
 
-        systemInfo = self._deviceAccess.retrieveInformation(REST_PATH_SYSTEMINFO)
-        ASVersion = deviceInfo["ASVersion"]
-        IPAddress = deviceInfo["IPAddress"]
-        countryCode = deviceInfo["countryCode"]
-        hardwareModel = systemInfo["hardwareModel"]
-        hardwareName = deviceInfo["hardwareName"]
-        manufacturer = systemInfo["manufacturer"]
-        modelNumber = deviceInfo["modelNumber"]
-        serialNumber = deviceInfo["serialNumber"]
-        versionNumber = deviceInfo["versionNumber"]
-
-        epgCountryCode = self._overrideCountry or countryCode.upper()
-        if not epgCountryCode:
-            _LOGGER.error(f"E0010 - No country identified: {self._host}")
-            return None
-
-        if epgCountryCode in KNOWN_COUNTRIES:
-            epgCountryCode = KNOWN_COUNTRIES[epgCountryCode]
-
-        self._epgCountryCode = epgCountryCode
-
-        return Device(
-            ASVersion,
-            IPAddress,
-            countryCode,
-            epgCountryCode,
-            hardwareModel,
-            hardwareName,
-            manufacturer,
-            modelNumber,
-            serialNumber,
-            versionNumber,
-        )
+        deviceInfo = self._deviceInformation.getDeviceInformation(self._overrideCountry)
+        self._epgCountryCode = deviceInfo.epgCountryCode
+        return deviceInfo
 
     def getChannelList(self):
         """Get Channel list for Sky Q box."""
