@@ -96,3 +96,5 @@ class SkyQCountry:
 
     def _getChannels(self):
         resp = requests.get(CHANNEL_URL)
+        if resp.status_code == RESPONSE_OK:
+            self._channellist = resp.json()["channels"]
