@@ -20,15 +20,32 @@ from .classes.media import Media
 from .classes.programme import Programme
 from .classes.recordings import Recordings
 from .classes.utils import DeviceAccess
-from .const import (APP_EPG, COMMANDS, CURRENT_TRANSPORT_STATE, CURRENT_URI,
-                    EPG_ERROR_NO_DATA, EPG_ERROR_PAST_END, KNOWN_COUNTRIES,
-                    PVR, REST_CHANNEL_LIST, REST_FAVOURITES, REST_PATH_APPS,
-                    REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO,
-                    REST_RECORDING_DETAILS, REST_RECORDINGS_LIST,
-                    SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_ON,
-                    SKY_STATE_PAUSED, SKY_STATE_PLAYING, SKY_STATE_STANDBY,
-                    SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING,
-                    UPNP_GET_MEDIA_INFO, UPNP_GET_TRANSPORT_INFO, XSI)
+from .const import (
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    CURRENT_URI,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    KNOWN_COUNTRIES,
+    PVR,
+    REST_CHANNEL_LIST,
+    REST_FAVOURITES,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    REST_RECORDING_DETAILS,
+    REST_RECORDINGS_LIST,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    UPNP_GET_MEDIA_INFO,
+    UPNP_GET_TRANSPORT_INFO,
+    XSI,
+)
 from .const_test import TEST_CHANNEL_LIST
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,21 +63,17 @@ class SkyQRemote:
         self._remoteCountry = None
         self._overrideCountry = None
         self._epgCountryCode = None
-        self._serialNumber = None
         self._test_channel = None
         self._port = port
         self._jsonport = jsonPort
         self._soapControlURL = None
         self._channel = None
-        self._lastEpg = None
         self._programme = None
         self._recordedProgramme = None
         self._lastProgrammeEpg = None
         self._epgCache = OrderedDict()
         self._lastPvrId = None
-        self._currentApp = APP_EPG
         self._channels = []
-        self._apps = {}
         self._error = False
         self._deviceAccess = DeviceAccess(self._host, self._jsonport)
         self._appInformation = AppInformation(self._deviceAccess)
@@ -151,7 +164,6 @@ class SkyQRemote:
 
         if sid in self._epgCache and self._epgCache[sid]["epg"] == epg:
             return self._epgCache[sid]["channel"]
-        self._lastEpg = epg
 
         channelNo = None
         channelName = None
@@ -515,13 +527,3 @@ class SkyQRemote:
             channel,
             status,
         )
-
-    def _get_app_title(self, appId):
-        if len(self._apps) == 0:
-            apps = self._deviceAccess.retrieveInformation(REST_PATH_APPS)
-            if not apps:
-                return None
-            for a in apps["apps"]:
-                self._apps[a["appId"]] = a["title"]
-
-        return self._apps[appId] if appId in self._apps else None

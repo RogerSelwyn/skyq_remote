@@ -16,7 +16,6 @@ class SkyQCountry:
 
     def __init__(self):
         """Initialise Italy remote."""
-        self.channel_image_url = CHANNEL_IMAGE_URL
         self.pvr_image_url = PVR_IMAGE_URL
         self._channellist = None
 
@@ -97,13 +96,3 @@ class SkyQCountry:
 
     def _getChannels(self):
         resp = requests.get(CHANNEL_URL)
-        if resp.status_code == RESPONSE_OK:
-            self._channellist = resp.json()["channels"]
-
-    def _getMidnight(self, epgDate, epgData):
-        midnight = datetime.combine(epgDate.date(), datetime.min.time())
-        for p in epgData:
-            if p.starttime < midnight and p.endtime >= midnight:
-                return p
-
-        return list(epgData)[len(epgData) - 1]
