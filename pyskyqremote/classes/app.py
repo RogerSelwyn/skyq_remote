@@ -1,7 +1,42 @@
-"""Structure of an app information."""
+"""Sky Q app methods and data class."""
 
 import json
 from dataclasses import dataclass, field
+
+from ..const import APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS, WS_CURRENT_APPS
+
+
+class AppInformation:
+    """Sky Q app information retrieval methods."""
+
+    def __init__(self, deviceAccess):
+        """Initialise the app information class."""
+        self._deviceAccess = deviceAccess
+        self._currentApp = APP_EPG
+        self._apps = {}
+
+    def getActiveApplication(self):
+        """Get the active application on Sky Q box."""
+        try:
+            apps = self._deviceAccess.callSkyWebSocket(WS_CURRENT_APPS)
+            if apps is None:
+                return self._currentApp
+
+            self._currentApp = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)["appId"]
+
+            return App(self._currentApp, self._get_app_title(self._currentApp))
+        except Exception:
+            return App(self._currentApp, self._get_app_title(self._currentApp))
+
+    def _get_app_title(self, appId):
+        if len(self._apps) == 0:
+            apps = self._deviceAccess.retrieveInformation(REST_PATH_APPS)
+            if not apps:
+                return None
+            for a in apps["apps"]:
+                self._apps[a["appId"]] = a["title"]
+
+        return self._apps[appId] if appId in self._apps else None
 
 
 @dataclass

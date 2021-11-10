@@ -29,12 +29,28 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-class deviceAccess:
+class DeviceAccess:
     """Set up the device for access."""
 
-    def __init__(self, host):
+    def __init__(self, host, jsonport):
         """Initialise the utility setup."""
         self._host = host
+        self._jsonport = jsonport
+
+    def retrieveInformation(self, rest_path):
+        """Retrieve information from the SkyQ box."""
+        try:
+            return self.http_json(self._jsonport, rest_path)
+        except (
+            requests.exceptions.ConnectTimeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ReadTimeout,
+        ):  # as err:
+            # _LOGGER.debug(f"D0010U - Connection error: {self._host} : {err}")
+            return None
+        except Exception as err:
+            _LOGGER.exception(f"X0060U - Error occurred: {self._host} : {err}")
+            return None
 
     def getSoapControlURL(self, descriptionIndex):
         """Get the sky control url."""

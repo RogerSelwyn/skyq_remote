@@ -9,7 +9,7 @@ from operator import attrgetter
 import pycountry
 import requests
 
-from .classes.app import App
+from .classes.app import AppInformation
 from .classes.channel import Channel
 from .classes.channelepg import ChannelEPG
 from .classes.channellist import ChannelList
@@ -19,38 +19,17 @@ from .classes.favouritelist import FavouriteList
 from .classes.media import Media
 from .classes.programme import Programme
 from .classes.recordings import Recordings
-from .const import (
-    APP_EPG,
-    APP_STATUS_VISIBLE,
-    COMMANDS,
-    CURRENT_TRANSPORT_STATE,
-    CURRENT_URI,
-    EPG_ERROR_NO_DATA,
-    EPG_ERROR_PAST_END,
-    KNOWN_COUNTRIES,
-    PVR,
-    REST_CHANNEL_LIST,
-    REST_FAVOURITES,
-    REST_PATH_APPS,
-    REST_PATH_DEVICEINFO,
-    REST_PATH_SYSTEMINFO,
-    REST_RECORDING_DETAILS,
-    REST_RECORDINGS_LIST,
-    SKY_STATE_NOMEDIA,
-    SKY_STATE_OFF,
-    SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
-    SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
-    UPNP_GET_MEDIA_INFO,
-    UPNP_GET_TRANSPORT_INFO,
-    WS_CURRENT_APPS,
-    XSI,
-)
+from .const import (APP_EPG, COMMANDS, CURRENT_TRANSPORT_STATE, CURRENT_URI,
+                    EPG_ERROR_NO_DATA, EPG_ERROR_PAST_END, KNOWN_COUNTRIES,
+                    PVR, REST_CHANNEL_LIST, REST_FAVOURITES, REST_PATH_APPS,
+                    REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO,
+                    REST_RECORDING_DETAILS, REST_RECORDINGS_LIST,
+                    SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_ON,
+                    SKY_STATE_PAUSED, SKY_STATE_PLAYING, SKY_STATE_STANDBY,
+                    SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING,
+                    UPNP_GET_MEDIA_INFO, UPNP_GET_TRANSPORT_INFO, XSI)
 from .const_test import TEST_CHANNEL_LIST
-from .utils import deviceAccess
+from .utils import DeviceAccess
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -83,7 +62,8 @@ class SkyQRemote:
         self._channels = []
         self._apps = {}
         self._error = False
-        self._deviceAccess = deviceAccess(self._host)
+        self._deviceAccess = DeviceAccess(self._host, self._jsonport)
+        self._appInformation = AppInformation(self._deviceAccess)
         self._epgCacheLen = epgCacheLen
         self._channellist = None
         self._favouritelist = None
@@ -102,7 +82,7 @@ class SkyQRemote:
         if self._soapControlURL is None:
             return SKY_STATE_OFF
 
-        output = self._retrieveInformation(REST_PATH_SYSTEMINFO)
+        output = self._deviceAccess.retrieveInformation(REST_PATH_SYSTEMINFO)
         if output is None:
             return SKY_STATE_OFF
         if "activeStandby" in output and output["activeStandby"] is True:
@@ -131,16 +111,7 @@ class SkyQRemote:
 
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
-        try:
-            apps = self._deviceAccess.callSkyWebSocket(WS_CURRENT_APPS)
-            if apps is None:
-                return self._currentApp
-
-            self._currentApp = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)["appId"]
-
-            return App(self._currentApp, self._get_app_title(self._currentApp))
-        except Exception:
-            return App(self._currentApp, self._get_app_title(self._currentApp))
+        return self._appInformation.getActiveApplication()
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
@@ -302,11 +273,11 @@ class SkyQRemote:
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
-        deviceInfo = self._retrieveInformation(REST_PATH_DEVICEINFO)
+        deviceInfo = self._deviceAccess.retrieveInformation(REST_PATH_DEVICEINFO)
         if not deviceInfo:
             return None
 
-        systemInfo = self._retrieveInformation(REST_PATH_SYSTEMINFO)
+        systemInfo = self._deviceAccess.retrieveInformation(REST_PATH_SYSTEMINFO)
         ASVersion = deviceInfo["ASVersion"]
         IPAddress = deviceInfo["IPAddress"]
         countryCode = deviceInfo["countryCode"]
@@ -481,20 +452,6 @@ class SkyQRemote:
 
         self.deviceSetup = True
 
-    def _retrieveInformation(self, rest_path):
-        try:
-            return self._deviceAccess.http_json(self._jsonport, rest_path)
-        except (
-            requests.exceptions.ConnectTimeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.ReadTimeout,
-        ):  # as err:
-            # _LOGGER.debug(f"D0010 - Connection error: {self._host} : {err}")
-            return None
-        except Exception as err:
-            _LOGGER.exception(f"X0020 - Error occurred: {self._host} : {err}")
-            return None
-
     def _importCountry(self, countryCode):
         """Work out the country for the Country Code."""
         try:
@@ -561,7 +518,7 @@ class SkyQRemote:
 
     def _get_app_title(self, appId):
         if len(self._apps) == 0:
-            apps = self._retrieveInformation(REST_PATH_APPS)
+            apps = self._deviceAccess.retrieveInformation(REST_PATH_APPS)
             if not apps:
                 return None
             for a in apps["apps"]:
