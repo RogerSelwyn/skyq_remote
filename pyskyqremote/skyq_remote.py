@@ -19,6 +19,7 @@ from .classes.favouritelist import FavouriteList
 from .classes.media import Media
 from .classes.programme import Programme
 from .classes.recordings import Recordings
+from .classes.utils import DeviceAccess
 from .const import (APP_EPG, COMMANDS, CURRENT_TRANSPORT_STATE, CURRENT_URI,
                     EPG_ERROR_NO_DATA, EPG_ERROR_PAST_END, KNOWN_COUNTRIES,
                     PVR, REST_CHANNEL_LIST, REST_FAVOURITES, REST_PATH_APPS,
@@ -29,7 +30,6 @@ from .const import (APP_EPG, COMMANDS, CURRENT_TRANSPORT_STATE, CURRENT_URI,
                     SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING,
                     UPNP_GET_MEDIA_INFO, UPNP_GET_TRANSPORT_INFO, XSI)
 from .const_test import TEST_CHANNEL_LIST
-from .utils import DeviceAccess
 
 _LOGGER = logging.getLogger(__name__)
 

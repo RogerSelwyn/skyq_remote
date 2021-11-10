@@ -10,7 +10,7 @@ import requests
 import websocket
 import xmltodict
 
-from .const import (
+from ..const import (
     CONNECT_TIMEOUT,
     HTTP_TIMEOUT,
     REST_BASE_URL,
