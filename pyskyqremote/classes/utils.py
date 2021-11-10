@@ -40,7 +40,7 @@ class DeviceAccess:
     def retrieveInformation(self, rest_path):
         """Retrieve information from the SkyQ box."""
         try:
-            return self.http_json(self._jsonport, rest_path)
+            return self.http_json(rest_path)
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ConnectionError,
@@ -121,10 +121,10 @@ class DeviceAccess:
         except requests.exceptions.RequestException:
             return None
 
-    def http_json(self, jsonport, path, headers=None) -> str:
+    def http_json(self, path, headers=None) -> str:
         """Make an HTTP call to the sky box."""
         response = requests.get(
-            REST_BASE_URL.format(self._host, jsonport, path),
+            REST_BASE_URL.format(self._host, self._jsonport, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )

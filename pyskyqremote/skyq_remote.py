@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from operator import attrgetter
 
 import pycountry
-import requests
 
 from .classes.app import AppInformation
 from .classes.channel import Channel
@@ -18,22 +17,18 @@ from .classes.favourite import Favourite
 from .classes.favouritelist import FavouriteList
 from .classes.media import MediaInformation
 from .classes.programme import Programme
-from .classes.recordings import Recordings
+from .classes.recordings import RecordingsInformation
 from .classes.utils import DeviceAccess
 from .const import (
     COMMANDS,
     CURRENT_TRANSPORT_STATE,
-    CURRENT_URI,
     EPG_ERROR_NO_DATA,
     EPG_ERROR_PAST_END,
     KNOWN_COUNTRIES,
-    PVR,
     REST_CHANNEL_LIST,
     REST_FAVOURITES,
     REST_PATH_DEVICEINFO,
     REST_PATH_SYSTEMINFO,
-    REST_RECORDING_DETAILS,
-    REST_RECORDINGS_LIST,
     SKY_STATE_NOMEDIA,
     SKY_STATE_OFF,
     SKY_STATE_ON,
@@ -42,9 +37,7 @@ from .const import (
     SKY_STATE_STANDBY,
     SKY_STATE_STOPPED,
     SKY_STATE_TRANSITIONING,
-    UPNP_GET_MEDIA_INFO,
     UPNP_GET_TRANSPORT_INFO,
-    XSI,
 )
 from .const_test import TEST_CHANNEL_LIST
 
@@ -76,8 +69,6 @@ class SkyQRemote:
         self._channels = []
         self._error = False
         self._deviceAccess = DeviceAccess(self._host, self._jsonport)
-        self._appInformation = AppInformation(self._deviceAccess)
-        self._mediaInformation = MediaInformation(self._deviceAccess)
         self._epgCacheLen = epgCacheLen
         self._channellist = None
         self._favouritelist = None
@@ -129,9 +120,7 @@ class SkyQRemote:
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
-        return self._mediaInformation.getCurrentMedia(
-            self._test_channel, self._soapControlURL, self._getChannelNode, self._remoteCountry
-        )
+        return self._mediaInformation.getCurrentMedia(self._test_channel, self._getChannelNode)
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
@@ -228,19 +217,7 @@ class SkyQRemote:
 
     def getRecordings(self, status=None):
         """Get the list of available Recordings."""
-        try:
-            recordings = set()
-            resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDINGS_LIST)
-            recData = resp["pvrItems"]
-            for recording in recData:
-                if recording["status"] == status or not status:
-                    built = self._buildRecording(recording)
-                    recordings.add(built)
-
-            return Recordings(recordings)
-        except requests.exceptions.ReadTimeout:
-            _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._host}")
-            return Recordings(recordings)
+        return self._recordingsInformation.getRecordings()
 
     def getRecording(self, pvrId):
         """Get the recording details."""
@@ -248,14 +225,7 @@ class SkyQRemote:
             return self._recordedProgramme
         self._lastPvrId = pvrId
 
-        resp = self._deviceAccess.http_json(self._jsonport, REST_RECORDING_DETAILS.format(pvrId))
-        if "details" not in resp:
-            _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
-            return None
-
-        recording = resp["details"]
-
-        self._recordedProgramme = self._buildRecording(recording)
+        self._recordedProgramme = self._recordingsInformation.getRecording(pvrId)
         return self._recordedProgramme
 
     def getDeviceInformation(self):
@@ -334,7 +304,7 @@ class SkyQRemote:
 
     def getFavouriteList(self):
         """Retrieve the list of favourites."""
-        favourites = self._deviceAccess.http_json(self._jsonport, REST_FAVOURITES)
+        favourites = self._deviceAccess.http_json(REST_FAVOURITES)
         if not favourites or "favourites" not in favourites:
             return []
 
@@ -405,7 +375,7 @@ class SkyQRemote:
         # This is here because otherwise I can never validate code for a foreign device
         if self._test_channel:
             return TEST_CHANNEL_LIST
-        channels = self._deviceAccess.http_json(self._jsonport, REST_CHANNEL_LIST)
+        channels = self._deviceAccess.http_json(REST_CHANNEL_LIST)
         if channels and "services" in channels:
             return channels["services"]
 
@@ -429,6 +399,11 @@ class SkyQRemote:
         if len(self._channels) == 0 and self._remoteCountry:
             self._channels = self._getChannels()
 
+        if self._remoteCountry and self._soapControlURL:
+            self._appInformation = AppInformation(self._deviceAccess)
+            self._mediaInformation = MediaInformation(self._deviceAccess, self._soapControlURL, self._remoteCountry)
+            self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
+
     def _setupDevice(self):
 
         url_index = 0
@@ -451,54 +426,3 @@ class SkyQRemote:
             from pyskyqremote.country.remote_gb import SkyQCountry
 
         return SkyQCountry
-
-    def _buildRecording(self, recording):
-        season = None
-        episode = None
-        starttime = None
-        endtime = None
-        programmeuuid = None
-        channel = None
-        imageUrl = None
-        title = None
-        status = None
-
-        channel = recording["cn"]
-        title = recording["t"]
-        if "seasonnumber" in recording and "episodenumber" in recording:
-            season = recording["seasonnumber"]
-            episode = recording["episodenumber"]
-        if "programmeuuid" in recording:
-            programmeuuid = recording["programmeuuid"]
-            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
-        elif "osid" in recording:
-            sid = str(recording["osid"])
-            imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
-
-        starttimestamp = 0
-        if "ast" in recording:
-            starttimestamp = recording["ast"]
-        elif "st" in recording:
-            starttimestamp = recording["st"]
-        starttime = datetime.utcfromtimestamp(starttimestamp)
-
-        if "finald" in recording:
-            endtime = datetime.utcfromtimestamp(starttimestamp + recording["finald"])
-        elif "schd" in recording:
-            endtime = datetime.utcfromtimestamp(starttimestamp + recording["schd"])
-        else:
-            endtime = starttime
-
-        status = recording["status"]
-
-        return Programme(
-            programmeuuid,
-            starttime,
-            endtime,
-            title,
-            season,
-            episode,
-            imageUrl,
-            channel,
-            status,
-        )

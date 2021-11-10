@@ -10,11 +10,13 @@ from ..const import CURRENT_URI, PVR, UPNP_GET_MEDIA_INFO, XSI
 class MediaInformation:
     """Sky Q media information retrieval methods."""
 
-    def __init__(self, deviceAccess):
+    def __init__(self, deviceAccess, soapControlURL, remoteCountry):
         """Initialise the media information class."""
         self._deviceAccess = deviceAccess
+        self._soapControlURL = soapControlURL
+        self._remoteCountry = remoteCountry
 
-    def getCurrentMedia(self, test_channel, soapControlURL, getChannelNode, remoteCountry):
+    def getCurrentMedia(self, test_channel, getChannelNode):
         """Get the currently playing media on the SkyQ box."""
         channel = None
         channelno = None
@@ -23,7 +25,7 @@ class MediaInformation:
         pvrId = None
         live = False
 
-        response = self._deviceAccess.callSkySOAPService(soapControlURL, UPNP_GET_MEDIA_INFO)
+        response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_MEDIA_INFO)
         if response is None:
             return None
 
@@ -38,7 +40,7 @@ class MediaInformation:
             if channelNode:
                 channel = channelNode["channel"]
                 channelno = channelNode["channelno"]
-                imageUrl = remoteCountry.buildChannelImageUrl(sid, channel)
+                imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
         elif PVR in currentURI:
             # Recorded content
             pvrId = "P" + currentURI[11:]
