@@ -4,7 +4,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 
-from ..const import KNOWN_COUNTRIES, REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO
+from ..const import KNOWN_COUNTRIES, REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO, UPNP_GET_TRANSPORT_INFO
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,6 +15,10 @@ class DeviceInformation:
     def __init__(self, deviceAccess):
         """Initialise the device information class."""
         self._deviceAccess = deviceAccess
+
+    def getTransportInformation(self, soapControlURL):
+        """Get the transport information from the SkyQ box."""
+        return self._deviceAccess.callSkySOAPService(soapControlURL, UPNP_GET_TRANSPORT_INFO)
 
     def getSystemInformation(self):
         """Get the system information from the SkyQ box."""

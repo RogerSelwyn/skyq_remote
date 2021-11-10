@@ -4,12 +4,11 @@ import logging
 import time
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from operator import attrgetter
 
 import pycountry
 
 from .classes.app import AppInformation
-from .classes.channel import Channel, ChannelList
+from .classes.channel import ChannelInformation
 from .classes.channelepg import ChannelEPG
 from .classes.device import DeviceInformation
 from .classes.favourite import FavouriteInformation
@@ -22,7 +21,6 @@ from .const import (
     CURRENT_TRANSPORT_STATE,
     EPG_ERROR_NO_DATA,
     EPG_ERROR_PAST_END,
-    REST_CHANNEL_LIST,
     SKY_STATE_NOMEDIA,
     SKY_STATE_OFF,
     SKY_STATE_ON,
@@ -31,9 +29,7 @@ from .const import (
     SKY_STATE_STANDBY,
     SKY_STATE_STOPPED,
     SKY_STATE_TRANSITIONING,
-    UPNP_GET_TRANSPORT_INFO,
 )
-from .const_test import TEST_CHANNEL_LIST
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -68,6 +64,7 @@ class SkyQRemote:
         self._favouritelist = None
 
         self._appInformation = None
+        self._channelInformation = None
         self._deviceInformation = None
         self._favouriteInformation = None
         self._mediaInformation = None
@@ -107,7 +104,10 @@ class SkyQRemote:
         if self._soapControlURL is None:
             return SKY_STATE_OFF
 
-        response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_TRANSPORT_INFO)
+        if not self._deviceInformation:
+            self._deviceInformation = DeviceInformation(self._deviceAccess)
+
+        response = self._deviceInformation.getTransportInformation(self._soapControlURL)
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
             if state in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
@@ -255,37 +255,17 @@ class SkyQRemote:
 
     def getChannelList(self):
         """Get Channel list for Sky Q box."""
-        channels = self._getChannels()
-        if not channels:
-            return None
+        if not self._channelInformation:
+            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
 
-        channelitems = set()
-
-        for c in channels:
-            channel = Channel(c["c"], c["t"], c["sid"], None, sf=c["sf"])
-            channelitems.add(channel)
-
-        channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
-        self._channellist = ChannelList(sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True))
-
-        return self._channellist
+        return self._channelInformation.getChannelList()
 
     def getChannelInfo(self, channelNo):
         """Retrieve channel information for specified channelNo."""
-        if not channelNo.isnumeric():
-            return None
+        if not self._channelInformation:
+            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
 
-        try:
-            channel = next(c for c in self._channels if c["c"] == channelNo)
-        except StopIteration:
-            return None
-
-        channelno = channel["c"]
-        channelname = channel["t"]
-        channelsid = channel["sid"]
-        channelImageUrl = self._remoteCountry.buildChannelImageUrl(channelsid, channelname)
-        sf = channel["sf"]
-        return Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
+        return self._channelInformation.getChannelInfo(channelNo)
 
     def getFavouriteList(self):
         """Retrieve the list of favourites."""
@@ -322,32 +302,10 @@ class SkyQRemote:
             self.port = port
 
     def _getChannelNode(self, sid):
-        channelNode = self._getNodeFromChannels(sid)
+        if not self._channelInformation:
+            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
 
-        if not channelNode:
-            # Load the channel list for the first time.
-            # It's also possible the channels may have changed since last HA restart, so reload them
-            self._channels = self._getChannels()
-            channelNode = self._getNodeFromChannels(sid)
-        if not channelNode:
-            return None
-
-        channel = channelNode["t"]
-        channelno = channelNode["c"]
-        return {"channel": channel, "channelno": channelno}
-
-    def _getChannels(self):
-        # This is here because otherwise I can never validate code for a foreign device
-        if self._test_channel:
-            return TEST_CHANNEL_LIST
-        channels = self._deviceAccess.http_json(REST_CHANNEL_LIST)
-        if channels and "services" in channels:
-            return channels["services"]
-
-        return []
-
-    def _getNodeFromChannels(self, sid):
-        return next((s for s in self._channels if s["sid"] == str(sid)), None)
+        return self._channelInformation.getChannelNode(sid)
 
     def _setupRemote(self):
         deviceInfo = self.getDeviceInformation()
@@ -360,9 +318,6 @@ class SkyQRemote:
         if not self._remoteCountry and self.deviceSetup:
             SkyQCountry = self._importCountry(self._epgCountryCode)
             self._remoteCountry = SkyQCountry()
-
-        if len(self._channels) == 0 and self._remoteCountry:
-            self._channels = self._getChannels()
 
     def _setupDevice(self):
 

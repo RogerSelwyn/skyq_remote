@@ -2,9 +2,88 @@
 
 import json
 from dataclasses import dataclass, field
+from operator import attrgetter
 
-AUDIO = "audio"
-VIDEO = "video"
+from ..const import AUDIO, REST_CHANNEL_LIST, VIDEO
+from ..const_test import TEST_CHANNEL_LIST
+
+
+class ChannelInformation:
+    """Channel information retrieval methods."""
+
+    def __init__(self, deviceAccess, remoteCountry, test_channel):
+        """Initialise the channel information class."""
+        self._deviceAccess = deviceAccess
+        self._remoteCountry = remoteCountry
+        self._test_channel = test_channel
+        self._channels = []
+
+    def getChannelList(self):
+        """Get Channel list for Sky Q box."""
+        self._channels = self._getChannels()
+        if not self._channels:
+            return None
+
+        channelitems = set()
+
+        for c in self._channels:
+            channel = Channel(c["c"], c["t"], c["sid"], None, sf=c["sf"])
+            channelitems.add(channel)
+
+        channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
+
+        return ChannelList(sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True))
+
+    def getChannelInfo(self, channelNo):
+        """Retrieve channel information for specified channelNo."""
+        if not channelNo.isnumeric():
+            return None
+
+        try:
+            channel = next(c for c in self._channels if c["c"] == channelNo)
+        except StopIteration:
+            return None
+
+        channelno = channel["c"]
+        channelname = channel["t"]
+        channelsid = channel["sid"]
+        channelImageUrl = self._remoteCountry.buildChannelImageUrl(channelsid, channelname)
+        sf = channel["sf"]
+        return Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
+
+    def getChannelNode(
+        self,
+        sid,
+    ):
+        """Retrieve the channel node for the given sid."""
+        channelNode = self._getNodeFromChannels(sid)
+
+        if not channelNode:
+            # Load the channel list for the first time.
+            # It's also possible the channels may have changed since last HA restart, so reload them
+            self._channels = self._getChannels()
+            channelNode = self._getNodeFromChannels(sid)
+        if not channelNode:
+            return None
+
+        channel = channelNode["t"]
+        channelno = channelNode["c"]
+        return {"channel": channel, "channelno": channelno}
+
+    def _getChannels(self):
+        """Get the list of channels from the Sky Q box."""
+        # This is here because otherwise I can never validate code for a foreign device
+        if self._test_channel:
+            return TEST_CHANNEL_LIST
+
+        channels = self._deviceAccess.http_json(REST_CHANNEL_LIST)
+        if channels and "services" in channels:
+            return channels["services"]
+
+        return []
+
+    def _getNodeFromChannels(self, sid):
+        return next((s for s in self._channels if s["sid"] == str(sid)), None)
 
 
 @dataclass
