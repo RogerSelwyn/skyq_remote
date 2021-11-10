@@ -4,6 +4,48 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from ..const import CURRENT_URI, PVR, UPNP_GET_MEDIA_INFO, XSI
+
+
+class MediaInformation:
+    """Sky Q media information retrieval methods."""
+
+    def __init__(self, deviceAccess):
+        """Initialise the media information class."""
+        self._deviceAccess = deviceAccess
+
+    def getCurrentMedia(self, test_channel, soapControlURL, getChannelNode, remoteCountry):
+        """Get the currently playing media on the SkyQ box."""
+        channel = None
+        channelno = None
+        imageUrl = None
+        sid = None
+        pvrId = None
+        live = False
+
+        response = self._deviceAccess.callSkySOAPService(soapControlURL, UPNP_GET_MEDIA_INFO)
+        if response is None:
+            return None
+
+        currentURI = response[CURRENT_URI]
+        if currentURI is None:
+            return None
+
+        if XSI in currentURI:
+            sid = test_channel or int(currentURI[6:], 16)
+            live = True
+            channelNode = getChannelNode(sid)
+            if channelNode:
+                channel = channelNode["channel"]
+                channelno = channelNode["channelno"]
+                imageUrl = remoteCountry.buildChannelImageUrl(sid, channel)
+        elif PVR in currentURI:
+            # Recorded content
+            pvrId = "P" + currentURI[11:]
+            live = False
+
+        return Media(channel, channelno, imageUrl, sid, pvrId, live)
+
 
 @dataclass
 class Media:

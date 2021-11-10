@@ -16,7 +16,7 @@ from .classes.channellist import ChannelList
 from .classes.device import Device
 from .classes.favourite import Favourite
 from .classes.favouritelist import FavouriteList
-from .classes.media import Media
+from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import Recordings
 from .classes.utils import DeviceAccess
@@ -77,6 +77,7 @@ class SkyQRemote:
         self._error = False
         self._deviceAccess = DeviceAccess(self._host, self._jsonport)
         self._appInformation = AppInformation(self._deviceAccess)
+        self._mediaInformation = MediaInformation(self._deviceAccess)
         self._epgCacheLen = epgCacheLen
         self._channellist = None
         self._favouritelist = None
@@ -128,35 +129,9 @@ class SkyQRemote:
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
-        channel = None
-        channelno = None
-        imageUrl = None
-        sid = None
-        pvrId = None
-        live = False
-
-        response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_MEDIA_INFO)
-        if response is None:
-            return None
-
-        currentURI = response[CURRENT_URI]
-        if currentURI is None:
-            return None
-
-        if XSI in currentURI:
-            sid = self._test_channel or int(currentURI[6:], 16)
-            live = True
-            channelNode = self._getChannelNode(sid)
-            if channelNode:
-                channel = channelNode["channel"]
-                channelno = channelNode["channelno"]
-                imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
-        elif PVR in currentURI:
-            # Recorded content
-            pvrId = "P" + currentURI[11:]
-            live = False
-
-        return Media(channel, channelno, imageUrl, sid, pvrId, live)
+        return self._mediaInformation.getCurrentMedia(
+            self._test_channel, self._soapControlURL, self._getChannelNode, self._remoteCountry
+        )
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
