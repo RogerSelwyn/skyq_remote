@@ -9,22 +9,33 @@ from operator import attrgetter
 import pycountry
 
 from .classes.app import AppInformation
-from .classes.channel import Channel
+from .classes.channel import Channel, ChannelList
 from .classes.channelepg import ChannelEPG
-from .classes.channellist import ChannelList
 from .classes.device import Device
 from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
 from .classes.utils import DeviceAccess
-from .const import (COMMANDS, CURRENT_TRANSPORT_STATE, EPG_ERROR_NO_DATA,
-                    EPG_ERROR_PAST_END, KNOWN_COUNTRIES, REST_CHANNEL_LIST,
-                    REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO,
-                    SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_ON,
-                    SKY_STATE_PAUSED, SKY_STATE_PLAYING, SKY_STATE_STANDBY,
-                    SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING,
-                    UPNP_GET_TRANSPORT_INFO)
+from .const import (
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    KNOWN_COUNTRIES,
+    REST_CHANNEL_LIST,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    UPNP_GET_TRANSPORT_INFO,
+)
 from .const_test import TEST_CHANNEL_LIST
 
 _LOGGER = logging.getLogger(__name__)
