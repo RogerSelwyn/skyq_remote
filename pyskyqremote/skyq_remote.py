@@ -13,32 +13,18 @@ from .classes.channel import Channel
 from .classes.channelepg import ChannelEPG
 from .classes.channellist import ChannelList
 from .classes.device import Device
-from .classes.favourite import Favourite
-from .classes.favouritelist import FavouriteList
+from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
 from .classes.utils import DeviceAccess
-from .const import (
-    COMMANDS,
-    CURRENT_TRANSPORT_STATE,
-    EPG_ERROR_NO_DATA,
-    EPG_ERROR_PAST_END,
-    KNOWN_COUNTRIES,
-    REST_CHANNEL_LIST,
-    REST_FAVOURITES,
-    REST_PATH_DEVICEINFO,
-    REST_PATH_SYSTEMINFO,
-    SKY_STATE_NOMEDIA,
-    SKY_STATE_OFF,
-    SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
-    SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
-    UPNP_GET_TRANSPORT_INFO,
-)
+from .const import (COMMANDS, CURRENT_TRANSPORT_STATE, EPG_ERROR_NO_DATA,
+                    EPG_ERROR_PAST_END, KNOWN_COUNTRIES, REST_CHANNEL_LIST,
+                    REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO,
+                    SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_ON,
+                    SKY_STATE_PAUSED, SKY_STATE_PLAYING, SKY_STATE_STANDBY,
+                    SKY_STATE_STOPPED, SKY_STATE_TRANSITIONING,
+                    UPNP_GET_TRANSPORT_INFO)
 from .const_test import TEST_CHANNEL_LIST
 
 _LOGGER = logging.getLogger(__name__)
@@ -304,24 +290,9 @@ class SkyQRemote:
 
     def getFavouriteList(self):
         """Retrieve the list of favourites."""
-        favourites = self._deviceAccess.http_json(REST_FAVOURITES)
-        if not favourites or "favourites" not in favourites:
-            return []
-
-        favitems = set()
-
-        for f in favourites["favourites"]:
-            favsid = f["sid"]
-            channel = self._getFavChannel(favsid)
-            channelno = channel.channelno if channel else None
-            channelname = channel.channelname if channel else None
-            favourite = Favourite(f["lcn"], channelno, channelname, favsid)
-            favitems.add(favourite)
-
-        favouritesorted = sorted(favitems, key=attrgetter("lcn"))
-        self._favouritelist = FavouriteList(favouritesorted)
-
-        return self._favouritelist
+        if not self._channellist:
+            self.getChannelList()
+        return self._favouriteInformation.getFavouriteList(self._channellist)
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
@@ -347,14 +318,6 @@ class SkyQRemote:
             self._jsonport = jsonPort
         if port:
             self.port = port
-
-    def _getFavChannel(self, sid):
-        if not self._channellist:
-            self.getChannelList()
-        try:
-            return next(c for c in self._channellist.channels if c.channelsid == sid)
-        except StopIteration:
-            return None
 
     def _getChannelNode(self, sid):
         channelNode = self._getNodeFromChannels(sid)
@@ -401,6 +364,7 @@ class SkyQRemote:
 
         if self._remoteCountry and self._soapControlURL:
             self._appInformation = AppInformation(self._deviceAccess)
+            self._favouriteInformation = FavouriteInformation(self._deviceAccess)
             self._mediaInformation = MediaInformation(self._deviceAccess, self._soapControlURL, self._remoteCountry)
             self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
 
