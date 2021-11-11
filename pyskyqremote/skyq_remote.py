@@ -11,25 +11,16 @@ from .classes.app import AppInformation
 from .classes.channel import ChannelInformation
 from .classes.channelepg import ChannelEPG
 from .classes.device import DeviceInformation
+from .classes.deviceaccess import DeviceAccess
 from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
-from .classes.utils import DeviceAccess
-from .const import (
-    COMMANDS,
-    CURRENT_TRANSPORT_STATE,
-    EPG_ERROR_NO_DATA,
-    EPG_ERROR_PAST_END,
-    SKY_STATE_NOMEDIA,
-    SKY_STATE_OFF,
-    SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
-    SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
-)
+from .const import (COMMANDS, CURRENT_TRANSPORT_STATE, EPG_ERROR_NO_DATA,
+                    EPG_ERROR_PAST_END, SKY_STATE_NOMEDIA, SKY_STATE_OFF,
+                    SKY_STATE_ON, SKY_STATE_PAUSED, SKY_STATE_PLAYING,
+                    SKY_STATE_STANDBY, SKY_STATE_STOPPED,
+                    SKY_STATE_TRANSITIONING)
 
 _LOGGER = logging.getLogger(__name__)
 
