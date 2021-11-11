@@ -11,11 +11,11 @@ from ..const_test import TEST_CHANNEL_LIST
 class ChannelInformation:
     """Channel information retrieval methods."""
 
-    def __init__(self, deviceAccess, remoteCountry, test_channel):
+    def __init__(self, remoteConfig):
         """Initialise the channel information class."""
-        self._deviceAccess = deviceAccess
-        self._remoteCountry = remoteCountry
-        self._test_channel = test_channel
+        self._deviceAccess = remoteConfig.deviceAccess
+        self._remoteCountry = remoteConfig.remoteCountry
+        self._test_channel = remoteConfig.test_channel
         self._channels = []
 
     def getChannelList(self):

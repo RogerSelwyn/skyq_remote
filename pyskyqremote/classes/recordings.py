@@ -16,10 +16,10 @@ _LOGGER = logging.getLogger(__name__)
 class RecordingsInformation:
     """Sky Q recordings information retrieval methods."""
 
-    def __init__(self, deviceAccess, remoteCountry):
+    def __init__(self, remoteConfig):
         """Initialise the recordings information class."""
-        self._deviceAccess = deviceAccess
-        self._remoteCountry = remoteCountry
+        self._deviceAccess = remoteConfig.deviceAccess
+        self._remoteCountry = remoteConfig.remoteCountry
 
     def getRecordings(self, status=None):
         """Get the list of available Recordings."""

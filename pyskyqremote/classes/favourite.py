@@ -9,9 +9,9 @@ from ..const import REST_FAVOURITES
 class FavouriteInformation:
     """Sky Q favourites information retrieval methods."""
 
-    def __init__(self, deviceAccess):
+    def __init__(self, remoteConfig):
         """Initialise the favourites information class."""
-        self._deviceAccess = deviceAccess
+        self._deviceAccess = remoteConfig.deviceAccess
 
     def getFavouriteList(self, channellist):
         """Retrieve the list of favourites."""

@@ -70,14 +70,14 @@ if sid:
 print("----------- Get Channel Info - 101")
 print(sky.getChannelInfo("101").as_json())
 
-# print("----------- Channel list")
-# print(sky.getChannelList().as_json())
+print("----------- Channel list")
+print(sky.getChannelList().as_json())
 
 print("----------- Favourites")
 print(sky.getFavouriteList().as_json())
 
-# print("----------- Today's EPG")
-# print(sky.getEpgData(sid, queryDate).as_json())
+print("----------- Today's EPG")
+print(sky.getEpgData(sid, queryDate).as_json())
 
-# print("----------- Get scheduled recordings")
-# print(sky.getRecordings("SCHEDULED").as_json())
+print("----------- Get scheduled recordings")
+print(sky.getRecordings("SCHEDULED").as_json())

@@ -12,12 +12,13 @@ from .programme import Programme
 class ChannelEPGInformation:
     """Sky Q Channel EPG information retrieval methods."""
 
-    def __init__(self, deviceAccess, remoteCountry, test_channel, epgCacheLen):
+    def __init__(self, remoteConfig):
         """Initialise the channel epg information class."""
-        self._deviceAccess = deviceAccess
-        self._remoteCountry = remoteCountry
-        self._test_channel = test_channel
-        self._epgCacheLen = epgCacheLen
+        self._remoteConfig = remoteConfig
+        self._deviceAccess = remoteConfig.deviceAccess
+        self._remoteCountry = remoteConfig.remoteCountry
+        self._test_channel = remoteConfig.test_channel
+        self._epgCacheLen = remoteConfig.epgCacheLen
         self._epgCache = OrderedDict()
         self._channel = None
         self._channelInformation = None
@@ -63,7 +64,7 @@ class ChannelEPGInformation:
 
     def _getChannelNode(self, sid):
         if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
+            self._channelInformation = ChannelInformation(self._remoteConfig)
 
         return self._channelInformation.getChannelNode(sid)
 

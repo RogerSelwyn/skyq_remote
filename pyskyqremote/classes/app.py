@@ -3,15 +3,16 @@
 import json
 from dataclasses import dataclass, field
 
-from ..const import APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS, WS_CURRENT_APPS
+from ..const import (APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS,
+                     WS_CURRENT_APPS)
 
 
 class AppInformation:
     """Sky Q app information retrieval methods."""
 
-    def __init__(self, deviceAccess):
+    def __init__(self, remoteConfig):
         """Initialise the app information class."""
-        self._deviceAccess = deviceAccess
+        self._deviceAccess = remoteConfig.deviceAccess
         self._currentApp = APP_EPG
         self._apps = {}
 

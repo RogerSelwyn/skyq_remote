@@ -11,12 +11,13 @@ from .channel import ChannelInformation
 class MediaInformation:
     """Sky Q media information retrieval methods."""
 
-    def __init__(self, deviceAccess, soapControlURL, remoteCountry, test_channel):
+    def __init__(self, remoteConfig):
         """Initialise the media information class."""
-        self._deviceAccess = deviceAccess
-        self._soapControlURL = soapControlURL
-        self._remoteCountry = remoteCountry
-        self._test_channel = test_channel
+        self._remoteConfig = remoteConfig
+        self._deviceAccess = remoteConfig.deviceAccess
+        self._soapControlURL = remoteConfig.soapControlURL
+        self._remoteCountry = remoteConfig.remoteCountry
+        self._test_channel = remoteConfig.test_channel
         self._channelInformation = None
 
     def getCurrentMedia(self):
@@ -53,7 +54,7 @@ class MediaInformation:
 
     def _getChannelNode(self, sid):
         if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
+            self._channelInformation = ChannelInformation(self._remoteConfig)
 
         return self._channelInformation.getChannelNode(sid)
 

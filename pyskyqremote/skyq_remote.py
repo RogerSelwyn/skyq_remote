@@ -1,7 +1,6 @@
 """Python module for accessing SkyQ box and EPG, and sending commands."""
 import importlib
 import logging
-import time
 from datetime import datetime
 
 import pycountry
@@ -36,18 +35,12 @@ class SkyQRemote:
         self._remoteCountry = None
         self._overrideCountry = None
         self._epgCountryCode = None
-        self._test_channel = None
-        self._port = port
-        self._jsonport = jsonPort
-        self._soapControlURL = None
         self._channel = None
         self._programme = None
         self._recordedProgramme = None
         self._lastProgrammeEpg = None
         self._lastPvrId = None
         self._error = False
-        self._deviceAccess = DeviceAccess(self._host, self._jsonport)
-        self._epgCacheLen = epgCacheLen
         self._channellist = None
 
         self._appInformation = None
@@ -57,6 +50,8 @@ class SkyQRemote:
         self._favouriteInformation = None
         self._mediaInformation = None
         self._recordingsInformation = None
+
+        self._remoteConfig = _RemoteConfig(host, port, jsonPort, epgCacheLen)
 
         deviceInfo = self.getDeviceInformation()
         if not deviceInfo:
@@ -69,7 +64,7 @@ class SkyQRemote:
         if not self._remoteCountry:
             self._setupRemote()
 
-        if self._soapControlURL is None:
+        if self._remoteConfig.soapControlURL is None:
             return SKY_STATE_OFF
 
         systemInfo = self._deviceInformation.getSystemInformation()
@@ -86,10 +81,10 @@ class SkyQRemote:
         if not self._remoteCountry:
             self._setupRemote()
 
-        if self._soapControlURL is None:
+        if self._remoteConfig.soapControlURL is None:
             return SKY_STATE_OFF
 
-        response = self._deviceInformation.getTransportInformation(self._soapControlURL)
+        response = self._deviceInformation.getTransportInformation()
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
             if state in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
@@ -103,25 +98,21 @@ class SkyQRemote:
     def getActiveApplication(self):
         """Get the active application on Sky Q box."""
         if not self._appInformation:
-            self._appInformation = AppInformation(self._deviceAccess)
+            self._appInformation = AppInformation(self._remoteConfig)
 
         return self._appInformation.getActiveApplication()
 
     def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
         if not self._mediaInformation:
-            self._mediaInformation = MediaInformation(
-                self._deviceAccess, self._soapControlURL, self._remoteCountry, self._test_channel
-            )
+            self._mediaInformation = MediaInformation(self._remoteConfig)
 
         return self._mediaInformation.getCurrentMedia()
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
         if not self._channelEPGInformation:
-            self._channeEPGInformation = ChannelEPGInformation(
-                self._deviceAccess, self._remoteCountry, self._test_channel, self._epgCacheLen
-            )
+            self._channeEPGInformation = ChannelEPGInformation(self._remoteConfig)
 
         return self._channeEPGInformation.getEpgData(sid, epgDate, days)
 
@@ -182,14 +173,14 @@ class SkyQRemote:
     def getRecordings(self, status=None):
         """Get the list of available Recordings."""
         if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
 
         return self._recordingsInformation.getRecordings()
 
     def getRecording(self, pvrId):
         """Get the recording details."""
         if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._deviceAccess, self._remoteCountry)
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
 
         if self._lastPvrId == pvrId:
             return self._recordedProgramme
@@ -201,7 +192,7 @@ class SkyQRemote:
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
         if not self._deviceInformation:
-            self._deviceInformation = DeviceInformation(self._deviceAccess)
+            self._deviceInformation = DeviceInformation(self._remoteConfig)
 
         deviceInfo = self._deviceInformation.getDeviceInformation(self._overrideCountry)
         self._epgCountryCode = deviceInfo.epgCountryCode
@@ -210,21 +201,21 @@ class SkyQRemote:
     def getChannelList(self):
         """Get Channel list for Sky Q box."""
         if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
+            self._channelInformation = ChannelInformation(self._remoteConfig)
 
         return self._channelInformation.getChannelList()
 
     def getChannelInfo(self, channelNo):
         """Retrieve channel information for specified channelNo."""
         if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
+            self._channelInformation = ChannelInformation(self._remoteConfig)
 
         return self._channelInformation.getChannelInfo(channelNo)
 
     def getFavouriteList(self):
         """Retrieve the list of favourites."""
         if not self._favouriteInformation:
-            self._favouriteInformation = FavouriteInformation(self._deviceAccess)
+            self._favouriteInformation = FavouriteInformation(self._remoteConfig)
 
         if not self._channellist:
             self.getChannelList()
@@ -232,28 +223,18 @@ class SkyQRemote:
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
-        if isinstance(sequence, list):
-            for item in sequence:
-                if item.casefold() not in self.commands:
-                    _LOGGER.error(f"E0020 - Invalid command: {self._host} : {item}")
-                    break
-                self._deviceAccess.sendCommand(self._port, self.commands[item.casefold()])
-                time.sleep(0.5)
-        elif sequence not in self.commands:
-            _LOGGER.error(f"E0030 - Invalid command: {self._host} : {sequence}")
-        else:
-            self._deviceAccess.sendCommand(self._port, self.commands[sequence.casefold()])
+        self._remoteConfig.deviceAccess.press(sequence)
 
     def setOverrides(self, overrideCountry=None, test_channel=None, jsonPort=None, port=None):
         """Override various items."""
         if overrideCountry:
             self._overrideCountry = overrideCountry
         if test_channel:
-            self._test_channel = test_channel
+            self._remoteConfig.test_channel = test_channel
         if jsonPort:
-            self._jsonport = jsonPort
+            self._remoteConfig.jsonPort = jsonPort
         if port:
-            self.port = port
+            self._remoteConfig.port = port
 
     def _setupRemote(self):
         deviceInfo = self.getDeviceInformation()
@@ -266,14 +247,11 @@ class SkyQRemote:
         if not self._remoteCountry and self.deviceSetup:
             SkyQCountry = self._importCountry(self._epgCountryCode)
             self._remoteCountry = SkyQCountry()
+            self._remoteConfig.remoteCountry = self._remoteCountry
 
     def _setupDevice(self):
 
-        url_index = 0
-        self._soapControlURL = None
-        while self._soapControlURL is None and url_index < 50:
-            self._soapControlURL = self._deviceAccess.getSoapControlURL(url_index)["url"]
-            url_index += 1
+        self._remoteConfig.soapControlURL = self._deviceInformation.getSoapControlURL()
 
         self.deviceSetup = True
 
@@ -289,3 +267,36 @@ class SkyQRemote:
             from pyskyqremote.country.remote_gb import SkyQCountry
 
         return SkyQCountry
+
+
+class _RemoteConfig:
+    deviceAccess = None
+    host = 0
+    port = 0
+    jsonPort = 0
+    epgCacheLen = 0
+    remoteCountry = ""
+    test_channel = 0
+    soapControlURL = ""
+    epgCacheLen = 0
+
+    def __init__(
+        self,
+        host,
+        port,
+        jsonPort,
+        epgCacheLen,
+        deviceAccess=None,
+        remoteCountry=None,
+        test_channel=None,
+        soapControlURL=None,
+    ):
+        self.host = host
+        self.port = port
+        self.jsonPort = jsonPort
+        self.deviceAccess = deviceAccess
+        self.remoteCountry = remoteCountry
+        self.test_channel = test_channel
+        self.soapControlURL = soapControlURL
+        self.epgCacheLen = epgCacheLen
+        self.deviceAccess = DeviceAccess(host, jsonPort, port)

@@ -24,6 +24,7 @@ from ..const import (
     SOAP_TIMEOUT,
     SOAP_USER_AGENT,
     WS_BASE_URL,
+    COMMANDS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -32,10 +33,11 @@ _LOGGER = logging.getLogger(__name__)
 class DeviceAccess:
     """Set up the device for access."""
 
-    def __init__(self, host, jsonport):
+    def __init__(self, host, jsonPort, port):
         """Initialise the utility setup."""
         self._host = host
-        self._jsonport = jsonport
+        self._jsonPort = jsonPort
+        self._port = port
 
     def retrieveInformation(self, rest_path):
         """Retrieve information from the SkyQ box."""
@@ -124,7 +126,7 @@ class DeviceAccess:
     def http_json(self, path, headers=None) -> str:
         """Make an HTTP call to the sky box."""
         response = requests.get(
-            REST_BASE_URL.format(self._host, self._jsonport, path),
+            REST_BASE_URL.format(self._host, self._jsonPort, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
@@ -166,6 +168,20 @@ class DeviceAccess:
             if time.time() > timeout:
                 _LOGGER.error(f"E0030U - Timeout error sending command: {self._host} : {code}")
                 break
+
+    def press(self, sequence):
+        """Issue the specified sequence of commands to SkyQ box."""
+        if isinstance(sequence, list):
+            for item in sequence:
+                if item.casefold() not in COMMANDS:
+                    _LOGGER.error(f"E0020 - Invalid command: {self._host} : {item}")
+                    break
+                self.sendCommand(self._port, COMMANDS[item.casefold()])
+                time.sleep(0.5)
+        elif sequence not in COMMANDS:
+            _LOGGER.error(f"E0030 - Invalid command: {self._host} : {sequence}")
+        else:
+            self.sendCommand(self._port, COMMANDS[sequence.casefold()])
 
     def _findPlayService(self, description):
         services = description["root"]["device"]["serviceList"]["service"]
