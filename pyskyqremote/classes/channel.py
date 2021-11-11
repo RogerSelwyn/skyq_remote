@@ -39,6 +39,9 @@ class ChannelInformation:
         if not channelNo.isnumeric():
             return None
 
+        if not self._channels:
+            self._channels = self._getChannels()
+
         try:
             channel = next(c for c in self._channels if c["c"] == channelNo)
         except StopIteration:

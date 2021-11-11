@@ -5,18 +5,21 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from ..const import CURRENT_URI, PVR, UPNP_GET_MEDIA_INFO, XSI
+from .channel import ChannelInformation
 
 
 class MediaInformation:
     """Sky Q media information retrieval methods."""
 
-    def __init__(self, deviceAccess, soapControlURL, remoteCountry):
+    def __init__(self, deviceAccess, soapControlURL, remoteCountry, test_channel):
         """Initialise the media information class."""
         self._deviceAccess = deviceAccess
         self._soapControlURL = soapControlURL
         self._remoteCountry = remoteCountry
+        self._test_channel = test_channel
+        self._channelInformation = None
 
-    def getCurrentMedia(self, test_channel, getChannelNode):
+    def getCurrentMedia(self):
         """Get the currently playing media on the SkyQ box."""
         channel = None
         channelno = None
@@ -34,9 +37,9 @@ class MediaInformation:
             return None
 
         if XSI in currentURI:
-            sid = test_channel or int(currentURI[6:], 16)
+            sid = self._test_channel or int(currentURI[6:], 16)
             live = True
-            channelNode = getChannelNode(sid)
+            channelNode = self._getChannelNode(sid)
             if channelNode:
                 channel = channelNode["channel"]
                 channelno = channelNode["channelno"]
@@ -47,6 +50,12 @@ class MediaInformation:
             live = False
 
         return Media(channel, channelno, imageUrl, sid, pvrId, live)
+
+    def _getChannelNode(self, sid):
+        if not self._channelInformation:
+            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
+
+        return self._channelInformation.getChannelNode(sid)
 
 
 @dataclass
