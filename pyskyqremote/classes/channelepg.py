@@ -1,10 +1,71 @@
 """Structure of a standard EPG programme."""
 
 import json
+from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from .channel import ChannelInformation
 from .programme import Programme
+
+
+class ChannelEPGInformation:
+    """Sky Q Channel EPG information retrieval methods."""
+
+    def __init__(self, deviceAccess, remoteCountry, test_channel, epgCacheLen):
+        """Initialise the channel epg information class."""
+        self._deviceAccess = deviceAccess
+        self._remoteCountry = remoteCountry
+        self._test_channel = test_channel
+        self._epgCacheLen = epgCacheLen
+        self._epgCache = OrderedDict()
+        self._channel = None
+        self._channelInformation = None
+
+    def getEpgData(self, sid, epgDate, days=2):
+        """Get EPG data for the specified channel/date."""
+        epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epgDate.strftime('%Y%m%d')}"
+
+        if sid in self._epgCache and self._epgCache[sid]["epg"] == epg:
+            return self._epgCache[sid]["channel"]
+
+        channelNo = None
+        channelName = None
+        channelImageUrl = None
+        programmes = set()
+
+        channelNode = self._getChannelNode(sid)
+        if channelNode:
+            channelNo = channelNode["channelno"]
+            channelName = channelNode["channel"]
+            channelImageUrl = self._remoteCountry.buildChannelImageUrl(sid, channelName)
+
+            for n in range(days):
+                programmesData = self._remoteCountry.getEpgData(
+                    sid, channelNo, channelName, epgDate + timedelta(days=n)
+                )
+                if len(programmesData) > 0:
+                    programmes = programmes.union(programmesData)
+                else:
+                    break
+
+        self._channel = ChannelEPG(sid, channelNo, channelName, channelImageUrl, sorted(programmes))
+        self._epgCache[sid] = {
+            "epg": epg,
+            "channel": self._channel,
+            "updatetime": datetime.utcnow(),
+        }
+        self._epgCache = OrderedDict(sorted(self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True))
+        while len(self._epgCache) > self._epgCacheLen:
+            self._epgCache.popitem(last=True)
+
+        return self._channel
+
+    def _getChannelNode(self, sid):
+        if not self._channelInformation:
+            self._channelInformation = ChannelInformation(self._deviceAccess, self._remoteCountry, self._test_channel)
+
+        return self._channelInformation.getChannelNode(sid)
 
 
 @dataclass

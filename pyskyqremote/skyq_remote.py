@@ -3,13 +3,13 @@ import importlib
 import logging
 import time
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pycountry
 
 from .classes.app import AppInformation
 from .classes.channel import ChannelInformation
-from .classes.channelepg import ChannelEPG
+from .classes.channelepg import ChannelEPGInformation
 from .classes.device import DeviceInformation
 from .classes.deviceaccess import DeviceAccess
 from .classes.favourite import FavouriteInformation
@@ -64,6 +64,7 @@ class SkyQRemote:
         self._appInformation = None
         self._channelInformation = None
         self._deviceInformation = None
+        self._channelEPGInformation = None
         self._favouriteInformation = None
         self._mediaInformation = None
         self._recordingsInformation = None
@@ -126,42 +127,12 @@ class SkyQRemote:
 
     def getEpgData(self, sid, epgDate, days=2):
         """Get EPG data for the specified channel/date."""
-        epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epgDate.strftime('%Y%m%d')}"
+        if not self._channelEPGInformation:
+            self._channeEPGInformation = ChannelEPGInformation(
+                self._deviceAccess, self._remoteCountry, self._test_channel, self._epgCacheLen
+            )
 
-        if sid in self._epgCache and self._epgCache[sid]["epg"] == epg:
-            return self._epgCache[sid]["channel"]
-
-        channelNo = None
-        channelName = None
-        channelImageUrl = None
-        programmes = set()
-
-        channelNode = self._getChannelNode(sid)
-        if channelNode:
-            channelNo = channelNode["channelno"]
-            channelName = channelNode["channel"]
-            channelImageUrl = self._remoteCountry.buildChannelImageUrl(sid, channelName)
-
-            for n in range(days):
-                programmesData = self._remoteCountry.getEpgData(
-                    sid, channelNo, channelName, epgDate + timedelta(days=n)
-                )
-                if len(programmesData) > 0:
-                    programmes = programmes.union(programmesData)
-                else:
-                    break
-
-        self._channel = ChannelEPG(sid, channelNo, channelName, channelImageUrl, sorted(programmes))
-        self._epgCache[sid] = {
-            "epg": epg,
-            "channel": self._channel,
-            "updatetime": datetime.utcnow(),
-        }
-        self._epgCache = OrderedDict(sorted(self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True))
-        while len(self._epgCache) > self._epgCacheLen:
-            self._epgCache.popitem(last=True)
-
-        return self._channel
+        return self._channeEPGInformation.getEpgData(sid, epgDate, days)
 
     def getProgrammeFromEpg(self, sid, epgDate, queryDate):
         """Get programme from EPG for specfied time and channel."""
