@@ -16,11 +16,20 @@ from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
-from .const import (COMMANDS, CURRENT_TRANSPORT_STATE, EPG_ERROR_NO_DATA,
-                    EPG_ERROR_PAST_END, SKY_STATE_NOMEDIA, SKY_STATE_OFF,
-                    SKY_STATE_ON, SKY_STATE_PAUSED, SKY_STATE_PLAYING,
-                    SKY_STATE_STANDBY, SKY_STATE_STOPPED,
-                    SKY_STATE_TRANSITIONING)
+from .const import (
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,12 +56,10 @@ class SkyQRemote:
         self._lastProgrammeEpg = None
         self._epgCache = OrderedDict()
         self._lastPvrId = None
-        self._channels = []
         self._error = False
         self._deviceAccess = DeviceAccess(self._host, self._jsonport)
         self._epgCacheLen = epgCacheLen
         self._channellist = None
-        self._favouritelist = None
 
         self._appInformation = None
         self._channelInformation = None
@@ -75,14 +82,11 @@ class SkyQRemote:
         if self._soapControlURL is None:
             return SKY_STATE_OFF
 
-        if not self._deviceInformation:
-            self._deviceInformation = DeviceInformation(self._deviceAccess)
+        systemInfo = self._deviceInformation.getSystemInformation()
 
-        output = self._deviceInformation.getSystemInformation()
-
-        if output is None:
+        if systemInfo is None:
             return SKY_STATE_OFF
-        if "activeStandby" in output and output["activeStandby"] is True:
+        if "activeStandby" in systemInfo and systemInfo["activeStandby"] is True:
             return SKY_STATE_STANDBY
 
         return SKY_STATE_ON
@@ -94,9 +98,6 @@ class SkyQRemote:
 
         if self._soapControlURL is None:
             return SKY_STATE_OFF
-
-        if not self._deviceInformation:
-            self._deviceInformation = DeviceInformation(self._deviceAccess)
 
         response = self._deviceInformation.getTransportInformation(self._soapControlURL)
         if response is not None:
