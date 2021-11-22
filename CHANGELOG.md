@@ -3,7 +3,7 @@
 
 ## v0.2.46 (22/11/2021)
 ### Enhancements
-- [Enable specification of PVR limit and ffset](https://github.com/RogerSelwyn/skyq_remote/commit/d7d63b42ed8141b5b03600d69c72b5e3a35eca14) - @RogerSelwyn
+- [Enable specification of PVR limit and offset](https://github.com/RogerSelwyn/skyq_remote/commit/d7d63b42ed8141b5b03600d69c72b5e3a35eca14) - @RogerSelwyn
 - [Add recording manipulation methods](https://github.com/RogerSelwyn/skyq_remote/commit/c81537f9b449abe1d5052b469512cf5bdeec7bbc) - @RogerSelwyn
 - [Add eid to epg info](https://github.com/RogerSelwyn/skyq_remote/commit/b5fd98a902e8c97a480622679df75143826ecbdd) - @RogerSelwyn
 
