@@ -14,11 +14,21 @@ from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
-from .const import (COMMANDS, CURRENT_TRANSPORT_STATE, EPG_ERROR_NO_DATA,
-                    EPG_ERROR_PAST_END, SKY_STATE_NOMEDIA, SKY_STATE_OFF,
-                    SKY_STATE_ON, SKY_STATE_PAUSED, SKY_STATE_PLAYING,
-                    SKY_STATE_STANDBY, SKY_STATE_STOPPED,
-                    SKY_STATE_TRANSITIONING)
+from .const import (
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    ALLRECORDINGS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -170,12 +180,12 @@ class SkyQRemote:
             _LOGGER.exception(f"X0010 - Error occurred: {self._host} : {sid} : {err}")
             return None
 
-    def getRecordings(self, status=None):
+    def getRecordings(self, status=ALLRECORDINGS, limit=1000, offset=0):
         """Get the list of available Recordings."""
         if not self._recordingsInformation:
             self._recordingsInformation = RecordingsInformation(self._remoteConfig)
 
-        return self._recordingsInformation.getRecordings()
+        return self._recordingsInformation.getRecordings(status, limit, offset)
 
     def getRecording(self, pvrId):
         """Get the recording details."""

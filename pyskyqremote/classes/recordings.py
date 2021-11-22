@@ -7,7 +7,7 @@ from datetime import datetime
 
 import requests
 
-from ..const import REST_RECORDING_DETAILS, REST_RECORDINGS_LIST
+from ..const import ALLRECORDINGS, REST_RECORDING_DETAILS, REST_RECORDINGS_LIST
 from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,14 +21,14 @@ class RecordingsInformation:
         self._deviceAccess = remoteConfig.deviceAccess
         self._remoteCountry = remoteConfig.remoteCountry
 
-    def getRecordings(self, status=None):
+    def getRecordings(self, status, limit, offset):
         """Get the list of available Recordings."""
         try:
             recordings = set()
-            resp = self._deviceAccess.http_json(REST_RECORDINGS_LIST)
+            resp = self._deviceAccess.http_json(REST_RECORDINGS_LIST.format(limit, offset))
             recData = resp["pvrItems"]
             for recording in recData:
-                if recording["status"] == status or not status:
+                if recording["status"] == status or status == ALLRECORDINGS:
                     built = self._buildRecording(recording)
                     recordings.add(built)
 

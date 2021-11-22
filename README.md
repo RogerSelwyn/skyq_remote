@@ -426,10 +426,10 @@ Will return a JSON structure such as below:
 ### Get recordings
 
 ```
-recordings = self.client.getRecordings(status)
+recordings = self.client.getRecordings(<status="all">, <limit=1000>, <offset=0>)
 ```
 
-Will return an object such as below for recordings with the provided status (default returns all):
+Will return an object such as below for the number of recordings specified by limit with the specified offset and with the provided status:
 
 ```
 {
@@ -465,10 +465,10 @@ Will return an object such as below for recordings with the provided status (def
 ### Get recordings (JSON)
 
 ```
-recordings = self.client.getRecordings(status).as_json()
+recordings = self.client.getRecordings(<status="all">, <limit=1000>, <offset=0>).as_json()
 ```
 
-Will return an object such as below for recordings with the provided status (default returns all):
+Will return an object such as below for the number of recordings specified by limit with the specified offset and with the provided status:
 
 ```
 {

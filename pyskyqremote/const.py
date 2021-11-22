@@ -26,7 +26,7 @@ REST_BASE_URL = "http://{0}:{1}/as/{2}"
 REST_CHANNEL_LIST = "services"
 REST_FAVOURITES = "services/favourites"
 REST_RECORDING_DETAILS = "pvr/details/{0}"
-REST_RECORDINGS_LIST = "pvr/?limit=1000&offset=0"
+REST_RECORDINGS_LIST = "pvr/?limit={0}&offset={1}"
 REST_PATH_SYSTEMINFO = "system/information"
 REST_PATH_DEVICEINFO = "system/deviceinformation"
 REST_PATH_APPS = "apps"
@@ -113,3 +113,5 @@ SOAP_TIMEOUT = 2
 
 AUDIO = "audio"
 VIDEO = "video"
+
+ALLRECORDINGS = "all"
