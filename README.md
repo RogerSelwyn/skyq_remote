@@ -244,7 +244,9 @@ Will return an object with an array of events including the specified number of 
          'episode':119,
          'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9',
          'channelname':'BBC One South',
-         'status':'LIVE'
+         'status':'LIVE',
+         'pvrid':'n/a',
+         'eid':'E4b8-19b'
       },
       {
          'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
@@ -255,7 +257,9 @@ Will return an object with an array of events including the specified number of 
          'episode':89,
          'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9',
          'channelname':'BBC One South',
-         'status':'LIVE'
+         'status':'LIVE',
+         'pvrid':'n/a',
+         'eid':'E4b8-19b'
       },
       {...}
    ]
@@ -290,7 +294,9 @@ Will return a JSON structure with an array of events including the specified num
             "episode":5,
             "imageUrl":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9",
             "channelname":"BBC One South",
-            "status":"LIVE"
+            "status":"LIVE",
+            "pvrid":"n/a",
+            "eid":"E4b8-19b"
         }
       },
       {
@@ -304,7 +310,9 @@ Will return a JSON structure with an array of events including the specified num
             "episode":4,
             "imageUrl":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9",
             "channelname":"BBC One South"
-            "status":"LIVE"
+            "status":"LIVE",
+            "pvrid":"n/a",
+            "eid":"E4b8-19b"
          }
       },
       {...},
@@ -343,7 +351,7 @@ Will return an object such as below:
    'channelname':'Channel 5 HD',
    'status':'LIVE',
    'pvrid':'n/a',
-   'oeid':'n/a'
+   'eid':'E4b8-19b'
 }
 ```
 ### Get programme at a point in time on a day (JSON)
@@ -370,7 +378,7 @@ Will return a JSON structure such as below:
       "channelname":"BBC ONE HD",
       "status":"LIVE",
       "pvrid":"n/a",
-      "oeid':"n/a"
+      "eid':"E4b8-19b"
    }
 }
 ```
@@ -401,7 +409,7 @@ Will return an object such as below:
    'channelname':'Channel 5 HD',
    'status':'LIVE',
    'pvrid':'n/a',
-   'oeid':'n/a'
+   'eid':'E4b8-19b'
 }
 ```
 ### Get current live TV programme on a channel (JSON)
@@ -426,7 +434,7 @@ Will return a JSON structure such as below:
       "channelname":"BBC ONE HD",
       "status":"LIVE",
       "pvrid":"n/a",
-      "oeid":"n/a"
+      "eid":"E4b8-19b"
   }
 }
 ```
@@ -453,7 +461,7 @@ Will return an object such as below for the number of recordings specified by li
         'channelname':'E4 HD',
         'status':'RECORDED',
         'pvrid':'P29014192',
-        'oeid':'E869-67b1'
+        'eid':'E869-67b1'
       },
       {
         'programmeuuid':'af9ecd2c-5026-4050-9c15-37598fe26713',
@@ -466,7 +474,7 @@ Will return an object such as below for the number of recordings specified by li
         'channelname':'Channel 5 HD',
         'status':'SCHEDULED',
         'pvrid':'P29014192',
-        'oeid':'E869-67b1'
+        'eid':'E869-67b1'
       },
       {…}
       }
@@ -502,7 +510,7 @@ Will return an object such as below for the number of recordings specified by li
             "channelname":"E4 HD",
             "status":"RECORDED",
             "pvrid":"P29014192",
-            "oeid":"E869-67b1"
+            "eid":"E869-67b1"
         }
       },
       {
@@ -518,7 +526,7 @@ Will return an object such as below for the number of recordings specified by li
             "channelname":"Channel 5 HD",
             "status":"SCHEDULED",
             "pvrid":"P29014192",
-            "oeid":"E869-67b1"
+            "eid":"E869-67b1"
      },
       {...}
       }
@@ -546,7 +554,7 @@ Will return an object such as below:
    'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9',
    'status':'RECORDED',
    'pvrid':'P29014192',
-   'oeid':'E869-67b1'
+   'eid':'E869-67b1'
 }
 ```
 ### Get recording (JSON)
@@ -571,7 +579,7 @@ Will return an object such as below:
       "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "status":"RECORDED",
       "pvrid":"P29014192",
-      "oeid":"E869-67b1"
+      "eid":"E869-67b1"
    }
 }
 ```

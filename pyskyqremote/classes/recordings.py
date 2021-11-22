@@ -165,7 +165,7 @@ class RecordingsInformation:
         title = None
         status = None
         pvrid = None
-        oeid = None
+        eid = None
 
         channel = recording["cn"]
         title = recording["t"]
@@ -195,10 +195,10 @@ class RecordingsInformation:
 
         status = recording["status"]
         pvrid = recording["pvrid"]
-        oeid = recording["oeid"]
+        eid = recording["oeid"]
 
         return Programme(
-            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status, pvrid, oeid
+            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status, pvrid, eid
         )
 
 

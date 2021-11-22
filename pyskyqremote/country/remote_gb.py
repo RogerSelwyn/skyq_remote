@@ -56,6 +56,7 @@ class SkyQCountry:
                 programmeuuid = str(p["programmeuuid"])
                 imageUrl = LIVE_IMAGE_URL.format(programmeuuid)
 
+            eid = p["eid"]
             programme = Programme(
                 programmeuuid,
                 starttime,
@@ -66,6 +67,8 @@ class SkyQCountry:
                 imageUrl,
                 channelName,
                 SKY_STATUS_LIVE,
+                "n/a",
+                eid,
             )
             programmes.add(programme)
 

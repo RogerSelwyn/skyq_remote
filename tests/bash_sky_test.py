@@ -5,6 +5,7 @@ import json
 import sys
 from datetime import datetime
 
+from pyskyqremote.classes.channelepg import ChannelEPGDecoder
 from pyskyqremote.classes.media import MediaDecoder
 from pyskyqremote.const import APP_EPG, SKY_STATE_OFF, SKY_STATE_STANDBY
 from pyskyqremote.skyq_remote import SkyQRemote
@@ -77,7 +78,8 @@ print("----------- Favourites")
 print(sky.getFavouriteList().as_json())
 
 print("----------- Today's EPG")
-print(sky.getEpgData(sid, queryDate).as_json())
+epgJSON = sky.getEpgData(sid, queryDate).as_json()
+print(epgJSON)
 
 print("----------- Get scheduled recordings")
 print(sky.getRecordings("SCHEDULED").as_json())
@@ -86,18 +88,21 @@ print("----------- Get quota info")
 print(sky.getQuota().as_json())
 
 print("----------- Book recording")
-eid = "E869-6713"
+epgProgrammes = ChannelEPGDecoder(epgJSON).programmes
+eid = epgProgrammes[len(epgProgrammes) - 1].eid
+print(eid)
 print(sky.bookRecording(eid))
-
-print("----------- Book series recording")
-print(sky.bookRecording(eid, series=True))
 recordings = sky.getRecordings("SCHEDULED")
 pvrid = None
 for recording in recordings.programmes:
-    if recording.oeid == eid:
+    if recording.eid == eid:
         pvrid = recording.pvrid
         break
 print(pvrid)
+
+print("----------- Book series recording")
+print(sky.bookRecording(eid, series=True))
+
 
 print("----------- Unlink series")
 print(sky.seriesLink(pvrid, False))

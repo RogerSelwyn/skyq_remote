@@ -55,7 +55,7 @@ class Programme:
         compare=False,
     )
     pvrid: str = "n/a"
-    oeid: str = "n/a"
+    eid: str = "n/a"
 
     def __hash__(self):
         """Calculate the hash of this object."""
