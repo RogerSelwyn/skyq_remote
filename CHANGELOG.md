@@ -1,6 +1,35 @@
 # Changelog
 
 
+## v0.2.46 (22/11/2021)
+### Enhancements
+- [Enable specification of PVR limit and ffset](https://github.com/RogerSelwyn/skyq_remote/commit/d7d63b42ed8141b5b03600d69c72b5e3a35eca14) - @RogerSelwyn
+- [Add recording manipulation methods](https://github.com/RogerSelwyn/skyq_remote/commit/c81537f9b449abe1d5052b469512cf5bdeec7bbc) - @RogerSelwyn
+- [Add eid to epg info](https://github.com/RogerSelwyn/skyq_remote/commit/b5fd98a902e8c97a480622679df75143826ecbdd) - @RogerSelwyn
+
+### Maintenance
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/5b02d7b61fc73e491d153a5c43655a5767efebc3) - @RogerSelwyn
+- [Code tidy up](https://github.com/RogerSelwyn/skyq_remote/commit/0d409ccd5aac304f3b4d900fd17c4d8039c53ce8) - @RogerSelwyn
+- [Code tidy up](https://github.com/RogerSelwyn/skyq_remote/commit/f781c6bce2be733a30d2275d03a1f5b1d5a45022) - @RogerSelwyn
+- [Extracted app info methods to class](https://github.com/RogerSelwyn/skyq_remote/commit/e54abc14135a722f4985cd4abf2cc300d8f44a1c) - @RogerSelwyn
+- [Formatted](https://github.com/RogerSelwyn/skyq_remote/commit/3767ba2d2ca7ef15824dc4c519e0ccda6c0c4050) - @RogerSelwyn
+- [Move utils into classes folder](https://github.com/RogerSelwyn/skyq_remote/commit/f0ddfa719e1ba6ac2446635de2d9b55421dc751b) - @RogerSelwyn
+- [Code tidy up from vulture](https://github.com/RogerSelwyn/skyq_remote/commit/3e20ba826c6af2e36806077991baa69b910be6cb) - @RogerSelwyn
+- [Update remote_it.py](https://github.com/RogerSelwyn/skyq_remote/commit/9f83676d81cd70bd0da7f716caffd1c58bee348b) - @RogerSelwyn
+- [Extract media information retrieval into class](https://github.com/RogerSelwyn/skyq_remote/commit/cf62ecb9913f54b2aa578da8a8babfe35a202ebd) - @RogerSelwyn
+- [Extract recording information retrieval to class](https://github.com/RogerSelwyn/skyq_remote/commit/966c9aeda71d484c3a70a9ab08160fb56f991ccb) - @RogerSelwyn
+- [Extract favourite methods to class](https://github.com/RogerSelwyn/skyq_remote/commit/a71c8f6dc4e0d4576464e2a6d21d88d8b1c70ded) - @RogerSelwyn
+- [Merge channellist into channel class file](https://github.com/RogerSelwyn/skyq_remote/commit/fa7e6fa4c1a3a18c0b391abc38de584b67ca1365) - @RogerSelwyn
+- [Perform less initial setup](https://github.com/RogerSelwyn/skyq_remote/commit/e533b28bc35c4d27bc756f36cf0506ae5a32d568) - @RogerSelwyn
+- [Extract device information methods to class](https://github.com/RogerSelwyn/skyq_remote/commit/821df06b5ebd28924eab669c9450c405209737e7) - @RogerSelwyn
+- [Extract channel info methods into class](https://github.com/RogerSelwyn/skyq_remote/commit/45d9ad176424a6c20b4ba51f2da6403b055f5aae) - @RogerSelwyn
+- [Rename utils.py](https://github.com/RogerSelwyn/skyq_remote/commit/8bd3075a58cbcb8b899461c498df1260ed58fd14) - @RogerSelwyn
+- [Remove unrequired code](https://github.com/RogerSelwyn/skyq_remote/commit/b8f91d4c8feb9b0a7d049343c89c6b40e4231e2a) - @RogerSelwyn
+- [Extract EPG method to class](https://github.com/RogerSelwyn/skyq_remote/commit/fafc2d6082fa36fa183a7bad6f6e46665f54f06b) - @RogerSelwyn
+- [Remove getChannelNode from parameter method](https://github.com/RogerSelwyn/skyq_remote/commit/de073033422ca50f811b9a9c41f46acac2af2aad) - @RogerSelwyn
+- [Standardise format of data set to classes](https://github.com/RogerSelwyn/skyq_remote/commit/df9a3437a8ba9de39347658561624f9f71253e8a) - @RogerSelwyn
+- [Bump to 0.2.46](https://github.com/RogerSelwyn/skyq_remote/commit/98018a5a8b7b8fc139bf5b3507c21bb15da821d8) - @RogerSelwyn
+
 ## v0.2.44 (08/11/2021)
 ### Fixes
 - [Removed print statement](https://github.com/RogerSelwyn/skyq_remote/commit/340104bc924ecf8d3be3264e715f0a32991422ba) - @RogerSelwyn
