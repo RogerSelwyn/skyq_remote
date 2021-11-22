@@ -341,7 +341,9 @@ Will return an object such as below:
    'episode':5,
    'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
    'channelname':'Channel 5 HD',
-   'status':'LIVE'
+   'status':'LIVE',
+   'pvrid':'n/a',
+   'oeid':'n/a'
 }
 ```
 ### Get programme at a point in time on a day (JSON)
@@ -366,7 +368,9 @@ Will return a JSON structure such as below:
       "episode":null,
       "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "channelname":"BBC ONE HD",
-      "status":"LIVE"
+      "status":"LIVE",
+      "pvrid":"n/a",
+      "oeid':"n/a"
    }
 }
 ```
@@ -395,7 +399,9 @@ Will return an object such as below:
    'episode':5,
    'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
    'channelname':'Channel 5 HD',
-   'status':'LIVE'
+   'status':'LIVE',
+   'pvrid':'n/a',
+   'oeid':'n/a'
 }
 ```
 ### Get current live TV programme on a channel (JSON)
@@ -418,7 +424,9 @@ Will return a JSON structure such as below:
       "episode":null,
       "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "channelname":"BBC ONE HD",
-      "status":"LIVE"
+      "status":"LIVE",
+      "pvrid":"n/a",
+      "oeid":"n/a"
   }
 }
 ```
@@ -443,7 +451,9 @@ Will return an object such as below for the number of recordings specified by li
         'episode':19,
         'imageUrl':'https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9',
         'channelname':'E4 HD',
-        'status':'RECORDED'
+        'status':'RECORDED',
+        'pvrid':'P29014192',
+        'oeid':'E869-67b1'
       },
       {
         'programmeuuid':'af9ecd2c-5026-4050-9c15-37598fe26713',
@@ -454,7 +464,9 @@ Will return an object such as below for the number of recordings specified by li
         'episode':4,
         'imageUrl':'https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9',
         'channelname':'Channel 5 HD',
-        'status':'SCHEDULED'
+        'status':'SCHEDULED',
+        'pvrid':'P29014192',
+        'oeid':'E869-67b1'
       },
       {…}
       }
@@ -488,7 +500,9 @@ Will return an object such as below for the number of recordings specified by li
             "episode":19,
             "imageUrl":"https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9",
             "channelname":"E4 HD",
-            "status":"RECORDED"
+            "status":"RECORDED",
+            "pvrid":"P29014192",
+            "oeid":"E869-67b1"
         }
       },
       {
@@ -502,7 +516,9 @@ Will return an object such as below for the number of recordings specified by li
             "episode":4,
             "imageUrl":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
             "channelname":"Channel 5 HD",
-            "status":"SCHEDULED"
+            "status":"SCHEDULED",
+            "pvrid":"P29014192",
+            "oeid":"E869-67b1"
      },
       {...}
       }
@@ -528,7 +544,9 @@ Will return an object such as below:
    'season':4,
    'episode':5,
    'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9',
-   'status':'RECORDED'
+   'status':'RECORDED',
+   'pvrid':'P29014192',
+   'oeid':'E869-67b1'
 }
 ```
 ### Get recording (JSON)
@@ -551,7 +569,9 @@ Will return an object such as below:
       "season":null,
       "episode":null,
       "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
-      "status":"RECORDED"
+      "status":"RECORDED",
+      "pvrid":"P29014192",
+      "oeid":"E869-67b1"
    }
 }
 ```
@@ -561,6 +581,95 @@ Will return an object such as below:
 from pyskyqremote.programme import RecordedProgrammeDecoder
 recording = RecordedProgrammeDecoder(recordingJSON)
 ```
+
+### Get quota
+
+```
+quota = self.client.getQuota()
+```
+
+Will return an object such as below:
+
+```
+{
+   'quotaMax':1604285,
+   'quotaUsed':171083
+}
+```
+### Get quota (JSON)
+
+```
+recording = self.client.getQuota().as_json()
+```
+
+Will return an object such as below:
+
+```
+{
+   "__type__":"__quota__",
+   "attributes":{
+     "quotaMax":1604285,
+     "quotaUsed":171083
+   }
+}
+```
+
+### Book Recording
+
+```
+response = self.client.bookRecording(eid, <series=False>)
+```
+
+
+Will return True for success or False for failure. Set series to True for series link or False for no series link.
+
+### Series Link Recording
+
+```
+response = self.client.seriesLink(pvrid, <on=True>)
+```
+
+Will return True for success or False for failure. Set on to True for linking, False for unlinking.
+
+### Keep Recording
+
+```
+response = self.client.recordingKeep(pvrid, <on=True>)
+```
+
+Will return True for success or False for failure. Set on to True to keep, False to unkeep.
+
+### Lock Recording
+
+```
+response = self.client.recordingLock(pvrid, <on=True>)
+```
+
+Will return True for success or False for failure. Set on to True to lock, False to unlock.
+
+### Delete Recording (or scheduled recording)
+
+```
+response = self.client.recordingDelete(pvrid, <on=True>)
+```
+
+Will return True for success or False for failure. Set on to True to delete, False to undelete. Cannot undelete scheduled recording.
+
+### Erase Recording
+
+```
+response = self.client.recordingErase(pvrid)
+```
+
+Will return True for success or False for failure.
+
+### Erase all Recordings including scheduled recordings
+
+```
+response = self.client.recordingEraseAll()
+```
+
+Will return True for success or False for failure.
 
 ### Get Channel List
 

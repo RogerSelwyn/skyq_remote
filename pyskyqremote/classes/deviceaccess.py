@@ -11,6 +11,7 @@ import websocket
 import xmltodict
 
 from ..const import (
+    COMMANDS,
     CONNECT_TIMEOUT,
     HTTP_TIMEOUT,
     REST_BASE_URL,
@@ -24,7 +25,6 @@ from ..const import (
     SOAP_TIMEOUT,
     SOAP_USER_AGENT,
     WS_BASE_URL,
-    COMMANDS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -124,13 +124,31 @@ class DeviceAccess:
             return None
 
     def http_json(self, path, headers=None) -> str:
-        """Make an HTTP call to the sky box."""
+        """Make an HTTP get call to the sky box."""
         response = requests.get(
             REST_BASE_URL.format(self._host, self._jsonPort, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
         return json.loads(response.content)
+
+    def http_json_post(self, path, headers=None) -> str:
+        """Make an HTTP post call to the sky box."""
+        response = requests.post(
+            REST_BASE_URL.format(self._host, self._jsonPort, path),
+            timeout=HTTP_TIMEOUT,
+            headers=headers,
+        )
+        return response.status_code
+
+    def http_json_delete(self, path, headers=None) -> str:
+        """Make an HTTP delete call to the sky box."""
+        response = requests.delete(
+            REST_BASE_URL.format(self._host, self._jsonPort, path),
+            timeout=HTTP_TIMEOUT,
+            headers=headers,
+        )
+        return response.status_code
 
     def sendCommand(self, port, code):
         """Send a command to the sky box."""

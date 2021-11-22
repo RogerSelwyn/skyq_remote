@@ -81,3 +81,44 @@ print(sky.getEpgData(sid, queryDate).as_json())
 
 print("----------- Get scheduled recordings")
 print(sky.getRecordings("SCHEDULED").as_json())
+
+print("----------- Get quota info")
+print(sky.getQuota().as_json())
+
+print("----------- Book recording")
+eid = "E869-6713"
+print(sky.bookRecording(eid))
+
+print("----------- Book series recording")
+print(sky.bookRecording(eid, series=True))
+recordings = sky.getRecordings("SCHEDULED")
+pvrid = None
+for recording in recordings.programmes:
+    if recording.oeid == eid:
+        pvrid = recording.pvrid
+        break
+print(pvrid)
+
+print("----------- Unlink series")
+print(sky.seriesLink(pvrid, False))
+print("----------- Link series")
+print(sky.seriesLink(pvrid, True))
+sky.seriesLink(pvrid, False)
+
+print("----------- Recording keep")
+print(sky.recordingKeep(pvrid, True))
+print("----------- Recording unkeep")
+print(sky.recordingKeep(pvrid, False))
+
+print("----------- Recording lock")
+print(sky.recordingLock(pvrid, True))
+print("----------- Recording unlock")
+print(sky.recordingLock(pvrid, False))
+
+print("----------- Recording delete")
+print(sky.recordingDelete(pvrid, True))
+print("----------- Recording undelete")
+print(sky.recordingDelete(pvrid, False))
+
+print("----------- Recording true")
+print(sky.recordingErase(pvrid))

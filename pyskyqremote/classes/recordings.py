@@ -7,7 +7,25 @@ from datetime import datetime
 
 import requests
 
-from ..const import ALLRECORDINGS, REST_RECORDING_DETAILS, REST_RECORDINGS_LIST
+from ..const import (
+    ALLRECORDINGS,
+    RESPONSE_OK,
+    REST_BOOK_RECORDING,
+    REST_BOOK_SERIES_RECORDING,
+    REST_QUOTA_DETAILS,
+    REST_RECORDING_DELETE,
+    REST_RECORDING_DETAILS,
+    REST_RECORDING_ERASE,
+    REST_RECORDING_ERASE_ALL,
+    REST_RECORDING_KEEP,
+    REST_RECORDING_LOCK,
+    REST_RECORDING_UNDELETE,
+    REST_RECORDING_UNKEEP,
+    REST_RECORDING_UNLOCK,
+    REST_RECORDINGS_LIST,
+    REST_SERIES_LINK,
+    REST_SERIES_UNLINK,
+)
 from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
@@ -48,6 +66,94 @@ class RecordingsInformation:
 
         return self._buildRecording(recording)
 
+    def getQuota(self):
+        """Get the quota information."""
+        resp = self._deviceAccess.http_json(REST_QUOTA_DETAILS)
+        return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
+
+    def bookRecording(self, eid, series):
+        """Book recording for specified item."""
+        resp = None
+        if not series:
+            resp = self._deviceAccess.http_json_post(REST_BOOK_RECORDING.format(eid))
+        else:
+            resp = self._deviceAccess.http_json_post(REST_BOOK_SERIES_RECORDING.format(eid))
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def seriesLink(self, pvrid, On):
+        """Series link the specified item."""
+        resp = None
+        if On:
+            resp = self._deviceAccess.http_json_post(REST_SERIES_LINK.format(pvrid))
+        else:
+            resp = self._deviceAccess.http_json_post(REST_SERIES_UNLINK.format(pvrid))
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def recordingKeep(self, pvrid, On):
+        """Keep the specified item."""
+        resp = None
+        if On:
+            resp = self._deviceAccess.http_json_post(REST_RECORDING_KEEP.format(pvrid))
+        else:
+            resp = self._deviceAccess.http_json_post(REST_RECORDING_UNKEEP.format(pvrid))
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def recordingLock(self, pvrid, On):
+        """Lock the specified item."""
+        resp = None
+        if On:
+            resp = self._deviceAccess.http_json_post(REST_RECORDING_LOCK.format(pvrid))
+        else:
+            resp = self._deviceAccess.http_json_post(REST_RECORDING_UNLOCK.format(pvrid))
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def recordingDelete(self, pvrid, On):
+        """Delete the specified item."""
+        resp = None
+        if On:
+            resp = self._deviceAccess.http_json_post(REST_RECORDING_DELETE.format(pvrid))
+        else:
+            resp = self._deviceAccess.http_json_post(REST_RECORDING_UNDELETE.format(pvrid))
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def recordingErase(self, pvrid):
+        """Permanently erase the specified item."""
+        resp = self._deviceAccess.http_json_post(REST_RECORDING_ERASE.format(pvrid))
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def recordingEraseAll(self):
+        """Permanently erase the specified item."""
+        resp = self._deviceAccess.http_json_post(REST_RECORDING_ERASE_ALL)
+
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
     def _buildRecording(self, recording):
         season = None
         episode = None
@@ -58,6 +164,8 @@ class RecordingsInformation:
         imageUrl = None
         title = None
         status = None
+        pvrid = None
+        oeid = None
 
         channel = recording["cn"]
         title = recording["t"]
@@ -86,17 +194,11 @@ class RecordingsInformation:
             endtime = starttime
 
         status = recording["status"]
+        pvrid = recording["pvrid"]
+        oeid = recording["oeid"]
 
         return Programme(
-            programmeuuid,
-            starttime,
-            endtime,
-            title,
-            season,
-            episode,
-            imageUrl,
-            channel,
-            status,
+            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status, pvrid, oeid
         )
 
 
@@ -161,3 +263,41 @@ class _RecordingsJSONEncoder(json.JSONEncoder):
             }
 
         json.JSONEncoder.default(self, obj)  # pragma: no cover
+
+
+@dataclass
+class Quota:
+    """SkyQ Quota Class."""
+
+    quotaMax: int = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    quotaUsed: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+
+    def as_json(self) -> str:
+        """Return a JSON string representing this quota info."""
+        return json.dumps(self, cls=_QuotaJSONEncoder)
+
+
+def QuotaDecoder(obj):
+    """Decode quota object from json."""
+    quota = json.loads(obj)
+    if "__type__" in quota and quota["__type__"] == "__quota__":
+        return Quota(**quota["attributes"])
+    return quota
+
+
+class _QuotaJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Quota):
+            attributes = {k: v for k, v in vars(obj).items()}
+            return {
+                "__type__": "__quota__",
+                "attributes": attributes,
+            }

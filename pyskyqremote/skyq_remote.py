@@ -15,6 +15,7 @@ from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
 from .const import (
+    ALLRECORDINGS,
     COMMANDS,
     CURRENT_TRANSPORT_STATE,
     EPG_ERROR_NO_DATA,
@@ -27,7 +28,6 @@ from .const import (
     SKY_STATE_STANDBY,
     SKY_STATE_STOPPED,
     SKY_STATE_TRANSITIONING,
-    ALLRECORDINGS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -198,6 +198,62 @@ class SkyQRemote:
 
         self._recordedProgramme = self._recordingsInformation.getRecording(pvrId)
         return self._recordedProgramme
+
+    def getQuota(self):
+        """Retrieve the available storage quota."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.getQuota()
+
+    def bookRecording(self, eid, series=False):
+        """Book recording for specified item."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.bookRecording(eid, series)
+
+    def seriesLink(self, pvrid, On=True):
+        """Book recording for specified item."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.seriesLink(pvrid, On)
+
+    def recordingKeep(self, pvrid, On=True):
+        """Keep the recording."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.recordingKeep(pvrid, On)
+
+    def recordingLock(self, pvrid, On=True):
+        """Lock the recording."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.recordingLock(pvrid, On)
+
+    def recordingDelete(self, pvrid, On=True):
+        """Delete the recording."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.recordingDelete(pvrid, On)
+
+    def recordingErase(self, pvrid):
+        """Delete the recording."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.recordingErase(pvrid)
+
+    def recordingEraseAll(self):
+        """Delete the reording."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.recordingEraseAll()
 
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
