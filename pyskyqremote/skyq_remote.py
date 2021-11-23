@@ -213,6 +213,13 @@ class SkyQRemote:
 
         return self._recordingsInformation.bookRecording(eid, series)
 
+    def bookPPVRecording(self, eid, offerref):
+        """Book recording for specified item."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.bookPPVRecording(eid, offerref)
+
     def seriesLink(self, pvrid, On=True):
         """Book recording for specified item."""
         if not self._recordingsInformation:
@@ -255,6 +262,13 @@ class SkyQRemote:
 
         return self._recordingsInformation.recordingEraseAll()
 
+    def recordingSetLastPlayedPosition(self, pvrid, pos):
+        """Set the last played position for specified item."""
+        if not self._recordingsInformation:
+            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+
+        return self._recordingsInformation.recordingSetLastPlayedPosition(pvrid, pos)
+
     def getDeviceInformation(self):
         """Get the device information from the SkyQ box."""
         if not self._deviceInformation:
@@ -269,7 +283,8 @@ class SkyQRemote:
         if not self._channelInformation:
             self._channelInformation = ChannelInformation(self._remoteConfig)
 
-        return self._channelInformation.getChannelList()
+        self._channellist = self._channelInformation.getChannelList()
+        return self._channellist
 
     def getChannelInfo(self, channelNo):
         """Retrieve channel information for specified channelNo."""

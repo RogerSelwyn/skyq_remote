@@ -10,6 +10,7 @@ import requests
 from ..const import (
     ALLRECORDINGS,
     RESPONSE_OK,
+    REST_BOOK_PPVRECORDING,
     REST_BOOK_RECORDING,
     REST_BOOK_SERIES_RECORDING,
     REST_QUOTA_DETAILS,
@@ -19,6 +20,7 @@ from ..const import (
     REST_RECORDING_ERASE_ALL,
     REST_RECORDING_KEEP,
     REST_RECORDING_LOCK,
+    REST_RECORDING_SET_LAST_PLAYED_POSITION,
     REST_RECORDING_UNDELETE,
     REST_RECORDING_UNKEEP,
     REST_RECORDING_UNLOCK,
@@ -79,6 +81,14 @@ class RecordingsInformation:
         else:
             resp = self._deviceAccess.http_json_post(REST_BOOK_SERIES_RECORDING.format(eid))
 
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def bookPPVRecording(self, eid, offerref):
+        """Book PPV recording for specified item."""
+        resp = self._deviceAccess.http_json_post(REST_BOOK_PPVRECORDING.format(eid, offerref))
         if resp != RESPONSE_OK:
             return False
 
@@ -149,6 +159,15 @@ class RecordingsInformation:
         """Permanently erase the specified item."""
         resp = self._deviceAccess.http_json_post(REST_RECORDING_ERASE_ALL)
 
+        if resp != RESPONSE_OK:
+            return False
+
+        return True
+
+    def recordingSetLastPlayedPosition(self, pvrid, pos):
+        """Set the last played position for specified item."""
+        resp = self._deviceAccess.http_json_post(REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid))
+        print(resp)
         if resp != RESPONSE_OK:
             return False
 

@@ -631,6 +631,15 @@ response = self.client.bookRecording(eid, <series=False>)
 
 Will return True for success or False for failure. Set series to True for series link or False for no series link.
 
+### Book PPV Recording
+
+```
+response = self.client.bookPPVRecording(eid, offerref)
+```
+
+
+Will return True for success or False for failure.
+
 ### Series Link Recording
 
 ```
@@ -678,6 +687,14 @@ response = self.client.recordingEraseAll()
 ```
 
 Will return True for success or False for failure.
+
+### Set Last Played Position
+
+```
+response = self.client.ecordingSetLastPlayedPosition(pvrid, pos)
+```
+
+Will return True for success or False for failure. Only works on the main Sky Q box.
 
 ### Get Channel List
 
