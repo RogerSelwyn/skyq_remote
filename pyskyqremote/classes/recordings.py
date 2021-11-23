@@ -38,14 +38,13 @@ class RecordingsInformation:
 
     def __init__(self, remoteConfig):
         """Initialise the recordings information class."""
-        self._deviceAccess = remoteConfig.deviceAccess
-        self._remoteCountry = remoteConfig.remoteCountry
+        self._remoteConfig = remoteConfig
 
     def getRecordings(self, status, limit, offset):
         """Get the list of available Recordings."""
         try:
             recordings = set()
-            resp = self._deviceAccess.http_json(REST_RECORDINGS_LIST.format(limit, offset))
+            resp = self._remoteConfig.deviceAccess.http_json(REST_RECORDINGS_LIST.format(limit, offset))
             recData = resp["pvrItems"]
             for recording in recData:
                 if recording["status"] == status or status == ALLRECORDINGS:
@@ -59,7 +58,7 @@ class RecordingsInformation:
 
     def getRecording(self, pvrId):
         """Get the recording details."""
-        resp = self._deviceAccess.http_json(REST_RECORDING_DETAILS.format(pvrId))
+        resp = self._remoteConfig.deviceAccess.http_json(REST_RECORDING_DETAILS.format(pvrId))
         if "details" not in resp:
             _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
             return None
@@ -70,16 +69,16 @@ class RecordingsInformation:
 
     def getQuota(self):
         """Get the quota information."""
-        resp = self._deviceAccess.http_json(REST_QUOTA_DETAILS)
+        resp = self._remoteConfig.deviceAccess.http_json(REST_QUOTA_DETAILS)
         return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
 
     def bookRecording(self, eid, series):
         """Book recording for specified item."""
         resp = None
         if not series:
-            resp = self._deviceAccess.http_json_post(REST_BOOK_RECORDING.format(eid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_BOOK_RECORDING.format(eid))
         else:
-            resp = self._deviceAccess.http_json_post(REST_BOOK_SERIES_RECORDING.format(eid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_BOOK_SERIES_RECORDING.format(eid))
 
         if resp != RESPONSE_OK:
             return False
@@ -88,7 +87,7 @@ class RecordingsInformation:
 
     def bookPPVRecording(self, eid, offerref):
         """Book PPV recording for specified item."""
-        resp = self._deviceAccess.http_json_post(REST_BOOK_PPVRECORDING.format(eid, offerref))
+        resp = self._remoteConfig.deviceAccess.http_json_post(REST_BOOK_PPVRECORDING.format(eid, offerref))
         if resp != RESPONSE_OK:
             return False
 
@@ -98,9 +97,9 @@ class RecordingsInformation:
         """Series link the specified item."""
         resp = None
         if On:
-            resp = self._deviceAccess.http_json_post(REST_SERIES_LINK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_SERIES_LINK.format(pvrid))
         else:
-            resp = self._deviceAccess.http_json_post(REST_SERIES_UNLINK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_SERIES_UNLINK.format(pvrid))
 
         if resp != RESPONSE_OK:
             return False
@@ -111,9 +110,9 @@ class RecordingsInformation:
         """Keep the specified item."""
         resp = None
         if On:
-            resp = self._deviceAccess.http_json_post(REST_RECORDING_KEEP.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_KEEP.format(pvrid))
         else:
-            resp = self._deviceAccess.http_json_post(REST_RECORDING_UNKEEP.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_UNKEEP.format(pvrid))
 
         if resp != RESPONSE_OK:
             return False
@@ -124,9 +123,9 @@ class RecordingsInformation:
         """Lock the specified item."""
         resp = None
         if On:
-            resp = self._deviceAccess.http_json_post(REST_RECORDING_LOCK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_LOCK.format(pvrid))
         else:
-            resp = self._deviceAccess.http_json_post(REST_RECORDING_UNLOCK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_UNLOCK.format(pvrid))
 
         if resp != RESPONSE_OK:
             return False
@@ -137,9 +136,9 @@ class RecordingsInformation:
         """Delete the specified item."""
         resp = None
         if On:
-            resp = self._deviceAccess.http_json_post(REST_RECORDING_DELETE.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_DELETE.format(pvrid))
         else:
-            resp = self._deviceAccess.http_json_post(REST_RECORDING_UNDELETE.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_UNDELETE.format(pvrid))
 
         if resp != RESPONSE_OK:
             return False
@@ -148,7 +147,7 @@ class RecordingsInformation:
 
     def recordingErase(self, pvrid):
         """Permanently erase the specified item."""
-        resp = self._deviceAccess.http_json_post(REST_RECORDING_ERASE.format(pvrid))
+        resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_ERASE.format(pvrid))
 
         if resp != RESPONSE_OK:
             return False
@@ -157,7 +156,7 @@ class RecordingsInformation:
 
     def recordingEraseAll(self):
         """Permanently erase the specified item."""
-        resp = self._deviceAccess.http_json_post(REST_RECORDING_ERASE_ALL)
+        resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_ERASE_ALL)
 
         if resp != RESPONSE_OK:
             return False
@@ -166,7 +165,9 @@ class RecordingsInformation:
 
     def recordingSetLastPlayedPosition(self, pvrid, pos):
         """Set the last played position for specified item."""
-        resp = self._deviceAccess.http_json_post(REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid))
+        resp = self._remoteConfig.deviceAccess.http_json_post(
+            REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid)
+        )
         print(resp)
         if resp != RESPONSE_OK:
             return False
@@ -193,7 +194,7 @@ class RecordingsInformation:
             episode = recording["episodenumber"]
         if "programmeuuid" in recording:
             programmeuuid = recording["programmeuuid"]
-            imageUrl = self._remoteCountry.pvr_image_url.format(str(programmeuuid))
+            imageUrl = self._remoteConfig.remoteCountry.pvr_image_url.format(str(programmeuuid))
         elif "osid" in recording:
             sid = str(recording["osid"])
             imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
