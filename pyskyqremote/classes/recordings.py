@@ -213,9 +213,10 @@ class RecordingsInformation:
         else:
             endtime = starttime
 
-        status = recording["status"]
         pvrid = recording["pvrid"]
-        eid = recording["oeid"]
+        if "oeid" in recording:
+            eid = recording["oeid"]
+        status = recording["status"]
 
         return Programme(
             programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status, pvrid, eid
