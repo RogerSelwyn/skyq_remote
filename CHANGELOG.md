@@ -2,6 +2,12 @@
 
 
 
+## v0.2.49 (23/11/2021)
+### Fixes
+- [Handle oeid missing in recording](https://github.com/RogerSelwyn/skyq_remote/commit/3d4e11a454b51e8b0fdc36011923dfb1f5ec591b) - @RogerSelwyn
+### Maintenance
+- [Update version.py](https://github.com/RogerSelwyn/skyq_remote/commit/f5a1cd0864fa1a73c430da9db0b51f9f8e7de805) - @RogerSelwyn
+
 ## v0.2.48 (23/11/2021)
 ### Fixes
 - [Fix problem with getting image for recording](https://github.com/RogerSelwyn/skyq_remote/commit/3efd5396e991b3ca4c7c853b55e9980016bbd80f) - @RogerSelwyn
