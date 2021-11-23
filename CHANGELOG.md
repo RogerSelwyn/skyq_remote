@@ -1,6 +1,11 @@
 # Changelog
 
 
+
+## v0.2.47 (23/11/2021)
+### Enhancements
+- [Add PPV booking and set last position](https://github.com/RogerSelwyn/skyq_remote/commit/09c817e86d0b0b7b846dc3cba9b5ec492e13fec5) - @RogerSelwyn
+ 
 ## v0.2.46 (22/11/2021)
 ### Enhancements
 - [Enable specification of PVR limit and offset](https://github.com/RogerSelwyn/skyq_remote/commit/d7d63b42ed8141b5b03600d69c72b5e3a35eca14) - @RogerSelwyn
