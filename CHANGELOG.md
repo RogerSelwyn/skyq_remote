@@ -2,6 +2,12 @@
 
 
 
+## v0.2.48 (23/11/2021)
+### Fixes
+- [Fix problem with getting image for recording](https://github.com/RogerSelwyn/skyq_remote/commit/3efd5396e991b3ca4c7c853b55e9980016bbd80f) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.2.48](https://github.com/RogerSelwyn/skyq_remote/commit/aca82a902f2696991227485877c33dc8fb8c3f08) - @RogerSelwyn
+
 ## v0.2.47 (23/11/2021)
 ### Enhancements
 - [Add PPV booking and set last position](https://github.com/RogerSelwyn/skyq_remote/commit/09c817e86d0b0b7b846dc3cba9b5ec492e13fec5) - @RogerSelwyn
