@@ -2,6 +2,12 @@
 
 
 
+## v0.2.51 (24/11/2021)
+### Enhancements
+- [Update to use bouquet/subbouquet for channel retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/5286c4aca14f0410ac29433b2e1e25379d54c5c2) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.2.51](https://github.com/RogerSelwyn/skyq_remote/commit/b7245401ca32556b9442516f4f6f728ade65ab95) - @RogerSelwyn
+
 ## v0.2.50 (24/11/2021)
 ### Fixes
 - [Fix error power off processing](https://github.com/RogerSelwyn/skyq_remote/commit/32536b3a854344892e2deb70c135b77dfd68d110) - @RogerSelwyn
