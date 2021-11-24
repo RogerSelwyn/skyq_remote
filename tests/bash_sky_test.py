@@ -125,8 +125,8 @@ print(sky.recordingDelete(pvrid, True))
 print("----------- Recording undelete")
 print(sky.recordingDelete(pvrid, False))
 
-print("----------- Recording true")
+print("----------- Recording erase")
 print(sky.recordingErase(pvrid))
 
-# print("----------- Set last played position")
-# print(sky.recordingSetLastPlayedPosition("P2901079b", 20))
+print("----------- Set last played position")
+print(sky.recordingSetLastPlayedPosition("P2900dbbf", 20))

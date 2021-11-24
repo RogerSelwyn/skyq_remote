@@ -10,22 +10,11 @@ import requests
 import websocket
 import xmltodict
 
-from ..const import (
-    COMMANDS,
-    CONNECT_TIMEOUT,
-    HTTP_TIMEOUT,
-    REST_BASE_URL,
-    SKY_PLAY_URN,
-    SKYCONTROL,
-    SOAP_ACTION,
-    SOAP_CONTROL_BASE_URL,
-    SOAP_DESCRIPTION_BASE_URL,
-    SOAP_PAYLOAD,
-    SOAP_RESPONSE,
-    SOAP_TIMEOUT,
-    SOAP_USER_AGENT,
-    WS_BASE_URL,
-)
+from ..const import (COMMANDS, CONNECT_TIMEOUT, HTTP_TIMEOUT, REST_BASE_URL,
+                     REST_DELETE, REST_GET, REST_POST, SKY_PLAY_URN,
+                     SKYCONTROL, SOAP_ACTION, SOAP_CONTROL_BASE_URL,
+                     SOAP_DESCRIPTION_BASE_URL, SOAP_PAYLOAD, SOAP_RESPONSE,
+                     SOAP_TIMEOUT, SOAP_USER_AGENT, WS_BASE_URL)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,10 +28,15 @@ class DeviceAccess:
         self._jsonPort = jsonPort
         self._port = port
 
-    def retrieveInformation(self, rest_path):
+    def retrieveInformation(self, rest_path, call_type=REST_GET):
         """Retrieve information from the SkyQ box."""
         try:
-            return self.http_json(rest_path)
+            if call_type == REST_GET:
+                return self.http_json(rest_path)
+            if call_type == REST_POST:
+                return self.http_json_post(rest_path)
+            if call_type == REST_DELETE:
+                return self.http_json_delete(rest_path)
         except (
             requests.exceptions.ConnectTimeout,
             requests.exceptions.ConnectionError,

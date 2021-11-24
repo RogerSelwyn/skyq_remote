@@ -5,14 +5,14 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
-import requests
-
 from ..const import (
     ALLRECORDINGS,
     RESPONSE_OK,
     REST_BOOK_PPVRECORDING,
     REST_BOOK_RECORDING,
     REST_BOOK_SERIES_RECORDING,
+    REST_DELETE,
+    REST_POST,
     REST_QUOTA_DETAILS,
     REST_RECORDING_DELETE,
     REST_RECORDING_DETAILS,
@@ -42,24 +42,23 @@ class RecordingsInformation:
 
     def getRecordings(self, status, limit, offset):
         """Get the list of available Recordings."""
-        try:
-            recordings = set()
-            resp = self._remoteConfig.deviceAccess.http_json(REST_RECORDINGS_LIST.format(limit, offset))
-            recData = resp["pvrItems"]
-            for recording in recData:
-                if recording["status"] == status or status == ALLRECORDINGS:
-                    built = self._buildRecording(recording)
-                    recordings.add(built)
-
-            return Recordings(recordings)
-        except requests.exceptions.ReadTimeout:
+        recordings = set()
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDINGS_LIST.format(limit, offset))
+        if not resp or "pvrItems" not in resp:
             _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._host}")
             return Recordings(recordings)
+        recData = resp["pvrItems"]
+        for recording in recData:
+            if recording["status"] == status or status == ALLRECORDINGS:
+                built = self._buildRecording(recording)
+                recordings.add(built)
+
+        return Recordings(recordings)
 
     def getRecording(self, pvrId):
         """Get the recording details."""
-        resp = self._remoteConfig.deviceAccess.http_json(REST_RECORDING_DETAILS.format(pvrId))
-        if "details" not in resp:
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_DETAILS.format(pvrId))
+        if not resp or "details" not in resp:
             _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
             return None
 
@@ -69,16 +68,20 @@ class RecordingsInformation:
 
     def getQuota(self):
         """Get the quota information."""
-        resp = self._remoteConfig.deviceAccess.http_json(REST_QUOTA_DETAILS)
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_QUOTA_DETAILS)
+        if not resp or "userQuotaMax" not in resp:
+            return None
         return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
 
     def bookRecording(self, eid, series):
         """Book recording for specified item."""
         resp = None
         if not series:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_BOOK_RECORDING.format(eid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_BOOK_RECORDING.format(eid), REST_POST)
         else:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_BOOK_SERIES_RECORDING.format(eid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(
+                REST_BOOK_SERIES_RECORDING.format(eid), REST_POST
+            )
 
         if resp != RESPONSE_OK:
             return False
@@ -87,7 +90,9 @@ class RecordingsInformation:
 
     def bookPPVRecording(self, eid, offerref):
         """Book PPV recording for specified item."""
-        resp = self._remoteConfig.deviceAccess.http_json_post(REST_BOOK_PPVRECORDING.format(eid, offerref))
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(
+            REST_BOOK_PPVRECORDING.format(eid, offerref), REST_POST
+        )
         if resp != RESPONSE_OK:
             return False
 
@@ -97,9 +102,9 @@ class RecordingsInformation:
         """Series link the specified item."""
         resp = None
         if On:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_SERIES_LINK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_SERIES_LINK.format(pvrid), REST_POST)
         else:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_SERIES_UNLINK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_SERIES_UNLINK.format(pvrid), REST_POST)
 
         if resp != RESPONSE_OK:
             return False
@@ -110,9 +115,9 @@ class RecordingsInformation:
         """Keep the specified item."""
         resp = None
         if On:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_KEEP.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_KEEP.format(pvrid), REST_POST)
         else:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_UNKEEP.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_UNKEEP.format(pvrid), REST_POST)
 
         if resp != RESPONSE_OK:
             return False
@@ -123,9 +128,9 @@ class RecordingsInformation:
         """Lock the specified item."""
         resp = None
         if On:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_LOCK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_LOCK.format(pvrid), REST_POST)
         else:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_UNLOCK.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_UNLOCK.format(pvrid), REST_POST)
 
         if resp != RESPONSE_OK:
             return False
@@ -136,9 +141,9 @@ class RecordingsInformation:
         """Delete the specified item."""
         resp = None
         if On:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_DELETE.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_DELETE.format(pvrid), REST_POST)
         else:
-            resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_UNDELETE.format(pvrid))
+            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_UNDELETE.format(pvrid), REST_POST)
 
         if resp != RESPONSE_OK:
             return False
@@ -147,7 +152,7 @@ class RecordingsInformation:
 
     def recordingErase(self, pvrid):
         """Permanently erase the specified item."""
-        resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_ERASE.format(pvrid))
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_ERASE.format(pvrid), REST_POST)
 
         if resp != RESPONSE_OK:
             return False
@@ -156,7 +161,7 @@ class RecordingsInformation:
 
     def recordingEraseAll(self):
         """Permanently erase the specified item."""
-        resp = self._remoteConfig.deviceAccess.http_json_post(REST_RECORDING_ERASE_ALL)
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_ERASE_ALL, REST_DELETE)
 
         if resp != RESPONSE_OK:
             return False
@@ -165,10 +170,9 @@ class RecordingsInformation:
 
     def recordingSetLastPlayedPosition(self, pvrid, pos):
         """Set the last played position for specified item."""
-        resp = self._remoteConfig.deviceAccess.http_json_post(
-            REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid)
+        resp = self._remoteConfig.deviceAccess.retrieveInformation(
+            REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid), REST_POST
         )
-        print(resp)
         if resp != RESPONSE_OK:
             return False
 

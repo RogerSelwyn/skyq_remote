@@ -16,7 +16,7 @@ class FavouriteInformation:
     def getFavouriteList(self, channellist):
         """Retrieve the list of favourites."""
         self._channellist = channellist
-        favourites = self._deviceAccess.http_json(REST_FAVOURITES)
+        favourites = self._deviceAccess.retrieveInformation(REST_FAVOURITES)
         if not favourites or "favourites" not in favourites:
             return []
 

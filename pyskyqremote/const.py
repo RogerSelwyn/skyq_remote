@@ -45,6 +45,9 @@ REST_RECORDING_SET_LAST_PLAYED_POSITION = "pvr/action/setlastplayedposition?pos=
 REST_PATH_SYSTEMINFO = "system/information"
 REST_PATH_DEVICEINFO = "system/deviceinformation"
 REST_PATH_APPS = "apps"
+REST_GET = "get"
+REST_POST = "post"
+REST_DELETE = "delete"
 
 # Sky specific constants
 CURRENT_URI = "CurrentURI"
@@ -130,3 +133,7 @@ AUDIO = "audio"
 VIDEO = "video"
 
 ALLRECORDINGS = "all"
+
+REST_GET = "get"
+REST_POST = "post"
+REST_DELETE = "DELETE"

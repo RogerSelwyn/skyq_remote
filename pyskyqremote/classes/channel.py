@@ -79,7 +79,7 @@ class ChannelInformation:
         if self._test_channel:
             return TEST_CHANNEL_LIST
 
-        channels = self._deviceAccess.http_json(REST_CHANNEL_LIST)
+        channels = self._deviceAccess.retrieveInformation(REST_CHANNEL_LIST)
         if channels and "services" in channels:
             return channels["services"]
 
