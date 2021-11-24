@@ -17,6 +17,8 @@ class ChannelInformation:
         self._remoteCountry = remoteConfig.remoteCountry
         self._test_channel = remoteConfig.test_channel
         self._channels = []
+        self._bouquet = remoteConfig.deviceInfo.bouquet
+        self._subbouquet = remoteConfig.deviceInfo.subbouquet
 
     def getChannelList(self):
         """Get Channel list for Sky Q box."""
@@ -79,7 +81,7 @@ class ChannelInformation:
         if self._test_channel:
             return TEST_CHANNEL_LIST
 
-        channels = self._deviceAccess.retrieveInformation(REST_CHANNEL_LIST)
+        channels = self._deviceAccess.retrieveInformation(REST_CHANNEL_LIST.format(self._bouquet, self._subbouquet))
         if channels and "services" in channels:
             return channels["services"]
 

@@ -42,6 +42,8 @@ class DeviceInformation:
         modelNumber = deviceInfo["modelNumber"]
         serialNumber = deviceInfo["serialNumber"]
         versionNumber = deviceInfo["versionNumber"]
+        bouquet = deviceInfo["bouquet"]
+        subbouquet = deviceInfo["subbouquet"]
 
         epgCountryCode = overrideCountry or countryCode.upper()
         if not epgCountryCode:
@@ -62,6 +64,8 @@ class DeviceInformation:
             modelNumber,
             serialNumber,
             versionNumber,
+            bouquet,
+            subbouquet,
         )
 
     def getSoapControlURL(self):
@@ -125,6 +129,16 @@ class Device:
         compare=False,
     )
     versionNumber: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    bouquet: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    subbouquet: str = field(
         init=True,
         repr=True,
         compare=False,

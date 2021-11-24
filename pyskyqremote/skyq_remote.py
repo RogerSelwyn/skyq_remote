@@ -44,7 +44,6 @@ class SkyQRemote:
         self._host = host
         self._remoteCountry = None
         self._overrideCountry = None
-        self._epgCountryCode = None
         self._channel = None
         self._programme = None
         self._recordedProgramme = None
@@ -275,7 +274,7 @@ class SkyQRemote:
             self._deviceInformation = DeviceInformation(self._remoteConfig)
 
         deviceInfo = self._deviceInformation.getDeviceInformation(self._overrideCountry)
-        self._epgCountryCode = deviceInfo.epgCountryCode
+        self._remoteConfig.deviceInfo = deviceInfo
         return deviceInfo
 
     def getChannelList(self):
@@ -326,7 +325,7 @@ class SkyQRemote:
             self._setupDevice()
 
         if not self._remoteCountry and self.deviceSetup:
-            SkyQCountry = self._importCountry(self._epgCountryCode)
+            SkyQCountry = self._importCountry(self._remoteConfig.deviceInfo.epgCountryCode)
             self._remoteCountry = SkyQCountry()
             self._remoteConfig.remoteCountry = self._remoteCountry
 
@@ -360,6 +359,7 @@ class _RemoteConfig:
     test_channel = 0
     soapControlURL = ""
     epgCacheLen = 0
+    deviceInfo = None
 
     def __init__(
         self,
@@ -371,6 +371,7 @@ class _RemoteConfig:
         remoteCountry=None,
         test_channel=None,
         soapControlURL=None,
+        deviceInfo=None,
     ):
         self.host = host
         self.port = port
@@ -381,3 +382,4 @@ class _RemoteConfig:
         self.soapControlURL = soapControlURL
         self.epgCacheLen = epgCacheLen
         self.deviceAccess = DeviceAccess(host, jsonPort, port)
+        self.deviceInfo = deviceInfo
