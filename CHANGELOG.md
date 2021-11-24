@@ -2,6 +2,12 @@
 
 
 
+## v0.2.50 (24/11/2021)
+### Fixes
+- [Fix error power off processing](https://github.com/RogerSelwyn/skyq_remote/commit/32536b3a854344892e2deb70c135b77dfd68d110) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.2.50](https://github.com/RogerSelwyn/skyq_remote/commit/8786cfcf099575eff231d4c426c3bba6d6d73ce3) - @RogerSelwyn
+
 ## v0.2.49 (23/11/2021)
 ### Fixes
 - [Handle oeid missing in recording](https://github.com/RogerSelwyn/skyq_remote/commit/3d4e11a454b51e8b0fdc36011923dfb1f5ec591b) - @RogerSelwyn
