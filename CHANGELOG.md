@@ -1,6 +1,13 @@
 # Changelog
 
 
+## v0.2.52 (03/12/2021)
+### Fixes
+- [Fix error with JSON decoding](https://github.com/RogerSelwyn/skyq_remote/commit/8319dcfa3a8a2f2cdca8d6f65d4d11bc491e9d43) - @RogerSelwyn
+### Maintenance
+
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/07079d749b7cb99204440325aa1a494db354f128) - @RogerSelwyn
+- [Bump to 0.2.52](https://github.com/RogerSelwyn/skyq_remote/commit/365aff8da052f7afa5847c461a7177febebb585d) - @RogerSelwyn
 
 ## v0.2.51 (24/11/2021)
 ### Enhancements
