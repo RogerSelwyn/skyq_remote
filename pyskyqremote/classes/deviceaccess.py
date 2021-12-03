@@ -10,11 +10,25 @@ import requests
 import websocket
 import xmltodict
 
-from ..const import (COMMANDS, CONNECT_TIMEOUT, HTTP_TIMEOUT, REST_BASE_URL,
-                     REST_DELETE, REST_GET, REST_POST, SKY_PLAY_URN,
-                     SKYCONTROL, SOAP_ACTION, SOAP_CONTROL_BASE_URL,
-                     SOAP_DESCRIPTION_BASE_URL, SOAP_PAYLOAD, SOAP_RESPONSE,
-                     SOAP_TIMEOUT, SOAP_USER_AGENT, WS_BASE_URL)
+from ..const import (
+    COMMANDS,
+    CONNECT_TIMEOUT,
+    HTTP_TIMEOUT,
+    REST_BASE_URL,
+    REST_DELETE,
+    REST_GET,
+    REST_POST,
+    SKY_PLAY_URN,
+    SKYCONTROL,
+    SOAP_ACTION,
+    SOAP_CONTROL_BASE_URL,
+    SOAP_DESCRIPTION_BASE_URL,
+    SOAP_PAYLOAD,
+    SOAP_RESPONSE,
+    SOAP_TIMEOUT,
+    SOAP_USER_AGENT,
+    WS_BASE_URL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,9 +58,9 @@ class DeviceAccess:
         ):  # as err:
             # _LOGGER.debug(f"D0010U - Connection error: {self._host} : {err}")
             return None
-        except Exception as err:
-            _LOGGER.exception(f"X0060U - Error occurred: {self._host} : {err}")
-            return None
+        # except Exception as err:
+        #     _LOGGER.exception(f"X0060U - Error occurred: {self._host} : {err}")
+        #     return None
 
     def getSoapControlURL(self, descriptionIndex):
         """Get the sky control url."""
@@ -124,7 +138,7 @@ class DeviceAccess:
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
-        return json.loads(response.content)
+        return response.json()
 
     def http_json_post(self, path, headers=None) -> str:
         """Make an HTTP post call to the sky box."""
