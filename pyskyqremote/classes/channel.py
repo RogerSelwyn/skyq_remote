@@ -14,7 +14,7 @@ class ChannelInformation:
     def __init__(self, remoteConfig):
         """Initialise the channel information class."""
         self._deviceAccess = remoteConfig.deviceAccess
-        self._remoteCountry = remoteConfig.remoteCountry
+        self.remoteCountry = remoteConfig.remoteCountry
         self._test_channel = remoteConfig.test_channel
         self._channels = []
         self._bouquet = remoteConfig.deviceInfo.bouquet
@@ -52,7 +52,7 @@ class ChannelInformation:
         channelno = channel["c"]
         channelname = channel["t"]
         channelsid = channel["sid"]
-        channelImageUrl = self._remoteCountry.buildChannelImageUrl(channelsid, channelname)
+        channelImageUrl = self.remoteCountry.buildChannelImageUrl(channelsid, channelname)
         sf = channel["sf"]
         return Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
 

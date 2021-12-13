@@ -14,21 +14,11 @@ from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
-from .const import (
-    ALLRECORDINGS,
-    COMMANDS,
-    CURRENT_TRANSPORT_STATE,
-    EPG_ERROR_NO_DATA,
-    EPG_ERROR_PAST_END,
-    SKY_STATE_NOMEDIA,
-    SKY_STATE_OFF,
-    SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
-    SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
-)
+from .const import (ALLRECORDINGS, COMMANDS, CURRENT_TRANSPORT_STATE,
+                    EPG_ERROR_NO_DATA, EPG_ERROR_PAST_END, SKY_STATE_NOMEDIA,
+                    SKY_STATE_OFF, SKY_STATE_ON, SKY_STATE_PAUSED,
+                    SKY_STATE_PLAYING, SKY_STATE_STANDBY, SKY_STATE_STOPPED,
+                    SKY_STATE_TRANSITIONING)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -287,7 +277,7 @@ class SkyQRemote:
 
     def getChannelInfo(self, channelNo):
         """Retrieve channel information for specified channelNo."""
-        if not self._channelInformation:
+        if not self._channelInformation or not self._channelInformation.remoteCountry:
             self._channelInformation = ChannelInformation(self._remoteConfig)
 
         return self._channelInformation.getChannelInfo(channelNo)
