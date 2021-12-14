@@ -1,6 +1,20 @@
 # Changelog
 
 
+## v0.2.54 (14/12/2021)
+### Fixes
+- [Fix media player not showing paused](https://github.com/RogerSelwyn/skyq_remote/commit/4816987148df1beb0115090fc94caf26f6b11b2a) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.54](https://github.com/RogerSelwyn/skyq_remote/commit/d68fa20fb050892c6b9f72be89769fb1726e2cf4) - @RogerSelwyn
+
+## v0.2.53 (13/12/2021)
+### Fixes
+- [Fix issue with media browser](https://github.com/RogerSelwyn/skyq_remote/commit/12d5b2c696174f42cf3a7d188126fe5e5aa17d5e) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.53](https://github.com/RogerSelwyn/skyq_remote/commit/291b7d63c57a18e8949b9bb74321bf06d607b267) - @RogerSelwyn
+
 ## v0.2.52 (03/12/2021)
 ### Fixes
 - [Fix error with JSON decoding](https://github.com/RogerSelwyn/skyq_remote/commit/8319dcfa3a8a2f2cdca8d6f65d4d11bc491e9d43) - @RogerSelwyn
