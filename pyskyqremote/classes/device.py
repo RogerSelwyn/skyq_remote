@@ -14,13 +14,13 @@ class DeviceInformation:
 
     def __init__(self, remoteConfig):
         """Initialise the device information class."""
+        self._remoteConfig = remoteConfig
         self._deviceAccess = remoteConfig.deviceAccess
-        self._soapControlURL = remoteConfig.soapControlURL
         self._port = remoteConfig.port
 
     def getTransportInformation(self):
         """Get the transport information from the SkyQ box."""
-        return self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_TRANSPORT_INFO)
+        return self._deviceAccess.callSkySOAPService(self._remoteConfig.soapControlURL, UPNP_GET_TRANSPORT_INFO)
 
     def getSystemInformation(self):
         """Get the system information from the SkyQ box."""
