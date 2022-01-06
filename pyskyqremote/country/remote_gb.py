@@ -6,7 +6,7 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_gb import CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL
+from .const_gb import CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL, TERRITORY
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,15 +24,17 @@ class SkyQCountry:
 
     def buildChannelImageUrl(self, sid, channelname):
         """Build the channel image URL."""
-        return CHANNEL_IMAGE_URL.format(sid)
+        chid = "".join(e for e in channelname.casefold() if e.isalnum())
+        return CHANNEL_IMAGE_URL.format(sid, chid)
 
     def _getData(self, sid, channelno, channelName, epgDate):
         epgDateStr = epgDate.strftime("%Y%m%d")
 
         epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
+        headers = {"x-skyott-territory": TERRITORY, "x-skyott-provider": "SKY", "x-skyott-proposition": "SKYQ"}
         programmes = set()
 
-        resp = requests.get(epgUrl)
+        resp = requests.get(epgUrl, headers=headers)
         epgData = resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
         if epgData is None:
             return programmes
