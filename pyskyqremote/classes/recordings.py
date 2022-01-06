@@ -45,7 +45,7 @@ class RecordingsInformation:
         recordings = set()
         resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDINGS_LIST.format(limit, offset))
         if not resp or "pvrItems" not in resp:
-            _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._host}")
+            _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._remoteConfig.host}")
             return Recordings(recordings)
         recData = resp["pvrItems"]
         for recording in recData:
