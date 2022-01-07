@@ -36,7 +36,9 @@ class DeviceInformation:
         ASVersion = deviceInfo["ASVersion"]
         IPAddress = deviceInfo["IPAddress"]
         countryCode = deviceInfo["countryCode"]
+        gateway = deviceInfo["gateway"]
         hardwareModel = systemInfo["hardwareModel"]
+        deviceType = systemInfo["deviceType"]
         hardwareName = deviceInfo["hardwareName"]
         manufacturer = systemInfo["manufacturer"]
         modelNumber = deviceInfo["modelNumber"]
@@ -60,6 +62,8 @@ class DeviceInformation:
             epgCountryCode,
             hardwareModel,
             hardwareName,
+            deviceType,
+            gateway,
             manufacturer,
             modelNumber,
             serialNumber,
@@ -109,6 +113,16 @@ class Device:
         compare=False,
     )
     hardwareName: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    deviceType: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    gateway: str = field(
         init=True,
         repr=True,
         compare=False,

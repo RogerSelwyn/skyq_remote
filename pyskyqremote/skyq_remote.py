@@ -41,6 +41,7 @@ class SkyQRemote:
     def __init__(self, host, epgCacheLen=20, port=49160, jsonPort=9006):
         """Stand up a new SkyQ box."""
         self.deviceSetup = False
+        self.gateway = False
         self._host = host
         self._remoteCountry = None
         self._overrideCountry = None
@@ -334,6 +335,7 @@ class SkyQRemote:
         self._remoteConfig.soapControlURL = self._deviceInformation.getSoapControlURL()
 
         self.deviceSetup = True
+        self.gateway = self._remoteConfig.deviceInfo.gateway
 
     def _importCountry(self, countryCode):
         """Work out the country for the Country Code."""
