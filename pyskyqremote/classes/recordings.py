@@ -45,7 +45,7 @@ class RecordingsInformation:
         recordings = set()
         resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDINGS_LIST.format(limit, offset))
         if not resp or "pvrItems" not in resp:
-            _LOGGER.error(f"E0040 - Timeout retrieving recordings: {self._remoteConfig.host}")
+            _LOGGER.error(f"E0010R - Timeout retrieving recordings: {self._remoteConfig.host}")
             return Recordings(recordings)
         recData = resp["pvrItems"]
         for recording in recData:
@@ -59,7 +59,7 @@ class RecordingsInformation:
         """Get the recording details."""
         resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_DETAILS.format(pvrId))
         if not resp or "details" not in resp:
-            _LOGGER.info(f"I0030 - Recording data not found for {pvrId}")
+            _LOGGER.info(f"I0010R - Recording data not found for {pvrId}")
             return None
 
         recording = resp["details"]
@@ -70,6 +70,7 @@ class RecordingsInformation:
         """Get the quota information."""
         resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_QUOTA_DETAILS)
         if not resp or "userQuotaMax" not in resp:
+            _LOGGER.debug(f"D0010R - Recording data not found for {resp}")
             return None
         return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
 
