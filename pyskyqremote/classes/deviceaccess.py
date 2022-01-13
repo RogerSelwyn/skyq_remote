@@ -106,7 +106,7 @@ class DeviceAccess:
             _LOGGER.warning(f"W0030U - Websocket call failed: {self._host} : {method} : {err}")
             return {"url": None, "status": "Error"}
         except Exception as err:
-            _LOGGER.exception(f"X0030U - Error occurred: {self._host} : {err}")
+            _LOGGER.exception(f"X0030U - Error occurred: {self._host} : {err} : {method}")
             return None
 
     def callSkySOAPService(self, soapControlURL, method):

@@ -3,8 +3,7 @@
 import json
 from dataclasses import dataclass, field
 
-from ..const import (APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS,
-                     WS_CURRENT_APPS)
+from ..const import APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS, WS_CURRENT_APPS
 
 
 class AppInformation:
@@ -20,10 +19,8 @@ class AppInformation:
         """Get the active application on Sky Q box."""
         try:
             apps = self._deviceAccess.callSkyWebSocket(WS_CURRENT_APPS)
-            if apps is None:
-                return self._currentApp
-
-            self._currentApp = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)["appId"]
+            if apps:
+                self._currentApp = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)["appId"]
 
             return App(self._currentApp, self._get_app_title(self._currentApp))
         except Exception:
