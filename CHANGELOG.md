@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.2.56 (2022/01/13)
+### Fixes
+- [Fix error when no recording info](https://github.com/RogerSelwyn/skyq_remote/commit/4b1c66bd82b70268e7d9156272b63a3d0190fe5b) - @RogerSelwyn
+- [Fix incorrect handling of failed retrieval of app](https://github.com/RogerSelwyn/skyq_remote/commit/85510ffc5aeb2387cab7737f5e948f603251abe5) - @RogerSelwyn
+- ### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/b6c174fd77c81a81c3555a7569285a6cc947cc96) - @RogerSelwyn
+- [Convert to current , more generic, URLs for schedule and images](https://github.com/RogerSelwyn/skyq_remote/commit/5130ad1714162565581fd61aed337a6be20f6698) - @RogerSelwyn
+- [Bump to 0.2.55](https://github.com/RogerSelwyn/skyq_remote/commit/e83fd600253e29ff14ef5e422b565db21b0a512d) - @RogerSelwyn
+- [Provide info on gateway](https://github.com/RogerSelwyn/skyq_remote/commit/88448a963395c0b90242cd3d8387227dd8bf7a6b) - @RogerSelwyn
+- [Correctly identify recording error](https://github.com/RogerSelwyn/skyq_remote/commit/4f3820be777988d9690605d3e5ff318e5681725d) - @RogerSelwyn
+- [Bump to 0.2.56](https://github.com/RogerSelwyn/skyq_remote/commit/3e69a078c248e4c31b815dc7358e87575f3606c2) - @RogerSelwyn
 
 ## v0.2.54 (14/12/2021)
 ### Fixes
