@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.57 (2022/01/27)
+### Enhancements
+- [Add extra device information](https://github.com/RogerSelwyn/skyq_remote/commit/5cca81b828d7ac9105661efd80a703e37d6df83a) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.2.57](https://github.com/RogerSelwyn/skyq_remote/commit/89f0eafa3e8de9e1e5bc72774c517cd257b73c39) - @RogerSelwyn
+
 ## v0.2.56 (2022/01/13)
 ### Fixes
 - [Fix error when no recording info](https://github.com/RogerSelwyn/skyq_remote/commit/4b1c66bd82b70268e7d9156272b63a3d0190fe5b) - @RogerSelwyn
