@@ -46,13 +46,22 @@ Will return an object such as below for device informatiom:
    'ASVersion':'Q112.000.21.00-AS_asdev',
    'IPAddress':'192.168.1.22',
    'countryCode':'GBR',
-   'epgCountryCode':'GBR',
+   'usedCountryCode':'GBR',
    'hardwareModel':'ES240',
    'hardwareName':'Falcon',
-   'manufacturer':'Sky',
+   'deviceType': 'GATEWAYSTB',
+   'gateway': true,
+   'manufacturer':'Sky',
    'modelNumber':'Q112.000.21.00L (53wk8j8)',
    'serialNumber':'0627086857 2',
-   'versionNumber':'32B12D'
+   'versionNumber':'32B12D',
+   'bouquet': 4101,
+   'subbouquet': 9,
+   'wakeReason': 'ECO',
+   'systemUptime': 28346,
+   'hdrCapable': true,
+   'uhdCapable': true
+
 }
 ```
 
@@ -74,10 +83,18 @@ Will return a JSON structure such as below for device information:
       "epgCountryCode":"GBR",
       "hardwareModel":"ES240",
       "hardwareName":"Falcon",
+      "deviceType": "GATEWAYSTB",
+      "gateway": true,
       "manufacturer":"Sky",
       "modelNumber":"Q112.000.21.00L (53wk8j8)",
       "serialNumber":"##########",
-      "versionNumber":"32B12D"
+      "versionNumber":"32B12D",
+      "bouquet": 4101,
+      "subbouquet": 9,
+      "wakeReason": "ECO",
+      "systemUptime": 28346,
+      "hdrCapable": true,
+      "uhdCapable": true
    }
 }
 
