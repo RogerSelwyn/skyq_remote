@@ -46,20 +46,24 @@ class DeviceInformation:
         versionNumber = deviceInfo["versionNumber"]
         bouquet = deviceInfo["bouquet"]
         subbouquet = deviceInfo["subbouquet"]
+        wakeReason = systemInfo["wakeReason"]
+        systemUptime = systemInfo["systemUptime"]
+        hdrCapable = systemInfo["hdrCapable"]
+        uhdCapable = systemInfo["uhdCapable"]
 
-        epgCountryCode = overrideCountry or countryCode.upper()
-        if not epgCountryCode:
+        usedCountryCode = overrideCountry or countryCode.upper()
+        if not usedCountryCode:
             _LOGGER.error(f"E0010 - No country identified: {self._host}")
             return None
 
-        if epgCountryCode in KNOWN_COUNTRIES:
-            epgCountryCode = KNOWN_COUNTRIES[epgCountryCode]
+        if usedCountryCode in KNOWN_COUNTRIES:
+            usedCountryCode = KNOWN_COUNTRIES[usedCountryCode]
 
         return Device(
             ASVersion,
             IPAddress,
             countryCode,
-            epgCountryCode,
+            usedCountryCode,
             hardwareModel,
             hardwareName,
             deviceType,
@@ -70,6 +74,10 @@ class DeviceInformation:
             versionNumber,
             bouquet,
             subbouquet,
+            wakeReason,
+            systemUptime,
+            hdrCapable,
+            uhdCapable,
         )
 
     def getSoapControlURL(self):
@@ -102,7 +110,7 @@ class Device:
         repr=True,
         compare=False,
     )
-    epgCountryCode: str = field(
+    usedCountryCode: str = field(
         init=True,
         repr=True,
         compare=False,
@@ -153,6 +161,26 @@ class Device:
         compare=False,
     )
     subbouquet: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    wakeReason: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    systemUptime: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    hdrCapable: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    uhdCapable: str = field(
         init=True,
         repr=True,
         compare=False,

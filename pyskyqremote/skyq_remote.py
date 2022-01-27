@@ -326,7 +326,7 @@ class SkyQRemote:
             self._setupDevice()
 
         if not self._remoteCountry and self.deviceSetup:
-            SkyQCountry = self._importCountry(self._remoteConfig.deviceInfo.epgCountryCode)
+            SkyQCountry = self._importCountry(self._remoteConfig.deviceInfo.usedCountryCode)
             self._remoteCountry = SkyQCountry()
             self._remoteConfig.remoteCountry = self._remoteCountry
 
