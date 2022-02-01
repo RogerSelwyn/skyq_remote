@@ -80,7 +80,7 @@ Will return a JSON structure such as below for device information:
       "ASVersion":"Q112.000.21.00-AS_asdev",
       "IPAddress":"192.168.x.xx",
       "countryCode":"GBR",
-      "epgCountryCode":"GBR",
+      "usedCountryCode":"GBR",
       "hardwareModel":"ES240",
       "hardwareName":"Falcon",
       "deviceType": "GATEWAYSTB",
