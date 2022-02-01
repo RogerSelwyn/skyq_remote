@@ -14,21 +14,11 @@ from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
-from .const import (
-    ALLRECORDINGS,
-    COMMANDS,
-    CURRENT_TRANSPORT_STATE,
-    EPG_ERROR_NO_DATA,
-    EPG_ERROR_PAST_END,
-    SKY_STATE_NOMEDIA,
-    SKY_STATE_OFF,
-    SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
-    SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
-)
+from .const import (ALLRECORDINGS, COMMANDS, CURRENT_TRANSPORT_STATE,
+                    EPG_ERROR_NO_DATA, EPG_ERROR_PAST_END, SKY_STATE_NOMEDIA,
+                    SKY_STATE_OFF, SKY_STATE_ON, SKY_STATE_PAUSED,
+                    SKY_STATE_PLAYING, SKY_STATE_STANDBY, SKY_STATE_STOPPED,
+                    SKY_STATE_TRANSITIONING)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,9 +64,6 @@ class SkyQRemote:
         if not self._remoteCountry:
             self._setupRemote()
 
-        if self._remoteConfig.soapControlURL is None:
-            return SKY_STATE_OFF
-
         systemInfo = self._deviceInformation.getSystemInformation()
 
         if systemInfo is None:
@@ -90,9 +77,6 @@ class SkyQRemote:
         """Get current state of the SkyQ box."""
         if not self._remoteCountry:
             self._setupRemote()
-
-        if self._remoteConfig.soapControlURL is None:
-            return SKY_STATE_OFF
 
         response = self._deviceInformation.getTransportInformation()
         if response is not None:
@@ -332,8 +316,6 @@ class SkyQRemote:
 
     def _setupDevice(self):
 
-        self._remoteConfig.soapControlURL = self._deviceInformation.getSoapControlURL()
-
         self.deviceSetup = True
         self.gateway = self._remoteConfig.deviceInfo.gateway
 
@@ -359,7 +341,6 @@ class _RemoteConfig:
     epgCacheLen = 0
     remoteCountry = ""
     test_channel = 0
-    soapControlURL = ""
     epgCacheLen = 0
     deviceInfo = None
 
@@ -372,7 +353,6 @@ class _RemoteConfig:
         deviceAccess=None,
         remoteCountry=None,
         test_channel=None,
-        soapControlURL=None,
         deviceInfo=None,
     ):
         self.host = host
@@ -381,7 +361,6 @@ class _RemoteConfig:
         self.deviceAccess = deviceAccess
         self.remoteCountry = remoteCountry
         self.test_channel = test_channel
-        self.soapControlURL = soapControlURL
         self.epgCacheLen = epgCacheLen
         self.deviceAccess = DeviceAccess(host, jsonPort, port)
         self.deviceInfo = deviceInfo

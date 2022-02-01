@@ -20,7 +20,7 @@ class DeviceInformation:
 
     def getTransportInformation(self):
         """Get the transport information from the SkyQ box."""
-        return self._deviceAccess.callSkySOAPService(self._remoteConfig.soapControlURL, UPNP_GET_TRANSPORT_INFO)
+        return self._deviceAccess.callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
 
     def getSystemInformation(self):
         """Get the system information from the SkyQ box."""
@@ -79,16 +79,6 @@ class DeviceInformation:
             hdrCapable,
             uhdCapable,
         )
-
-    def getSoapControlURL(self):
-        """Get the soapcontrourl for the SkyQ box."""
-        url_index = 0
-        soapControlURL = None
-        while soapControlURL is None and url_index < 50:
-            soapControlURL = self._deviceAccess.getSoapControlURL(url_index)["url"]
-            url_index += 1
-
-        return soapControlURL
 
 
 @dataclass

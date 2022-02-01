@@ -15,7 +15,6 @@ class MediaInformation:
         """Initialise the media information class."""
         self._remoteConfig = remoteConfig
         self._deviceAccess = remoteConfig.deviceAccess
-        self._soapControlURL = remoteConfig.soapControlURL
         self._remoteCountry = remoteConfig.remoteCountry
         self._test_channel = remoteConfig.test_channel
         self._channelInformation = None
@@ -29,7 +28,7 @@ class MediaInformation:
         pvrId = None
         live = False
 
-        response = self._deviceAccess.callSkySOAPService(self._soapControlURL, UPNP_GET_MEDIA_INFO)
+        response = self._deviceAccess.callSkySOAPService(UPNP_GET_MEDIA_INFO)
         if response is None:
             return None
 
