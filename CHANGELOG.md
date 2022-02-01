@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.58 (2022/02/01)
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/11ed4a869560799c055d0a58aa4957f75e0f3e9f) - @RogerSelwyn
+- [Optimise startup calls](https://github.com/RogerSelwyn/skyq_remote/commit/e567fc110430d14cc02693ca19d3cb438f2d344f) - @RogerSelwyn
+- [Bump to 0.2.58](https://github.com/RogerSelwyn/skyq_remote/commit/c02bb35cabd1e7b4e0062146a52ad39b99cd787d) - @RogerSelwyn
+
 ## v0.2.57 (2022/01/27)
 ### Enhancements
 - [Add extra device information](https://github.com/RogerSelwyn/skyq_remote/commit/5cca81b828d7ac9105661efd80a703e37d6df83a) - @RogerSelwyn
