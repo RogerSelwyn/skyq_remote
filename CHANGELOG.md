@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.59 (2022/02/02)
+## v0.2.59 (2022/02/03)
 ### Fixes
 - [Fix excessive quota errors when in low power mode](https://github.com/RogerSelwyn/skyq_remote/commit/1352ee25fe7aeb80ca5ddb2cf7d08cd13bfbd292) - @RogerSelwyn
 
