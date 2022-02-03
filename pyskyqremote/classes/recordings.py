@@ -69,7 +69,9 @@ class RecordingsInformation:
     def getQuota(self):
         """Get the quota information."""
         resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_QUOTA_DETAILS)
-        if not resp or "userQuotaMax" not in resp:
+        if not resp:
+            return None
+        elif "userQuotaMax" not in resp:
             _LOGGER.debug(f"D0010R - Recording data not found for {resp}")
             return None
         return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
