@@ -140,6 +140,7 @@ class DeviceAccess:
 
     def sendCommand(self, port, code):
         """Send a command to the sky box."""
+        _LOGGER.debug(f"Socket Call - {self._host} - {code}")
         commandBytes = bytearray([4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16])
 
         try:
