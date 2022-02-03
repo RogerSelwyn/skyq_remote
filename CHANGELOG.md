@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.59 (2022/02/02)
+### Fixes
+- [Fix excessive quota errors when in low power mode](https://github.com/RogerSelwyn/skyq_remote/commit/1352ee25fe7aeb80ca5ddb2cf7d08cd13bfbd292) - @RogerSelwyn
+
+### Maintenance
+- [Add debug message for command press](https://github.com/RogerSelwyn/skyq_remote/commit/c1208f5166a79bd6bd5980257c7f84a51d6e7b3a) - @RogerSelwyn
+- [Bump to 0.2.59](https://github.com/RogerSelwyn/skyq_remote/commit/b3a8a95c66ce2403b2849d975d0ec15137a8f668) - @RogerSelwyn
+
 ## v0.2.58 (2022/02/01)
 ### Maintenance
 - [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/11ed4a869560799c055d0a58aa4957f75e0f3e9f) - @RogerSelwyn
