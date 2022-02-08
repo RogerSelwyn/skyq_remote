@@ -14,11 +14,21 @@ from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
 from .classes.programme import Programme
 from .classes.recordings import RecordingsInformation
-from .const import (ALLRECORDINGS, COMMANDS, CURRENT_TRANSPORT_STATE,
-                    EPG_ERROR_NO_DATA, EPG_ERROR_PAST_END, SKY_STATE_NOMEDIA,
-                    SKY_STATE_OFF, SKY_STATE_ON, SKY_STATE_PAUSED,
-                    SKY_STATE_PLAYING, SKY_STATE_STANDBY, SKY_STATE_STOPPED,
-                    SKY_STATE_TRANSITIONING)
+from .const import (
+    ALLRECORDINGS,
+    COMMANDS,
+    CURRENT_TRANSPORT_STATE,
+    EPG_ERROR_NO_DATA,
+    EPG_ERROR_PAST_END,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_ON,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,57 +38,57 @@ class SkyQRemote:
 
     commands = COMMANDS
 
-    def __init__(self, host, epgCacheLen=20, port=49160, jsonPort=9006):
+    def __init__(self, host, epg_cache_len=20, port=49160, json_port=9006):
         """Stand up a new SkyQ box."""
-        self.deviceSetup = False
+        self.device_setup = False
         self.gateway = False
         self._host = host
-        self._remoteCountry = None
-        self._overrideCountry = None
+        self._remote_country = None
+        self._override_country = None
         self._channel = None
         self._programme = None
-        self._recordedProgramme = None
-        self._lastProgrammeEpg = None
-        self._lastPvrId = None
+        self._recorded_programme = None
+        self._last_programme_epg = None
+        self._last_pvr_id = None
         self._error = False
         self._channellist = None
 
-        self._appInformation = None
-        self._channelInformation = None
-        self._deviceInformation = None
-        self._channelEPGInformation = None
-        self._favouriteInformation = None
-        self._mediaInformation = None
-        self._recordingsInformation = None
+        self._app_information = None
+        self._channel_information = None
+        self._device_information = None
+        self._channel_epg_information = None
+        self._favourite_information = None
+        self._media_information = None
+        self._recordings_information = None
 
-        self._remoteConfig = _RemoteConfig(host, port, jsonPort, epgCacheLen)
+        self._remote_config = _RemoteConfig(host, port, json_port, epg_cache_len)
 
-        deviceInfo = self.getDeviceInformation()
-        if not deviceInfo:
+        device_info = self.get_device_information()
+        if not device_info:
             return None
 
-        self._setupDevice()
+        self._setup_device()
 
-    def powerStatus(self) -> str:
+    def power_status(self) -> str:
         """Get the power status of the Sky Q box."""
-        if not self._remoteCountry:
-            self._setupRemote()
+        if not self._remote_country:
+            self._setup_remote()
 
-        systemInfo = self._deviceInformation.getSystemInformation()
+        system_info = self._device_information.get_system_information()
 
-        if systemInfo is None:
+        if system_info is None:
             return SKY_STATE_OFF
-        if "activeStandby" in systemInfo and systemInfo["activeStandby"] is True:
+        if "activeStandby" in system_info and system_info["activeStandby"] is True:
             return SKY_STATE_STANDBY
 
         return SKY_STATE_ON
 
-    def getCurrentState(self):
+    def get_current_state(self):
         """Get current state of the SkyQ box."""
-        if not self._remoteCountry:
-            self._setupRemote()
+        if not self._remote_country:
+            self._setup_remote()
 
-        response = self._deviceInformation.getTransportInformation()
+        response = self._device_information.get_transport_information()
         if response is not None:
             state = response[CURRENT_TRANSPORT_STATE]
             if state in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
@@ -89,28 +99,29 @@ class SkyQRemote:
                 return SKY_STATE_PAUSED
         return SKY_STATE_OFF
 
-    def getActiveApplication(self):
+    def get_active_application(self):
         """Get the active application on Sky Q box."""
-        if not self._appInformation:
-            self._appInformation = AppInformation(self._remoteConfig)
+        if not self._app_information:
+            self._app_information = AppInformation(self._remote_config)
 
-        return self._appInformation.getActiveApplication()
+        return self._app_information.get_active_application()
 
-    def getCurrentMedia(self):
+    def get_current_media(self):
         """Get the currently playing media on the SkyQ box."""
-        if not self._mediaInformation:
-            self._mediaInformation = MediaInformation(self._remoteConfig)
+        if not self._media_information:
+            self._media_information = MediaInformation(self._remote_config)
 
-        return self._mediaInformation.getCurrentMedia()
+        return self._media_information.get_current_media()
 
-    def getEpgData(self, sid, epgDate, days=2):
+    def get_epg_data(self, sid, epg_date, days=2):
         """Get EPG data for the specified channel/date."""
-        if not self._channelEPGInformation:
-            self._channeEPGInformation = ChannelEPGInformation(self._remoteConfig)
+        if not self._channel_epg_information:
+            self._channel_epg_information = ChannelEPGInformation(self._remote_config)
 
-        return self._channeEPGInformation.getEpgData(sid, epgDate, days)
+        data = self._channel_epg_information.get_epg_data(sid, epg_date, days)
+        return data
 
-    def getProgrammeFromEpg(self, sid, epgDate, queryDate):
+    def get_programme_from_epg(self, sid, epg_date, query_date):
         """Get programme from EPG for specfied time and channel."""
         sidint = 0
         try:
@@ -119,248 +130,282 @@ class SkyQRemote:
             if not self._error:
                 self._error = True
                 _LOGGER.info(
-                    f"I0010 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
+                    "I0010 - Programme data not found for host: %s/%s sid: %s : %s",
+                    self._host,
+                    self._override_country,
+                    sid,
+                    epg_date,
                 )
                 return EPG_ERROR_NO_DATA
 
             self._error = False
 
-        programmeEpg = f"{str(sidint)} {epgDate.strftime('%Y%m%d')}"
-        if self._lastProgrammeEpg == programmeEpg and queryDate < self._programme.endtime:
+        programme_epg = f"{str(sidint)} {epg_date.strftime('%Y%m%d')}"
+        if (
+            self._last_programme_epg == programme_epg
+            and query_date < self._programme.endtime
+        ):
             return self._programme
 
-        epgData = self.getEpgData(sidint, epgDate)
+        epg_data = self.get_epg_data(sidint, epg_date)
 
-        if len(epgData.programmes) == 0:
+        if len(epg_data.programmes) == 0:
             if not self._error:
                 self._error = True
                 _LOGGER.info(
-                    f"I0020 - Programme data not found for host: {self._host}/{self._overrideCountry} sid: {sid} : {epgDate}"
+                    "I0020 - Programme data not found for host: %s/%s sid: %s : %s",
+                    self._host,
+                    self._override_country,
+                    sid,
+                    epg_date,
                 )
             return EPG_ERROR_NO_DATA
 
         self._error = False
 
         try:
-            programme = next(p for p in epgData.programmes if p.starttime <= queryDate and p.endtime >= queryDate)
+            programme = next(
+                p
+                for p in epg_data.programmes
+                if p.starttime <= query_date and p.endtime >= query_date
+            )
 
             self._programme = programme
-            self._lastProgrammeEpg = programmeEpg
+            self._last_programme_epg = programme_epg
             return programme
 
         except StopIteration:
             return EPG_ERROR_PAST_END
 
-    def getCurrentLiveTVProgramme(self, sid):
+    def get_current_live_tv_programme(self, sid):
         """Get current live programme on the specified channel."""
         try:
-            queryDate = datetime.utcnow()
-            programme = self.getProgrammeFromEpg(sid, queryDate, queryDate)
+            query_date = datetime.utcnow()
+            programme = self.get_programme_from_epg(sid, query_date, query_date)
             if not isinstance(programme, Programme):
                 return None
 
             return programme
-        except Exception as err:
-            _LOGGER.exception(f"X0010 - Error occurred: {self._host} : {sid} : {err}")
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.exception(
+                "X0010 - Error occurred: %s : %s : %s", self._host, sid, err
+            )
             return None
 
-    def getRecordings(self, status=ALLRECORDINGS, limit=1000, offset=0):
+    def get_recordings(self, status=ALLRECORDINGS, limit=1000, offset=0):
         """Get the list of available Recordings."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.getRecordings(status, limit, offset)
+        return self._recordings_information.get_recordings(status, limit, offset)
 
-    def getRecording(self, pvrId):
+    def get_recording(self, pvrid):
         """Get the recording details."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        if self._lastPvrId == pvrId:
-            return self._recordedProgramme
-        self._lastPvrId = pvrId
+        if self._last_pvr_id == pvrid:
+            return self._recorded_programme
+        self._last_pvr_id = pvrid
 
-        self._recordedProgramme = self._recordingsInformation.getRecording(pvrId)
-        return self._recordedProgramme
+        self._recorded_programme = self._recordings_information.get_recording(pvrid)
+        return self._recorded_programme
 
-    def getQuota(self):
+    def get_quota(self):
         """Retrieve the available storage quota."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.getQuota()
+        return self._recordings_information.get_quota()
 
-    def bookRecording(self, eid, series=False):
+    def book_recording(self, eid, series=False):
         """Book recording for specified item."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.bookRecording(eid, series)
+        return self._recordings_information.book_recording(eid, series)
 
-    def bookPPVRecording(self, eid, offerref):
+    def book_ppv_recording(self, eid, offerref):
         """Book recording for specified item."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.bookPPVRecording(eid, offerref)
+        return self._recordings_information.book_ppv_recording(eid, offerref)
 
-    def seriesLink(self, pvrid, On=True):
+    def series_link(self, pvrid, linkon=True):
         """Book recording for specified item."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.seriesLink(pvrid, On)
+        return self._recordings_information.series_link(pvrid, linkon)
 
-    def recordingKeep(self, pvrid, On=True):
+    def recording_keep(self, pvrid, keepon=True):
         """Keep the recording."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.recordingKeep(pvrid, On)
+        return self._recordings_information.recording_keep(pvrid, keepon)
 
-    def recordingLock(self, pvrid, On=True):
+    def recording_lock(self, pvrid, lockon=True):
         """Lock the recording."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.recordingLock(pvrid, On)
+        return self._recordings_information.recording_lock(pvrid, lockon)
 
-    def recordingDelete(self, pvrid, On=True):
+    def recording_delete(self, pvrid, deleteon=True):
         """Delete the recording."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.recordingDelete(pvrid, On)
+        return self._recordings_information.recording_delete(pvrid, deleteon)
 
-    def recordingErase(self, pvrid):
+    def recording_erase(self, pvrid):
         """Delete the recording."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.recordingErase(pvrid)
+        return self._recordings_information.recording_erase(pvrid)
 
-    def recordingEraseAll(self):
+    def recording_erase_all(self):
         """Delete the reording."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.recordingEraseAll()
+        return self._recordings_information.recording_erase_all()
 
-    def recordingSetLastPlayedPosition(self, pvrid, pos):
+    def recording_set_last_played_position(self, pvrid, pos):
         """Set the last played position for specified item."""
-        if not self._recordingsInformation:
-            self._recordingsInformation = RecordingsInformation(self._remoteConfig)
+        if not self._recordings_information:
+            self._recordings_information = RecordingsInformation(self._remote_config)
 
-        return self._recordingsInformation.recordingSetLastPlayedPosition(pvrid, pos)
+        return self._recordings_information.recording_set_last_played_position(
+            pvrid, pos
+        )
 
-    def getDeviceInformation(self):
+    def get_device_information(self):
         """Get the device information from the SkyQ box."""
-        if not self._deviceInformation:
-            self._deviceInformation = DeviceInformation(self._remoteConfig)
+        if not self._device_information:
+            self._device_information = DeviceInformation(self._remote_config)
 
-        deviceInfo = self._deviceInformation.getDeviceInformation(self._overrideCountry)
-        self._remoteConfig.deviceInfo = deviceInfo
-        return deviceInfo
+        device_info = self._device_information.get_device_information(
+            self._override_country
+        )
+        self._remote_config.device_info = device_info
+        return device_info
 
-    def getChannelList(self):
+    def get_channel_list(self):
         """Get Channel list for Sky Q box."""
-        if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._remoteConfig)
+        if not self._channel_information:
+            self._channel_information = ChannelInformation(self._remote_config)
 
-        self._channellist = self._channelInformation.getChannelList()
+        self._channellist = self._channel_information.get_channel_list()
         return self._channellist
 
-    def getChannelInfo(self, channelNo):
+    def get_channel_info(self, channel_no):
         """Retrieve channel information for specified channelNo."""
-        if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._remoteConfig)
+        if not self._channel_information:
+            self._channel_information = ChannelInformation(self._remote_config)
 
-        return self._channelInformation.getChannelInfo(channelNo)
+        return self._channel_information.get_channel_info(channel_no)
 
-    def getFavouriteList(self):
+    def get_favourite_list(self):
         """Retrieve the list of favourites."""
-        if not self._favouriteInformation:
-            self._favouriteInformation = FavouriteInformation(self._remoteConfig)
+        if not self._favourite_information:
+            self._favourite_information = FavouriteInformation(self._remote_config)
 
         if not self._channellist:
-            self.getChannelList()
-        return self._favouriteInformation.getFavouriteList(self._channellist)
+            self.get_channel_list()
+        return self._favourite_information.get_favourite_list(self._channellist)
 
     def press(self, sequence):
         """Issue the specified sequence of commands to SkyQ box."""
-        self._remoteConfig.deviceAccess.press(sequence)
+        self._remote_config.device_access.press(sequence)
 
-    def setOverrides(self, overrideCountry=None, test_channel=None, jsonPort=None, port=None):
+    def set_overrides(
+        self, override_country=None, test_channel=None, json_port=None, port=None
+    ):
         """Override various items."""
-        if overrideCountry:
-            self._overrideCountry = overrideCountry
+        if override_country:
+            self._override_country = override_country
         if test_channel:
-            self._remoteConfig.test_channel = test_channel
-        if jsonPort:
-            self._remoteConfig.jsonPort = jsonPort
+            self._remote_config.test_channel = test_channel
+        if json_port:
+            self._remote_config.json_port = json_port
         if port:
-            self._remoteConfig.port = port
+            self._remote_config.port = port
 
-    def _setupRemote(self):
-        deviceInfo = self.getDeviceInformation()
-        if not deviceInfo:
+    def _setup_remote(self):
+        device_info = self.get_device_information()
+        if not device_info:
             return
 
-        if not self.deviceSetup:
-            self._setupDevice()
+        if not self.device_setup:
+            self._setup_device()
 
-        if not self._remoteCountry and self.deviceSetup:
-            SkyQCountry = self._importCountry(self._remoteConfig.deviceInfo.usedCountryCode)
-            self._remoteCountry = SkyQCountry()
-            self._remoteConfig.remoteCountry = self._remoteCountry
+        if not self._remote_country and self.device_setup:
+            skyq_country = self._import_country(
+                self._remote_config.device_info.used_country_code
+            )
+            self._remote_country = skyq_country()
+            self._remote_config.remote_country = self._remote_country
 
-    def _setupDevice(self):
+    def _setup_device(self):
 
-        self.deviceSetup = True
-        self.gateway = self._remoteConfig.deviceInfo.gateway
+        self.device_setup = True
+        self.gateway = self._remote_config.device_info.gateway
 
-    def _importCountry(self, countryCode):
+    def _import_country(self, country_code):
         """Work out the country for the Country Code."""
         try:
-            country = pycountry.countries.get(alpha_3=countryCode).alpha_2.casefold()
-            SkyQCountry = importlib.import_module("pyskyqremote.country.remote_" + country).SkyQCountry
+            country = pycountry.countries.get(alpha_3=country_code).alpha_2.casefold()
+            skyq_country = importlib.import_module(
+                "pyskyqremote.country.remote_" + country
+            ).SkyQCountry
 
         except (AttributeError, ModuleNotFoundError) as err:
-            _LOGGER.warning(f"W0010 - Invalid country, defaulting to GBR: {self._host} : {countryCode} : {err}")
+            _LOGGER.warning(
+                "W0010 - Invalid country, defaulting to GBR: %s : %s : %s",
+                self._host,
+                country_code,
+                err,
+            )
 
-            from pyskyqremote.country.remote_gb import SkyQCountry
+            skyq_country = importlib.import_module(
+                "pyskyqremote.country.remote_" + "gb"
+            ).SkyQCountry
 
-        return SkyQCountry
+        return skyq_country
 
 
 class _RemoteConfig:
-    deviceAccess = None
+    device_access = None
     host = 0
     port = 0
-    jsonPort = 0
-    epgCacheLen = 0
-    remoteCountry = ""
+    json_port = 0
+    epg_cache_len = 0
+    remote_country = ""
     test_channel = 0
-    epgCacheLen = 0
-    deviceInfo = None
+    epg_cache_len = 0
+    device_info = None
 
     def __init__(
         self,
         host,
         port,
-        jsonPort,
-        epgCacheLen,
-        deviceAccess=None,
-        remoteCountry=None,
+        json_port,
+        epg_cache_len,
+        device_access=None,
+        remote_country=None,
         test_channel=None,
-        deviceInfo=None,
+        device_info=None,
     ):
         self.host = host
         self.port = port
-        self.jsonPort = jsonPort
-        self.deviceAccess = deviceAccess
-        self.remoteCountry = remoteCountry
+        self.json_port = json_port
+        self.device_access = device_access
+        self.remote_country = remote_country
         self.test_channel = test_channel
-        self.epgCacheLen = epgCacheLen
-        self.deviceAccess = DeviceAccess(host, jsonPort, port)
-        self.deviceInfo = deviceInfo
+        self.epg_cache_len = epg_cache_len
+        self.device_access = DeviceAccess(host, json_port, port)
+        self.device_info = device_info

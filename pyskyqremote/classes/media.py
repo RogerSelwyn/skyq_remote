@@ -11,51 +11,51 @@ from .channel import ChannelInformation
 class MediaInformation:
     """Sky Q media information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the media information class."""
-        self._remoteConfig = remoteConfig
-        self._deviceAccess = remoteConfig.deviceAccess
-        self._remoteCountry = remoteConfig.remoteCountry
-        self._test_channel = remoteConfig.test_channel
-        self._channelInformation = None
+        self._remote_config = remote_config
+        self._device_access = remote_config.device_access
+        self._remote_country = remote_config.remote_country
+        self._test_channel = remote_config.test_channel
+        self._channel_information = None
 
-    def getCurrentMedia(self):
+    def get_current_media(self):
         """Get the currently playing media on the SkyQ box."""
         channel = None
         channelno = None
-        imageUrl = None
+        image_url = None
         sid = None
-        pvrId = None
+        pvrid = None
         live = False
 
-        response = self._deviceAccess.callSkySOAPService(UPNP_GET_MEDIA_INFO)
+        response = self._device_access.call_sky_soap_service(UPNP_GET_MEDIA_INFO)
         if response is None:
             return None
 
-        currentURI = response[CURRENT_URI]
-        if currentURI is None:
+        current_uri = response[CURRENT_URI]
+        if current_uri is None:
             return None
 
-        if XSI in currentURI:
-            sid = self._test_channel or int(currentURI[6:], 16)
+        if XSI in current_uri:
+            sid = self._test_channel or int(current_uri[6:], 16)
             live = True
-            channelNode = self._getChannelNode(sid)
-            if channelNode:
-                channel = channelNode["channel"]
-                channelno = channelNode["channelno"]
-                imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
-        elif PVR in currentURI:
+            channel_node = self._get_channel_node(sid)
+            if channel_node:
+                channel = channel_node["channel"]
+                channelno = channel_node["channelno"]
+                image_url = self._remote_country.build_channel_image_url(sid, channel)
+        elif PVR in current_uri:
             # Recorded content
-            pvrId = "P" + currentURI[11:]
+            pvrid = "P" + current_uri[11:]
             live = False
 
-        return Media(channel, channelno, imageUrl, sid, pvrId, live)
+        return Media(channel, channelno, image_url, sid, pvrid, live)
 
-    def _getChannelNode(self, sid):
-        if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._remoteConfig)
+    def _get_channel_node(self, sid):
+        if not self._channel_information:
+            self._channel_information = ChannelInformation(self._remote_config)
 
-        return self._channelInformation.getChannelNode(sid)
+        return self._channel_information.get_channel_node(sid)
 
 
 @dataclass
@@ -72,7 +72,7 @@ class Media:
         repr=True,
         compare=False,
     )
-    imageUrl: str = field(
+    image_url: str = field(
         init=True,
         repr=True,
         compare=False,
@@ -82,7 +82,7 @@ class Media:
         repr=True,
         compare=False,
     )
-    pvrId: str = field(
+    pvrid: str = field(
         init=True,
         repr=True,
         compare=False,
@@ -98,7 +98,7 @@ class Media:
         return json.dumps(self, cls=_MediaJSONEncoder)
 
 
-def MediaDecoder(obj):
+def media_decoder(obj):
     """Decode programme object from json."""
     media = json.loads(obj)
     if "__type__" in media and media["__type__"] == "__media__":
@@ -107,13 +107,13 @@ def MediaDecoder(obj):
 
 
 class _MediaJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Media):
+    def default(self, o):
+        if isinstance(o, Media):
             attributes = {}
-            for k, v in vars(obj).items():
-                if isinstance(v, datetime):
-                    v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
-                attributes[k] = v
+            for k, val in vars(o).items():
+                if isinstance(val, datetime):
+                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                attributes[k] = val
             return {
                 "__type__": "__media__",
                 "attributes": attributes,

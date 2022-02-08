@@ -9,25 +9,27 @@ from ..const import REST_FAVOURITES
 class FavouriteInformation:
     """Sky Q favourites information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the favourites information class."""
-        self._deviceAccess = remoteConfig.deviceAccess
+        self._device_access = remote_config.device_access
+        self._channellist = None
+        self._favouritelist = None
 
-    def getFavouriteList(self, channellist):
+    def get_favourite_list(self, channellist):
         """Retrieve the list of favourites."""
         self._channellist = channellist
-        favourites = self._deviceAccess.retrieveInformation(REST_FAVOURITES)
+        favourites = self._device_access.retrieve_information(REST_FAVOURITES)
         if not favourites or "favourites" not in favourites:
             return []
 
         favitems = set()
 
-        for f in favourites["favourites"]:
-            favsid = f["sid"]
-            channel = self._getFavChannel(favsid)
+        for favourite in favourites["favourites"]:
+            favsid = favourite["sid"]
+            channel = self._get_fav_channel(favsid)
             channelno = channel.channelno if channel else None
             channelname = channel.channelname if channel else None
-            favourite = Favourite(f["lcn"], channelno, channelname, favsid)
+            favourite = Favourite(favourite["lcn"], channelno, channelname, favsid)
             favitems.add(favourite)
 
         favouritesorted = sorted(favitems, key=attrgetter("lcn"))
@@ -35,7 +37,7 @@ class FavouriteInformation:
 
         return self._favouritelist
 
-    def _getFavChannel(self, sid):
+    def _get_fav_channel(self, sid):
         try:
             return next(c for c in self._channellist.channels if c.channelsid == sid)
         except StopIteration:
@@ -57,11 +59,13 @@ class FavouriteList:
         return json.dumps(self, cls=_FavouriteListJSONEncoder)
 
 
-def FavouriteListDecoder(obj):
+def favourite_list_decoder(obj):
     """Decode favourite object from json."""
     favouritelist = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in favouritelist and favouritelist["__type__"] == "__favouritelist__":
-        return FavouriteList(favourites=favouritelist["favourites"], **favouritelist["attributes"])
+        return FavouriteList(
+            favourites=favouritelist["favourites"], **favouritelist["attributes"]
+        )
     return favouritelist
 
 
@@ -73,28 +77,28 @@ def _json_decoder_hook(obj):
 
 
 class _FavouriteListJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, FavouriteList):
+    def default(self, o):
+        if isinstance(o, FavouriteList):
             type_ = "__favouritelist__"
-            favourites = obj.favourites
-            attributes = {k: v for k, v in vars(obj).items() if k not in {"favourites"}}
+            favourites = o.favourites
+            attributes = {k: v for k, v in vars(o).items() if k not in {"favourites"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
                 "favourites": favourites,
             }
 
-        if isinstance(obj, set):
-            return list(obj)
+        if isinstance(o, set):
+            return list(o)
 
-        if isinstance(obj, Favourite):
-            attributes = {k: v for k, v in vars(obj).items()}
+        if isinstance(o, Favourite):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__favourite__",
                 "attributes": attributes,
             }
 
-        json.JSONEncoder.default(self, obj)  # pragma: no cover
+        json.JSONEncoder.default(self, o)  # pragma: no cover
 
 
 @dataclass(order=True)
@@ -131,7 +135,7 @@ class Favourite:
         return json.dumps(self, cls=_favouriteJSONEncoder)
 
 
-def favouriteDecoder(obj):
+def favourite_decoder(obj):
     """Decode favourite object from json."""
     favourite = json.loads(obj)
     if "__type__" in favourite and favourite["__type__"] == "__favourite__":
@@ -140,9 +144,9 @@ def favouriteDecoder(obj):
 
 
 class _favouriteJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Favourite):
-            attributes = {k: v for k, v in vars(obj).items()}
+    def default(self, o):
+        if isinstance(o, Favourite):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__favourite__",
                 "attributes": attributes,

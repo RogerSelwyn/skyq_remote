@@ -12,61 +12,69 @@ from .programme import Programme
 class ChannelEPGInformation:
     """Sky Q Channel EPG information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the channel epg information class."""
-        self._remoteConfig = remoteConfig
-        self._deviceAccess = remoteConfig.deviceAccess
-        self._remoteCountry = remoteConfig.remoteCountry
-        self._test_channel = remoteConfig.test_channel
-        self._epgCacheLen = remoteConfig.epgCacheLen
-        self._epgCache = OrderedDict()
+        self._remote_config = remote_config
+        self._device_access = remote_config.device_access
+        self._remote_country = remote_config.remote_country
+        self._test_channel = remote_config.test_channel
+        self._epg_cache_len = remote_config.epg_cache_len
+        self._epg_cache = OrderedDict()
         self._channel = None
-        self._channelInformation = None
+        self._channel_information = None
 
-    def getEpgData(self, sid, epgDate, days=2):
+    def get_epg_data(self, sid, epg_date, days=2):
         """Get EPG data for the specified channel/date."""
-        epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epgDate.strftime('%Y%m%d')}"
+        epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epg_date.strftime('%Y%m%d')}"  # pylint: disable=consider-using-f-string
 
-        if sid in self._epgCache and self._epgCache[sid]["epg"] == epg:
-            return self._epgCache[sid]["channel"]
+        if sid in self._epg_cache and self._epg_cache[sid]["epg"] == epg:
+            return self._epg_cache[sid]["channel"]
 
-        channelNo = None
-        channelName = None
-        channelImageUrl = None
+        channel_no = None
+        channel_name = None
+        channel_image_url = None
         programmes = set()
 
-        channelNode = self._getChannelNode(sid)
-        if channelNode:
-            channelNo = channelNode["channelno"]
-            channelName = channelNode["channel"]
-            channelImageUrl = self._remoteCountry.buildChannelImageUrl(sid, channelName)
+        channel_node = self._get_channel_node(sid)
+        if channel_node:
+            channel_no = channel_node["channelno"]
+            channel_name = channel_node["channel"]
+            channel_image_url = self._remote_country.build_channel_image_url(
+                sid, channel_name
+            )
 
-            for n in range(days):
-                programmesData = self._remoteCountry.getEpgData(
-                    sid, channelNo, channelName, epgDate + timedelta(days=n)
+            for day in range(days):
+                programmes_data = self._remote_country.get_epg_data(
+                    sid, channel_no, channel_name, epg_date + timedelta(days=day)
                 )
-                if len(programmesData) > 0:
-                    programmes = programmes.union(programmesData)
+                if len(programmes_data) > 0:
+                    programmes = programmes.union(programmes_data)
                 else:
                     break
 
-        self._channel = ChannelEPG(sid, channelNo, channelName, channelImageUrl, sorted(programmes))
-        self._epgCache[sid] = {
+        self._channel = ChannelEPG(
+            sid, channel_no, channel_name, channel_image_url, sorted(programmes)
+        )
+        self._epg_cache[sid] = {
             "epg": epg,
             "channel": self._channel,
             "updatetime": datetime.utcnow(),
         }
-        self._epgCache = OrderedDict(sorted(self._epgCache.items(), key=lambda x: x[1]["updatetime"], reverse=True))
-        while len(self._epgCache) > self._epgCacheLen:
-            self._epgCache.popitem(last=True)
+        self._epg_cache = OrderedDict(
+            sorted(
+                self._epg_cache.items(), key=lambda x: x[1]["updatetime"], reverse=True
+            )
+        )
+        while len(self._epg_cache) > self._epg_cache_len:
+            self._epg_cache.popitem(last=True)
 
         return self._channel
 
-    def _getChannelNode(self, sid):
-        if not self._channelInformation:
-            self._channelInformation = ChannelInformation(self._remoteConfig)
+    def _get_channel_node(self, sid):
+        if not self._channel_information:
+            self._channel_information = ChannelInformation(self._remote_config)
 
-        return self._channelInformation.getChannelNode(sid)
+        return self._channel_information.get_channel_node(sid)
 
 
 @dataclass
@@ -88,7 +96,7 @@ class ChannelEPG:
         repr=True,
         compare=False,
     )
-    channelImageUrl: str = field(
+    channelimageurl: str = field(
         init=True,
         repr=True,
         compare=False,
@@ -104,11 +112,13 @@ class ChannelEPG:
         return json.dumps(self, cls=_ChannelEPGJSONEncoder)
 
 
-def ChannelEPGDecoder(obj):
+def channel_epg_decoder(obj):
     """Decode channel object from json."""
     channelepg = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in channelepg and channelepg["__type__"] == "__channelepg__":
-        return ChannelEPG(programmes=channelepg["programmes"], **channelepg["attributes"])
+        return ChannelEPG(
+            programmes=channelepg["programmes"], **channelepg["attributes"]
+        )
     return channelepg
 
 
@@ -124,29 +134,29 @@ def _json_decoder_hook(obj):
 
 
 class _ChannelEPGJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, ChannelEPG):
+    def default(self, o):
+        if isinstance(o, ChannelEPG):
             type_ = "__channelepg__"
-            programmes = obj.programmes
-            attributes = {k: v for k, v in vars(obj).items() if k not in {"programmes"}}
+            programmes = o.programmes
+            attributes = {k: v for k, v in vars(o).items() if k not in {"programmes"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
                 "programmes": programmes,
             }
 
-        if isinstance(obj, set):
-            return list(obj)
+        if isinstance(o, set):
+            return list(o)
 
-        if isinstance(obj, Programme):
+        if isinstance(o, Programme):
             attributes = {}
-            for k, v in vars(obj).items():
-                if isinstance(v, datetime):
-                    v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
-                attributes[k] = v
+            for k, val in vars(o).items():
+                if isinstance(val, datetime):
+                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                attributes[k] = val
             return {
                 "__type__": "__programme__",
                 "attributes": attributes,
             }
 
-        json.JSONEncoder.default(self, obj)  # pragma: no cover
+        json.JSONEncoder.default(self, o)  # pragma: no cover

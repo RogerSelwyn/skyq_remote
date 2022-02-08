@@ -36,53 +36,63 @@ _LOGGER = logging.getLogger(__name__)
 class RecordingsInformation:
     """Sky Q recordings information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the recordings information class."""
-        self._remoteConfig = remoteConfig
+        self._remote_config = remote_config
 
-    def getRecordings(self, status, limit, offset):
+    def get_recordings(self, status, limit, offset):
         """Get the list of available Recordings."""
         recordings = set()
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDINGS_LIST.format(limit, offset))
+        resp = self._remote_config.device_access.retrieve_information(
+            REST_RECORDINGS_LIST.format(limit, offset)
+        )
         if not resp or "pvrItems" not in resp:
-            _LOGGER.error(f"E0010R - Timeout retrieving recordings: {self._remoteConfig.host}")
+            _LOGGER.error(
+                "E0010R - Timeout retrieving recordings: %s", self._remote_config.host
+            )
             return Recordings(recordings)
-        recData = resp["pvrItems"]
-        for recording in recData:
+        rec_data = resp["pvrItems"]
+        for recording in rec_data:
             if recording["status"] == status or status == ALLRECORDINGS:
-                built = self._buildRecording(recording)
+                built = self._build_recording(recording)
                 recordings.add(built)
 
         return Recordings(recordings)
 
-    def getRecording(self, pvrId):
+    def get_recording(self, pvrid):
         """Get the recording details."""
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_DETAILS.format(pvrId))
+        resp = self._remote_config.device_access.retrieve_information(
+            REST_RECORDING_DETAILS.format(pvrid)
+        )
         if not resp or "details" not in resp:
-            _LOGGER.info(f"I0010R - Recording data not found for {pvrId}")
+            _LOGGER.info("I0010R - Recording data not found for %s", pvrid)
             return None
 
         recording = resp["details"]
 
-        return self._buildRecording(recording)
+        return self._build_recording(recording)
 
-    def getQuota(self):
+    def get_quota(self):
         """Get the quota information."""
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_QUOTA_DETAILS)
+        resp = self._remote_config.device_access.retrieve_information(
+            REST_QUOTA_DETAILS
+        )
         if not resp:
             return None
         elif "userQuotaMax" not in resp:
-            _LOGGER.debug(f"D0010R - Recording data not found for {resp}")
+            _LOGGER.debug("D0010R - Recording data not found for %s", resp)
             return None
         return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
 
-    def bookRecording(self, eid, series):
+    def book_recording(self, eid, series):
         """Book recording for specified item."""
         resp = None
         if not series:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_BOOK_RECORDING.format(eid), REST_POST)
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_BOOK_RECORDING.format(eid), REST_POST
+            )
         else:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(
+            resp = self._remote_config.device_access.retrieve_information(
                 REST_BOOK_SERIES_RECORDING.format(eid), REST_POST
             )
 
@@ -91,9 +101,9 @@ class RecordingsInformation:
 
         return True
 
-    def bookPPVRecording(self, eid, offerref):
+    def book_ppv_recording(self, eid, offerref):
         """Book PPV recording for specified item."""
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(
+        resp = self._remote_config.device_access.retrieve_information(
             REST_BOOK_PPVRECORDING.format(eid, offerref), REST_POST
         )
         if resp != RESPONSE_OK:
@@ -101,79 +111,99 @@ class RecordingsInformation:
 
         return True
 
-    def seriesLink(self, pvrid, On):
+    def series_link(self, pvrid, linkon):
         """Series link the specified item."""
         resp = None
-        if On:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_SERIES_LINK.format(pvrid), REST_POST)
+        if linkon:
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_SERIES_LINK.format(pvrid), REST_POST
+            )
         else:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_SERIES_UNLINK.format(pvrid), REST_POST)
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_SERIES_UNLINK.format(pvrid), REST_POST
+            )
 
         if resp != RESPONSE_OK:
             return False
 
         return True
 
-    def recordingKeep(self, pvrid, On):
+    def recording_keep(self, pvrid, keepon):
         """Keep the specified item."""
         resp = None
-        if On:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_KEEP.format(pvrid), REST_POST)
+        if keepon:
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_RECORDING_KEEP.format(pvrid), REST_POST
+            )
         else:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_UNKEEP.format(pvrid), REST_POST)
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_RECORDING_UNKEEP.format(pvrid), REST_POST
+            )
 
         if resp != RESPONSE_OK:
             return False
 
         return True
 
-    def recordingLock(self, pvrid, On):
+    def recording_lock(self, pvrid, lockon):
         """Lock the specified item."""
         resp = None
-        if On:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_LOCK.format(pvrid), REST_POST)
+        if lockon:
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_RECORDING_LOCK.format(pvrid), REST_POST
+            )
         else:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_UNLOCK.format(pvrid), REST_POST)
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_RECORDING_UNLOCK.format(pvrid), REST_POST
+            )
 
         if resp != RESPONSE_OK:
             return False
 
         return True
 
-    def recordingDelete(self, pvrid, On):
+    def recording_delete(self, pvrid, deleteon):
         """Delete the specified item."""
         resp = None
-        if On:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_DELETE.format(pvrid), REST_POST)
+        if deleteon:
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_RECORDING_DELETE.format(pvrid), REST_POST
+            )
         else:
-            resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_UNDELETE.format(pvrid), REST_POST)
+            resp = self._remote_config.device_access.retrieve_information(
+                REST_RECORDING_UNDELETE.format(pvrid), REST_POST
+            )
 
         if resp != RESPONSE_OK:
             return False
 
         return True
 
-    def recordingErase(self, pvrid):
+    def recording_erase(self, pvrid):
         """Permanently erase the specified item."""
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_ERASE.format(pvrid), REST_POST)
+        resp = self._remote_config.device_access.retrieve_information(
+            REST_RECORDING_ERASE.format(pvrid), REST_POST
+        )
 
         if resp != RESPONSE_OK:
             return False
 
         return True
 
-    def recordingEraseAll(self):
+    def recording_erase_all(self):
         """Permanently erase the specified item."""
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(REST_RECORDING_ERASE_ALL, REST_DELETE)
+        resp = self._remote_config.device_access.retrieve_information(
+            REST_RECORDING_ERASE_ALL, REST_DELETE
+        )
 
         if resp != RESPONSE_OK:
             return False
 
         return True
 
-    def recordingSetLastPlayedPosition(self, pvrid, pos):
+    def recording_set_last_played_position(self, pvrid, pos):
         """Set the last played position for specified item."""
-        resp = self._remoteConfig.deviceAccess.retrieveInformation(
+        resp = self._remote_config.device_access.retrieve_information(
             REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid), REST_POST
         )
         if resp != RESPONSE_OK:
@@ -181,14 +211,14 @@ class RecordingsInformation:
 
         return True
 
-    def _buildRecording(self, recording):
+    def _build_recording(self, recording):
         season = None
         episode = None
         starttime = None
         endtime = None
         programmeuuid = None
         channel = None
-        imageUrl = None
+        image_url = None
         title = None
         status = None
         pvrid = None
@@ -201,10 +231,14 @@ class RecordingsInformation:
             episode = recording["episodenumber"]
         if "programmeuuid" in recording:
             programmeuuid = recording["programmeuuid"]
-            imageUrl = self._remoteConfig.remoteCountry.pvr_image_url.format(str(programmeuuid))
+            image_url = self._remote_config.remote_country.pvr_image_url.format(
+                str(programmeuuid)
+            )
         elif "osid" in recording:
             sid = str(recording["osid"])
-            imageUrl = self._remoteCountry.buildChannelImageUrl(sid, channel)
+            image_url = self._remote_config.remote_country.build_channel_image_url(
+                sid, channel
+            )
 
         starttimestamp = 0
         if "ast" in recording:
@@ -226,7 +260,17 @@ class RecordingsInformation:
         status = recording["status"]
 
         return Programme(
-            programmeuuid, starttime, endtime, title, season, episode, imageUrl, channel, status, pvrid, eid
+            programmeuuid,
+            starttime,
+            endtime,
+            title,
+            season,
+            episode,
+            image_url,
+            channel,
+            status,
+            pvrid,
+            eid,
         )
 
 
@@ -245,11 +289,13 @@ class Recordings:
         return json.dumps(self, cls=_RecordingsJSONEncoder)
 
 
-def RecordingsDecoder(obj):
+def recordings_decoder(obj):
     """Decode channel object from json."""
     recordings = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in recordings and recordings["__type__"] == "__recordings__":
-        return Recordings(programmes=recordings["programmes"], **recordings["attributes"])
+        return Recordings(
+            programmes=recordings["programmes"], **recordings["attributes"]
+        )
     return recordings
 
 
@@ -265,44 +311,44 @@ def _json_decoder_hook(obj):
 
 
 class _RecordingsJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Recordings):
+    def default(self, o):
+        if isinstance(o, Recordings):
             type_ = "__recordings__"
-            programmes = obj.programmes
-            attributes = {k: v for k, v in vars(obj).items() if k not in {"programmes"}}
+            programmes = o.programmes
+            attributes = {k: v for k, v in vars(o).items() if k not in {"programmes"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
                 "programmes": programmes,
             }
 
-        if isinstance(obj, set):
-            return list(obj)
+        if isinstance(o, set):
+            return list(o)
 
-        if isinstance(obj, Programme):
+        if isinstance(o, Programme):
             attributes = {}
-            for k, v in vars(obj).items():
-                if isinstance(v, datetime):
-                    v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
-                attributes[k] = v
+            for k, val in vars(o).items():
+                if isinstance(val, datetime):
+                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                attributes[k] = val
             return {
                 "__type__": "__programme__",
                 "attributes": attributes,
             }
 
-        json.JSONEncoder.default(self, obj)  # pragma: no cover
+        json.JSONEncoder.default(self, o)  # pragma: no cover
 
 
 @dataclass
 class Quota:
     """SkyQ Quota Class."""
 
-    quotaMax: int = field(
+    quota_max: int = field(
         init=True,
         repr=True,
         compare=False,
     )
-    quotaUsed: str = field(
+    quota_used: str = field(
         init=True,
         repr=True,
         compare=False,
@@ -313,7 +359,7 @@ class Quota:
         return json.dumps(self, cls=_QuotaJSONEncoder)
 
 
-def QuotaDecoder(obj):
+def quota_decoder(obj):
     """Decode quota object from json."""
     quota = json.loads(obj)
     if "__type__" in quota and quota["__type__"] == "__quota__":
@@ -322,9 +368,9 @@ def QuotaDecoder(obj):
 
 
 class _QuotaJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Quota):
-            attributes = {k: v for k, v in vars(obj).items()}
+    def default(self, o):
+        if isinstance(o, Quota):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__quota__",
                 "attributes": attributes,

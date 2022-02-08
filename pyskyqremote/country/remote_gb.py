@@ -6,7 +6,13 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_gb import CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL, TERRITORY
+from .const_gb import (
+    CHANNEL_IMAGE_URL,
+    LIVE_IMAGE_URL,
+    PVR_IMAGE_URL,
+    SCHEDULE_URL,
+    TERRITORY,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,47 +24,53 @@ class SkyQCountry:
         """Initialise UK remote."""
         self.pvr_image_url = PVR_IMAGE_URL
 
-    def getEpgData(self, sid, channelno, channelName, epgDate):
+    def get_epg_data(self, sid, channelno, channel_name, epg_date):
         """Get EPG data for UK."""
-        return self._getData(sid, channelno, channelName, epgDate)
+        return self._get_data(sid, channelno, channel_name, epg_date)
 
-    def buildChannelImageUrl(self, sid, channelname):
+    def build_channel_image_url(self, sid, channelname):
         """Build the channel image URL."""
         chid = "".join(e for e in channelname.casefold() if e.isalnum())
         return CHANNEL_IMAGE_URL.format(sid, chid)
 
-    def _getData(self, sid, channelno, channelName, epgDate):
-        epgDateStr = epgDate.strftime("%Y%m%d")
+    def _get_data(
+        self, sid, channelno, channel_name, epg_date
+    ):  # pylint: disable=unused-argument
+        epg_date_str = epg_date.strftime("%Y%m%d")
 
-        epgUrl = SCHEDULE_URL.format(sid, epgDateStr)
-        headers = {"x-skyott-territory": TERRITORY, "x-skyott-provider": "SKY", "x-skyott-proposition": "SKYQ"}
+        epg_url = SCHEDULE_URL.format(sid, epg_date_str)
+        headers = {
+            "x-skyott-territory": TERRITORY,
+            "x-skyott-provider": "SKY",
+            "x-skyott-proposition": "SKYQ",
+        }
         programmes = set()
 
-        resp = requests.get(epgUrl, headers=headers)
-        epgData = resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
-        if epgData is None:
+        resp = requests.get(epg_url, headers=headers)
+        epg_data = resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
+        if epg_data is None:
             return programmes
 
-        if len(epgData) == 0:
+        if len(epg_data) == 0:
             return programmes
 
-        for p in epgData[0]["events"]:
-            starttime = datetime.utcfromtimestamp(p["st"])
-            endtime = datetime.utcfromtimestamp(p["st"] + p["d"])
-            title = p["t"]
+        for programme in epg_data[0]["events"]:
+            starttime = datetime.utcfromtimestamp(programme["st"])
+            endtime = datetime.utcfromtimestamp(programme["st"] + programme["d"])
+            title = programme["t"]
             season = None
-            if "seasonnumber" in p and p["seasonnumber"] > 0:
-                season = p["seasonnumber"]
+            if "seasonnumber" in programme and programme["seasonnumber"] > 0:
+                season = programme["seasonnumber"]
             episode = None
-            if "episodenumber" in p and p["episodenumber"] > 0:
-                episode = p["episodenumber"]
+            if "episodenumber" in programme and programme["episodenumber"] > 0:
+                episode = programme["episodenumber"]
             programmeuuid = None
-            imageUrl = None
-            if "programmeuuid" in p:
-                programmeuuid = str(p["programmeuuid"])
-                imageUrl = LIVE_IMAGE_URL.format(programmeuuid)
+            image_url = None
+            if "programmeuuid" in programme:
+                programmeuuid = str(programme["programmeuuid"])
+                image_url = LIVE_IMAGE_URL.format(programmeuuid)
 
-            eid = p["eid"]
+            eid = programme["eid"]
             programme = Programme(
                 programmeuuid,
                 starttime,
@@ -66,8 +78,8 @@ class SkyQCountry:
                 title,
                 season,
                 episode,
-                imageUrl,
-                channelName,
+                image_url,
+                channel_name,
                 SKY_STATUS_LIVE,
                 "n/a",
                 eid,

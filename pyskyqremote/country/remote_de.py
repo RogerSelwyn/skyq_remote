@@ -8,7 +8,14 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_de import CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL, SCHEDULE_URL, TIMEZONE
+from .const_de import (
+    CHANNEL_IMAGE_URL,
+    CHANNEL_URL,
+    LIVE_IMAGE_URL,
+    PVR_IMAGE_URL,
+    SCHEDULE_URL,
+    TIMEZONE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,29 +28,35 @@ class SkyQCountry:
         self.pvr_image_url = PVR_IMAGE_URL
         self._channellist = None
 
-        self._getChannels()
+        self._get_channels()
 
-    def getEpgData(self, sid, channelno, channelName, epgDate):
+    def get_epg_data(self, sid, channelno, channel_name, epg_date):
         """Get EPG data for DE."""
-        return self._getData(sid, channelno, channelName, epgDate)
+        return self._get_data(sid, channelno, channel_name, epg_date)
 
-    def buildChannelImageUrl(self, sid, channelname):
+    def build_channel_image_url(
+        self, sid, channelname
+    ):  # pylint: disable=unused-argument
         """Build the channel image URL."""
         for channel in self._channellist:
             if str(channel["sid"]) == str(sid):
                 return CHANNEL_IMAGE_URL.format(channel["clu"])
 
-    def _getData(self, sid, channelno, channelName, epgDate):
+    def _get_data(
+        self, sid, channelno, channel_name, epg_date
+    ):  # pylint: disable=unused-argument
         cid = None
         for channel in self._channellist:
             if str(channel["sid"]) == str(sid):
                 cid = channel["ci"]
 
-        milliDate = int(epgDate.replace(tzinfo=timezone.utc).timestamp() * 1000)
-        berlinDT = epgDate.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(TIMEZONE))
-        berlinDate = berlinDT.strftime("%Y-%m-%dT")
+        milli_date = int(epg_date.replace(tzinfo=timezone.utc).timestamp() * 1000)
+        berlin_dt = epg_date.replace(tzinfo=pytz.utc).astimezone(
+            pytz.timezone(TIMEZONE)
+        )
+        berlin_date = berlin_dt.strftime("%Y-%m-%dT")
 
-        epgUrl = SCHEDULE_URL
+        epg_url = SCHEDULE_URL
         programmes = set()
 
         headers = {
@@ -51,7 +64,7 @@ class SkyQCountry:
         }
         payload = json.dumps(
             {
-                "d": milliDate,
+                "d": milli_date,
                 "lt": 6,
                 "t": 0,
                 "s": 0,
@@ -63,24 +76,30 @@ class SkyQCountry:
         )
 
         resp = requests.post(
-            epgUrl,
+            epg_url,
             headers=headers,
             data=payload,
             verify=True,
             timeout=10,
         )
-        epgData = resp.json()["el"] if resp.status_code == RESPONSE_OK else None
-        if epgData is None:
+        epg_data = resp.json()["el"] if resp.status_code == RESPONSE_OK else None
+        if epg_data is None:
             return programmes
 
-        if len(epgData) == 0:
+        if len(epg_data) == 0:
             return programmes
 
-        for p in epgData:
-            starttimede = datetime.strptime(berlinDate + p["bst"], "%Y-%m-%dT%H:%M")
-            starttime = starttimede.replace(tzinfo=berlinDT.tzinfo).astimezone(pytz.utc).replace(tzinfo=None)
-            endtime = starttime + timedelta(minutes=p["len"])
-            title = p["et"]
+        for programme in epg_data:
+            starttimede = datetime.strptime(
+                berlin_date + programme["bst"], "%Y-%m-%dT%H:%M"
+            )
+            starttime = (
+                starttimede.replace(tzinfo=berlin_dt.tzinfo)
+                .astimezone(pytz.utc)
+                .replace(tzinfo=None)
+            )
+            endtime = starttime + timedelta(minutes=programme["len"])
+            title = programme["et"]
             season = None
             # if "seasonnumber" in p:
             #     if p["seasonnumber"] > 0:
@@ -90,13 +109,13 @@ class SkyQCountry:
             #     if p["episodenumber"] > 0:
             #         episode = p["episodenumber"]
             programmeuuid = None
-            imageUrl = None
+            image_url = None
             # if "programmeuuid" in p:
-            programmeuuid = str(p["ei"])
-            if "pu" in p:
-                imageUrl = LIVE_IMAGE_URL.format(p["pu"])
-            elif "clu" in p:
-                imageUrl = LIVE_IMAGE_URL.format(p["clu"])
+            programmeuuid = str(programme["ei"])
+            if "pu" in programme:
+                image_url = LIVE_IMAGE_URL.format(programme["pu"])
+            elif "clu" in programme:
+                image_url = LIVE_IMAGE_URL.format(programme["clu"])
 
             programme = Programme(
                 programmeuuid,
@@ -105,15 +124,15 @@ class SkyQCountry:
                 title,
                 season,
                 episode,
-                imageUrl,
-                channelName,
+                image_url,
+                channel_name,
                 SKY_STATUS_LIVE,
             )
             programmes.add(programme)
 
         return programmes
 
-    def _getChannels(self):
+    def _get_channels(self):
         resp = requests.get(CHANNEL_URL)
         if resp.status_code == RESPONSE_OK:
             self._channellist = resp.json()

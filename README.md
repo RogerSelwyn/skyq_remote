@@ -28,15 +28,15 @@ from pyskyqremote.skyq_remote import SkyQRemote
 self.client = SkyQRemote('192.168.1.99')
 ```
 Optional parameters:
-* epgCacheLen - Default = 20
+* epg_cache_len - Default = 20
 * port - Default = 49160
-* jsonPort - Default = 9006
+* json_port - Default = 9006
 
 
 ### Get device information
 
 ```
-device = self.client.getDeviceInformation()
+device = self.client.get_device_information()
 ```
 
 Will return an object such as below for device informatiom:
@@ -68,7 +68,7 @@ Will return an object such as below for device informatiom:
 ### Get device information (JSON)
 
 ```
-device = self.client.getDeviceInformation().as_json()
+device = self.client.get_device_information().as_json()
 ```
 
 Will return a JSON structure such as below for device information:
@@ -103,8 +103,8 @@ Will return a JSON structure such as below for device information:
 ### Decode device information (JSON)
 
 ```
-from pyskyqremote.media import DeviceDecoder
-device = DeviceDecoder(deviceJSON)
+from pyskyqremote.media import device_decoder
+device = device_decoder(device_json)
 ```
 
 Will decode the JSON structure to a python object.
@@ -113,7 +113,7 @@ Will decode the JSON structure to a python object.
 ### Get power status
 
 ```
-status = self.client.powerStatus()
+status = self.client.power_status()
 ```
 
 Will return "POWERED OFF", "STANDBY or "ON"
@@ -121,7 +121,7 @@ Will return "POWERED OFF", "STANDBY or "ON"
 ### Get current state
 
 ```
-status = self.client.getCurrentState()
+status = self.client.get_current_state()
 ```
 
 Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK"
@@ -129,14 +129,14 @@ Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK"
 ### Get the active application
 
 ```
-app = self.client.getActiveApplication()
+app = self.client.get_active_application()
 ```
 
 Will return an object such as below for the running application name:
 
 ```
 {
-   'appId':'com.bskyb.beehive',
+   'appid':'com.bskyb.beehive',
    'title':'Beehive Bedlam'
 }
 ```
@@ -144,7 +144,7 @@ Will return an object such as below for the running application name:
 ### Get the active application (JSON)
 
 ```
-app = self.client.getActiveApplication().as_json()
+app = self.client.get_active_application().as_json()
 ```
 
 Will return a JSON structure such as below for the running application name:
@@ -153,7 +153,7 @@ Will return a JSON structure such as below for the running application name:
 {
    "__type__":"__app__",
    "attributes":{
-      "appId":"com.bskyb.beehive",
+      "appid":"com.bskyb.beehive",
       "title":"Beehive Bedlam"
    }
 }
@@ -162,7 +162,7 @@ Will return a JSON structure such as below for the running application name:
 ### Get current media
 
 ```
-app = self.client.getCurrentMedia()
+app = self.client.get_current_media()
 ```
 
 Will return an object such as below for live programme:
@@ -171,9 +171,9 @@ Will return an object such as below for live programme:
 {
    'channel':'Sky Comedy HD',
    'channelno':'153',
-   'imageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb1143.png',
+   'image_url':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb1143.png',
    'sid':1143,
-   'pvrId':None,
+   'pvrid':None,
    'live':True
 }
 ```
@@ -183,16 +183,16 @@ or for recording
 {
    'channel':None,
    'channelno':'None',
-   'imageUrl':None,
+   'image_url':None,
    'sid':None,
-   'pvrId':'P12345ABC'
+   'pvrid':'P12345ABC'
    'live':False
 }
 ```
 ### Get current media (JSON)
 
 ```
-media = self.client.getCurrentMedia().as_json()
+media = self.client.get_current_media().as_json()
 ```
 
 Will return a JSON structure such as below for live programme:
@@ -203,9 +203,9 @@ Will return a JSON structure such as below for live programme:
    "attributes":{
       "channel":"BBC One South",
       "channelno":"101",
-      "imageUrl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
+      "image_url":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
       "sid":2153,
-      "pvrId":null,
+      "pvrid":null,
       "live":true
    }
 }
@@ -219,9 +219,9 @@ or for recording
    "attributes":{
       "channel":null,
       "channelno":null,
-      "imageUrl":null,
+      "image_url":null,
       "sid":null,
-      "pvrId":"P12345ABC",
+      "pvrid":"P12345ABC",
       "live":false
    }
 }
@@ -230,8 +230,8 @@ or for recording
 ### Decode current media (JSON)
 
 ```
-from pyskyqremote.media import MediaDecoder
-media = MediaDecoder(mediaJSON)
+from pyskyqremote.media import media_decoder
+media = media_decoder(media_json)
 ```
 
 Will decode the JSON structure to a python object.
@@ -240,7 +240,7 @@ Will decode the JSON structure to a python object.
 ### Get EPG information
 
 ```
-epg = self.client.getEpgData(sid, epgDate, days)
+epg = self.client.get_epg_data(sid, epgDate, days)
 ```
 
 Will return an object with an array of events including the specified number of days. Defaults to 2 days.
@@ -250,7 +250,7 @@ Will return an object with an array of events including the specified number of 
    'sid':2153,
    'channelno':'101',
    'channelname':'BBC One South',
-   'channelImageUrl':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
+   'channelimage_url':'https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
    'programmes':[
       {
          'progammeuuid':'57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0',
@@ -259,7 +259,7 @@ Will return an object with an array of events including the specified number of 
          'title':'New: Tonight Show Starring. Jimmy Fallon',
          'season':7,
          'episode':119,
-         'imageUrl':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9',
+         'image_url':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9',
          'channelname':'BBC One South',
          'status':'LIVE',
          'pvrid':'n/a',
@@ -272,7 +272,7 @@ Will return an object with an array of events including the specified number of 
          'title':'New: Late Late Show With...',
          'season':2020,
          'episode':89,
-         'imageUrl':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9',
+         'image_url':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9',
          'channelname':'BBC One South',
          'status':'LIVE',
          'pvrid':'n/a',
@@ -285,7 +285,7 @@ Will return an object with an array of events including the specified number of 
 ### Get EPG information (JSON)
 
 ```
-epg = self.client.getEpgData(sid, epgDate, days).as_json()
+epg = self.client.get_epg_data(sid, epgDate, days).as_json()
 ```
 
 Will return a JSON structure with an array of events including the specified number of days. Defaults to 2 days.
@@ -297,7 +297,7 @@ Will return a JSON structure with an array of events including the specified num
       "sid":2153,
       "channelno":"101",
       "channelname":"BBC One South",
-      "channelImageUrl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png"
+      "channelimage_url":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png"
    },
    "programmes":[
       {
@@ -309,7 +309,7 @@ Will return a JSON structure with an array of events including the specified num
             "title":"Man Like Mobeen",
             "season":3,
             "episode":5,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9",
+            "image_url":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9",
             "channelname":"BBC One South",
             "status":"LIVE",
             "pvrid":"n/a",
@@ -325,7 +325,7 @@ Will return a JSON structure with an array of events including the specified num
             "title":"Have I Got A Bit More News For You",
             "season":59,
             "episode":4,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9",
+            "image_url":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9",
             "channelname":"BBC One South"
             "status":"LIVE",
             "pvrid":"n/a",
@@ -340,8 +340,8 @@ Will return a JSON structure with an array of events including the specified num
 ### Decode EPG information (JSON)
 
 ```
-from pyskyqremote.channel import ChannelDecoder
-channel = ChannelDecoder(channelJSON)
+from pyskyqremote.channel import channel_decoder
+channel = channel_decoder(channel_json)
 ```
 
 Will decode the JSON structure to a python object.
@@ -351,7 +351,7 @@ Will decode the JSON structure to a python object.
 Note that at the end of a day, the programme may appear on the next day's schedule.
 
 ```
-programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate)
+programme = self.client.get_programme_from_epg(sid, epgDate, queryDate)
 ```
 
 Will return an object such as below:
@@ -364,7 +364,7 @@ Will return an object such as below:
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
+   'image_url':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
    'channelname':'Channel 5 HD',
    'status':'LIVE',
    'pvrid':'n/a',
@@ -376,7 +376,7 @@ Will return an object such as below:
 Note that at the end of a day, the programme may appear on the next day's schedule.
 
 ```
-programme = self.client.getProgrammeFromEpg(sid, epgDate, queryDate).as_json()
+programme = self.client.get_programme_from_epg(sid, epgDate, queryDate).as_json()
 ```
 
 Will return a JSON structure such as below:
@@ -391,7 +391,7 @@ Will return a JSON structure such as below:
       "title":"BBC News at Ten",
       "season":null,
       "episode":null,
-      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
+      "image_url":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "channelname":"BBC ONE HD",
       "status":"LIVE",
       "pvrid":"n/a",
@@ -409,7 +409,7 @@ programme = ProgrammeDecoder(programmeJSON)
 ### Get current live TV programme on a channel
 
 ```
-currentTV = self.client.getCurrentLiveTVProgramme(sid)
+currentTV = self.client.get_current_live_tv_programme(sid)
 ```
 
 Will return an object such as below:
@@ -422,7 +422,7 @@ Will return an object such as below:
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
+   'image_url':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
    'channelname':'Channel 5 HD',
    'status':'LIVE',
    'pvrid':'n/a',
@@ -432,7 +432,7 @@ Will return an object such as below:
 ### Get current live TV programme on a channel (JSON)
 
 ```
-currentTV = self.client.getCurrentLiveTVProgramme(sid).as_json()
+currentTV = self.client.get_current_live_tv_programme(sid).as_json()
 ```
 
 Will return a JSON structure such as below:
@@ -447,7 +447,7 @@ Will return a JSON structure such as below:
       "title":"BBC News at Ten",
       "season":null,
       "episode":null,
-      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
+      "image_url":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "channelname":"BBC ONE HD",
       "status":"LIVE",
       "pvrid":"n/a",
@@ -459,7 +459,7 @@ Will return a JSON structure such as below:
 ### Get recordings
 
 ```
-recordings = self.client.getRecordings(<status="all">, <limit=1000>, <offset=0>)
+recordings = self.client.get_recordings(<status="all">, <limit=1000>, <offset=0>)
 ```
 
 Will return an object such as below for the number of recordings specified by limit with the specified offset and with the provided status:
@@ -474,7 +474,7 @@ Will return an object such as below for the number of recordings specified by li
         'title':'New: Batwoman',
         'season':1,
         'episode':19,
-        'imageUrl':'https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9',
+        'image_url':'https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9',
         'channelname':'E4 HD',
         'status':'RECORDED',
         'pvrid':'P29014192',
@@ -487,7 +487,7 @@ Will return an object such as below for the number of recordings specified by li
         'title':'Home and Away',
         'season':35,
         'episode':4,
-        'imageUrl':'https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9',
+        'image_url':'https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9',
         'channelname':'Channel 5 HD',
         'status':'SCHEDULED',
         'pvrid':'P29014192',
@@ -502,7 +502,7 @@ Will return an object such as below for the number of recordings specified by li
 ### Get recordings (JSON)
 
 ```
-recordings = self.client.getRecordings(<status="all">, <limit=1000>, <offset=0>).as_json()
+recordings = self.client.get_recordings(<status="all">, <limit=1000>, <offset=0>).as_json()
 ```
 
 Will return an object such as below for the number of recordings specified by limit with the specified offset and with the provided status:
@@ -523,7 +523,7 @@ Will return an object such as below for the number of recordings specified by li
             "title":"New: Batwoman",
             "season":1,
             "episode":19,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9",
+            "image_url":"https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9",
             "channelname":"E4 HD",
             "status":"RECORDED",
             "pvrid":"P29014192",
@@ -539,7 +539,7 @@ Will return an object such as below for the number of recordings specified by li
             "title":"Home and Away",
             "season":35,
             "episode":4,
-            "imageUrl":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
+            "image_url":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
             "channelname":"Channel 5 HD",
             "status":"SCHEDULED",
             "pvrid":"P29014192",
@@ -554,7 +554,7 @@ Will return an object such as below for the number of recordings specified by li
 ### Get recording
 
 ```
-recording = self.client.getRecording(pvrId)
+recording = self.client.getRecording(pvrid)
 ```
 
 Will return an object such as below:
@@ -568,7 +568,7 @@ Will return an object such as below:
    'title':'Van Der Valk',
    'season':4,
    'episode':5,
-   'imageUrl':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9',
+   'image_url':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9',
    'status':'RECORDED',
    'pvrid':'P29014192',
    'eid':'E869-67b1'
@@ -577,7 +577,7 @@ Will return an object such as below:
 ### Get recording (JSON)
 
 ```
-recording = self.client.getRecording(pvrId).as_json()
+recording = self.client.getRecording(pvrid).as_json()
 ```
 
 Will return an object such as below:
@@ -593,7 +593,7 @@ Will return an object such as below:
       "title":"BBC News at Ten",
       "season":null,
       "episode":null,
-      "imageUrl":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
+      "image_url":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "status":"RECORDED",
       "pvrid":"P29014192",
       "eid":"E869-67b1"
@@ -610,7 +610,7 @@ recording = RecordedProgrammeDecoder(recordingJSON)
 ### Get quota
 
 ```
-quota = self.client.getQuota()
+quota = self.client.get_quota()
 ```
 
 Will return an object such as below:
@@ -624,7 +624,7 @@ Will return an object such as below:
 ### Get quota (JSON)
 
 ```
-recording = self.client.getQuota().as_json()
+recording = self.client.get_quota().as_json()
 ```
 
 Will return an object such as below:
@@ -642,7 +642,7 @@ Will return an object such as below:
 ### Book Recording
 
 ```
-response = self.client.bookRecording(eid, <series=False>)
+response = self.client.book_recording(eid, <series=False>)
 ```
 
 
@@ -651,7 +651,7 @@ Will return True for success or False for failure. Set series to True for series
 ### Book PPV Recording
 
 ```
-response = self.client.bookPPVRecording(eid, offerref)
+response = self.client.book_ppv_recording(eid, offerref)
 ```
 
 
@@ -660,7 +660,7 @@ Will return True for success or False for failure.
 ### Series Link Recording
 
 ```
-response = self.client.seriesLink(pvrid, <on=True>)
+response = self.client.series_link(pvrid, <linkon=True>)
 ```
 
 Will return True for success or False for failure. Set on to True for linking, False for unlinking.
@@ -668,7 +668,7 @@ Will return True for success or False for failure. Set on to True for linking, F
 ### Keep Recording
 
 ```
-response = self.client.recordingKeep(pvrid, <on=True>)
+response = self.client.recording_keep(pvrid, <keepon=True>)
 ```
 
 Will return True for success or False for failure. Set on to True to keep, False to unkeep.
@@ -676,7 +676,7 @@ Will return True for success or False for failure. Set on to True to keep, False
 ### Lock Recording
 
 ```
-response = self.client.recordingLock(pvrid, <on=True>)
+response = self.client.recording_lock(pvrid, <lockon=True>)
 ```
 
 Will return True for success or False for failure. Set on to True to lock, False to unlock.
@@ -684,7 +684,7 @@ Will return True for success or False for failure. Set on to True to lock, False
 ### Delete Recording (or scheduled recording)
 
 ```
-response = self.client.recordingDelete(pvrid, <on=True>)
+response = self.client.recording_delete(pvrid, <deleteon=True>)
 ```
 
 Will return True for success or False for failure. Set on to True to delete, False to undelete. Cannot undelete scheduled recording.
@@ -692,7 +692,7 @@ Will return True for success or False for failure. Set on to True to delete, Fal
 ### Erase Recording
 
 ```
-response = self.client.recordingErase(pvrid)
+response = self.client.recording_erase(pvrid)
 ```
 
 Will return True for success or False for failure.
@@ -700,7 +700,7 @@ Will return True for success or False for failure.
 ### Erase all Recordings including scheduled recordings
 
 ```
-response = self.client.recordingEraseAll()
+response = self.client.recording_erase_all()
 ```
 
 Will return True for success or False for failure.
@@ -708,7 +708,7 @@ Will return True for success or False for failure.
 ### Set Last Played Position
 
 ```
-response = self.client.ecordingSetLastPlayedPosition(pvrid, pos)
+response = self.client.recording_set_last_played_position(pvrid, pos)
 ```
 
 Will return True for success or False for failure. Only works on the main Sky Q box.
@@ -716,7 +716,7 @@ Will return True for success or False for failure. Only works on the main Sky Q 
 ### Get Channel List
 
 ```
-channelList = self.client.getChannelList()
+channelList = self.client.get_channel_list()
 ```
 
 Will return an object with an array of channels.
@@ -728,7 +728,7 @@ Will return an object with an array of channels.
          'channelno':'101',
          'channelname':'BBC ONE',
          'channelsid'='2153',
-         'channelimageurl'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
+         'channelimage_url'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
          'channeltype':'video',
          'channelnoint':101,
          'sf':'sd'
@@ -737,7 +737,7 @@ Will return an object with an array of channels.
          'channelno':'0102',
          'channelname':'BBC R2',
          'channelsid'='2153',
-         'channelimageurl'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
+         'channelimage_url'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
          'channeltype':'audio',
          'channelnoint':102,
          'sf':'au'
@@ -749,7 +749,7 @@ Will return an object with an array of channels.
 ### Get Channel List (JSON)
 
 ```
-channelList = self.client.getChannelList().as_json()
+channelList = self.client.get_channel_list().as_json()
 ```
 
 Will return a JSON structure with an array of channels.
@@ -766,7 +766,7 @@ Will return a JSON structure with an array of channels.
             "channelno":"101",
             "channelname":"BBC ONE",
             "channelsid":"2153",
-            "channelimageurl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
+            "channelimage_url":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
             "channeltype":"video",
             "channelnoint":101,
             "sf":"sd"
@@ -778,7 +778,7 @@ Will return a JSON structure with an array of channels.
             "channelno":"0102",
             "channelname":"BBC R2",
             "channelsid":"2153",
-            "channelimageurl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
+            "channelimage_url":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
             "channeltype":"audio",
             "channelnoint":102,
             "sf":"au"
@@ -792,7 +792,7 @@ Will return a JSON structure with an array of channels.
 ### Get Channel Information (for a specific channel number)
 
 ```
-channelInfo = self.client.getChannelInfo(channelNo)
+channelInfo = self.client.get_channel_info(channel_no)
 ```
 
 Will return an object such as below:
@@ -802,7 +802,7 @@ Will return an object such as below:
    'channelno'='101',
    'channelname'='BBC One South',
    'channelsid'='2153',
-   'channelimageurl'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
+   'channelimage_url'='https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png',
    'channeltype'='video',
    'channelnoint'=101,
    'sf'='sd'
@@ -811,7 +811,7 @@ Will return an object such as below:
 ### Get Channel Information (for a specific channel number) (JSON)
 
 ```
-channelInfo = self.client.getChannelInfo(channelNo).as_json()
+channelInfo = self.client.get_channel_info(channel_no).as_json()
 ```
 
 Will return an object such as below:
@@ -823,7 +823,7 @@ Will return an object such as below:
       "channelno":"101",
       "channelname":"BBC One South",
       "channelsid":"2153",
-      "channelimageurl":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
+      "channelimage_url":"https://d2n0069hmnqmmx.cloudfront.net/epgdata/1.0/newchanlogos/600/600/skychb2153.png",
       "channeltype":"video",
       "channelnoint":101,
       "sf":"sd"
@@ -834,7 +834,7 @@ Will return an object such as below:
 ### Get Favourite List
 
 ```
-favouriteList = self.client.getFavouriteList()
+favouriteList = self.client.get_favourite_list()
 ```
 
 Will return an object with an array of favourites.
@@ -861,7 +861,7 @@ Will return an object with an array of favourites.
 ### Get Favorite List (JSON)
 
 ```
-favouriteList = self.client.getFavouriteList().as_json()
+favouriteList = self.client.get_favourite_list().as_json()
 ```
 
 Will return a JSON structure with an array of channels.

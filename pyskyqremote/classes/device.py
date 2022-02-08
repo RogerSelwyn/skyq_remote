@@ -4,7 +4,12 @@ import json
 import logging
 from dataclasses import dataclass, field
 
-from ..const import KNOWN_COUNTRIES, REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO, UPNP_GET_TRANSPORT_INFO
+from ..const import (
+    KNOWN_COUNTRIES,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    UPNP_GET_TRANSPORT_INFO,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -12,72 +17,72 @@ _LOGGER = logging.getLogger(__name__)
 class DeviceInformation:
     """Sky Q device information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the device information class."""
-        self._remoteConfig = remoteConfig
-        self._deviceAccess = remoteConfig.deviceAccess
-        self._port = remoteConfig.port
+        self._remote_config = remote_config
+        self._device_access = remote_config.device_access
+        self._port = remote_config.port
 
-    def getTransportInformation(self):
+    def get_transport_information(self):
         """Get the transport information from the SkyQ box."""
-        return self._deviceAccess.callSkySOAPService(UPNP_GET_TRANSPORT_INFO)
+        return self._device_access.call_sky_soap_service(UPNP_GET_TRANSPORT_INFO)
 
-    def getSystemInformation(self):
+    def get_system_information(self):
         """Get the system information from the SkyQ box."""
-        return self._deviceAccess.retrieveInformation(REST_PATH_SYSTEMINFO)
+        return self._device_access.retrieve_information(REST_PATH_SYSTEMINFO)
 
-    def getDeviceInformation(self, overrideCountry):
+    def get_device_information(self, override_country):
         """Get the device information from the SkyQ box."""
-        deviceInfo = self._deviceAccess.retrieveInformation(REST_PATH_DEVICEINFO)
-        if not deviceInfo:
+        device_info = self._device_access.retrieve_information(REST_PATH_DEVICEINFO)
+        if not device_info:
             return None
 
-        systemInfo = self.getSystemInformation()
-        ASVersion = deviceInfo["ASVersion"]
-        IPAddress = deviceInfo["IPAddress"]
-        countryCode = deviceInfo["countryCode"]
-        gateway = deviceInfo["gateway"]
-        hardwareModel = systemInfo["hardwareModel"]
-        deviceType = systemInfo["deviceType"]
-        hardwareName = deviceInfo["hardwareName"]
-        manufacturer = systemInfo["manufacturer"]
-        modelNumber = deviceInfo["modelNumber"]
-        serialNumber = deviceInfo["serialNumber"]
-        versionNumber = deviceInfo["versionNumber"]
-        bouquet = deviceInfo["bouquet"]
-        subbouquet = deviceInfo["subbouquet"]
-        wakeReason = systemInfo["wakeReason"]
-        systemUptime = systemInfo["systemUptime"]
-        hdrCapable = systemInfo["hdrCapable"]
-        uhdCapable = systemInfo["uhdCapable"]
+        system_info = self.get_system_information()
+        as_version = device_info["ASVersion"]
+        ip_address = device_info["IPAddress"]
+        country_code = device_info["countryCode"]
+        gateway = device_info["gateway"]
+        hardware_model = system_info["hardwareModel"]
+        device_type = system_info["deviceType"]
+        hardware_name = device_info["hardwareName"]
+        manufacturer = system_info["manufacturer"]
+        model_number = device_info["modelNumber"]
+        serial_number = device_info["serialNumber"]
+        version_number = device_info["versionNumber"]
+        bouquet = device_info["bouquet"]
+        subbouquet = device_info["subbouquet"]
+        wake_reason = system_info["wakeReason"]
+        system_uptime = system_info["systemUptime"]
+        hdr_capable = system_info["hdrCapable"]
+        uhd_capable = system_info["uhdCapable"]
 
-        usedCountryCode = overrideCountry or countryCode.upper()
-        if not usedCountryCode:
-            _LOGGER.error(f"E0010 - No country identified: {self._host}")
+        used_country_code = override_country or country_code.upper()
+        if not used_country_code:
+            _LOGGER.error("E0010 - No country identified: %s", self._remote_config.host)
             return None
 
-        if usedCountryCode in KNOWN_COUNTRIES:
-            usedCountryCode = KNOWN_COUNTRIES[usedCountryCode]
+        if used_country_code in KNOWN_COUNTRIES:
+            used_country_code = KNOWN_COUNTRIES[used_country_code]
 
         return Device(
-            ASVersion,
-            IPAddress,
-            countryCode,
-            usedCountryCode,
-            hardwareModel,
-            hardwareName,
-            deviceType,
+            as_version,
+            ip_address,
+            country_code,
+            used_country_code,
+            hardware_model,
+            hardware_name,
+            device_type,
             gateway,
             manufacturer,
-            modelNumber,
-            serialNumber,
-            versionNumber,
+            model_number,
+            serial_number,
+            version_number,
             bouquet,
             subbouquet,
-            wakeReason,
-            systemUptime,
-            hdrCapable,
-            uhdCapable,
+            wake_reason,
+            system_uptime,
+            hdr_capable,
+            uhd_capable,
         )
 
 
@@ -85,37 +90,37 @@ class DeviceInformation:
 class Device:
     """SkyQ Device Class."""
 
-    ASVersion: str = field(
+    ASVersion: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    IPAddress: str = field(
+    IPAddress: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    countryCode: str = field(
+    countryCode: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    usedCountryCode: str = field(
+    used_country_code: str = field(
         init=True,
         repr=True,
         compare=False,
     )
-    hardwareModel: str = field(
+    hardwareModel: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    hardwareName: str = field(
+    hardwareName: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    deviceType: str = field(
+    deviceType: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
@@ -130,17 +135,17 @@ class Device:
         repr=True,
         compare=False,
     )
-    modelNumber: str = field(
+    modelNumber: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    serialNumber: str = field(
+    serialNumber: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    versionNumber: str = field(
+    versionNumber: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
@@ -155,22 +160,22 @@ class Device:
         repr=True,
         compare=False,
     )
-    wakeReason: str = field(
+    wakeReason: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    systemUptime: str = field(
+    systemUptime: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    hdrCapable: str = field(
+    hdrCapable: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
     )
-    uhdCapable: str = field(
+    uhdCapable: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
@@ -181,7 +186,7 @@ class Device:
         return json.dumps(self, cls=_DeviceJSONEncoder)
 
 
-def DeviceDecoder(obj):
+def device_decoder(obj):
     """Decode programme object from json."""
     device = json.loads(obj)
     if "__type__" in device and device["__type__"] == "__device__":
@@ -190,9 +195,9 @@ def DeviceDecoder(obj):
 
 
 class _DeviceJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Device):
-            attributes = {k: v for k, v in vars(obj).items()}
+    def default(self, o):
+        if isinstance(o, Device):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__device__",
                 "attributes": attributes,

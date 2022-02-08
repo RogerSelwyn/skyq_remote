@@ -9,39 +9,41 @@ from ..const import APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS, WS_CURRENT_APPS
 class AppInformation:
     """Sky Q app information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the app information class."""
-        self._deviceAccess = remoteConfig.deviceAccess
-        self._currentApp = APP_EPG
+        self._device_access = remote_config.device_access
+        self._current_app = APP_EPG
         self._apps = {}
 
-    def getActiveApplication(self):
+    def get_active_application(self):
         """Get the active application on Sky Q box."""
         try:
-            apps = self._deviceAccess.callSkyWebSocket(WS_CURRENT_APPS)
+            apps = self._device_access.callSkyWebSocket(WS_CURRENT_APPS)
             if apps:
-                self._currentApp = next(a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE)["appId"]
+                self._current_app = next(
+                    a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE
+                )["appId"]
 
-            return App(self._currentApp, self._get_app_title(self._currentApp))
-        except Exception:
-            return App(self._currentApp, self._get_app_title(self._currentApp))
+            return App(self._current_app, self._get_app_title(self._current_app))
+        except Exception:  # pylint: disable=broad-except
+            return App(self._current_app, self._get_app_title(self._current_app))
 
-    def _get_app_title(self, appId):
+    def _get_app_title(self, appid):
         if len(self._apps) == 0:
-            apps = self._deviceAccess.retrieveInformation(REST_PATH_APPS)
+            apps = self._device_access.retrieve_information(REST_PATH_APPS)
             if not apps:
                 return None
-            for a in apps["apps"]:
-                self._apps[a["appId"]] = a["title"]
+            for app in apps["apps"]:
+                self._apps[app["appId"]] = app["title"]
 
-        return self._apps[appId] if appId in self._apps else None
+        return self._apps[appid] if appid in self._apps else None
 
 
 @dataclass
 class App:
     """SkyQ App Class."""
 
-    appId: str = field(
+    appId: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
@@ -57,7 +59,7 @@ class App:
         return json.dumps(self, cls=_AppJSONEncoder)
 
 
-def AppDecoder(obj):
+def app_decoder(obj):
     """Decode programme object from json."""
     app = json.loads(obj)
     if "__type__" in app and app["__type__"] == "__app__":
@@ -66,9 +68,9 @@ def AppDecoder(obj):
 
 
 class _AppJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, App):
-            attributes = {k: v for k, v in vars(obj).items()}
+    def default(self, o):
+        if isinstance(o, App):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__app__",
                 "attributes": attributes,

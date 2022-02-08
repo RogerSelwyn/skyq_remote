@@ -5,7 +5,7 @@ SKYCONTROL = "SkyControl"
 SOAP_ACTION = '"urn:schemas-nds-com:service:SkyPlay:2#{0}"'
 SOAP_CONTROL_BASE_URL = "http://{0}:49153{1}"
 SOAP_DESCRIPTION_BASE_URL = "http://{0}:49153/description{1}.xml"
-SOAP_PAYLOAD = """<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'>
+SOAP_PAYLOAD = """<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'>  # pylint: disable=line-too-long
     <s:Body>
         <u:{0} xmlns:u="urn:schemas-nds-com:service:SkyPlay:2">
             <InstanceID>0</InstanceID>
@@ -41,7 +41,9 @@ REST_RECORDING_DELETE = "pvr/action/delete?pvrid={0}"
 REST_RECORDING_UNDELETE = "pvr/action/undelete?pvrid={0}"
 REST_RECORDING_ERASE = "pvr/action/erase?pvrid={0}"
 REST_RECORDING_ERASE_ALL = "pvr"
-REST_RECORDING_SET_LAST_PLAYED_POSITION = "pvr/action/setlastplayedposition?pos={0}&pvrid={1}"
+REST_RECORDING_SET_LAST_PLAYED_POSITION = (
+    "pvr/action/setlastplayedposition?pos={0}&pvrid={1}"
+)
 REST_PATH_SYSTEMINFO = "system/information"
 REST_PATH_DEVICEINFO = "system/deviceinformation"
 REST_PATH_APPS = "apps"

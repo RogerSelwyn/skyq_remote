@@ -37,15 +37,15 @@ UNDEFINED = "undefined"
 class DeviceAccess:
     """Set up the device for access."""
 
-    def __init__(self, host, jsonPort, port):
+    def __init__(self, host, json_port, port):
         """Initialise the utility setup."""
         self._host = host
-        self._jsonPort = jsonPort
+        self._json_port = json_port
         self._port = port
         # _LOGGER.debug(f"Init device access - {self._host}")
-        self._soapControlURL = UNDEFINED
+        self._soap_control_url = UNDEFINED
 
-    def retrieveInformation(self, rest_path, call_type=REST_GET):
+    def retrieve_information(self, rest_path, call_type=REST_GET):
         """Retrieve information from the SkyQ box."""
         try:
             if call_type == REST_GET:
@@ -65,29 +65,37 @@ class DeviceAccess:
         #     _LOGGER.exception(f"X0010DA - Error occurred: {self._host} : {err}")
         #     return None
 
-    def callSkyWebSocket(self, method):
+    def call_sky_web_socket(self, method):
         """Make a websocket call to the sky box."""
-        _LOGGER.debug(f"WS Call - {self._host} - {method}")
+        _LOGGER.debug("WS Call - %s - %s", self._host, method)
         try:
-            ws = websocket.create_connection(WS_BASE_URL.format(self._host, method))
-            response = json.loads(ws.recv())
-            ws.close()
+            websock = websocket.create_connection(
+                WS_BASE_URL.format(self._host, method)
+            )
+            response = json.loads(websock.recv())
+            websock.close()
             return response
         except (TimeoutError) as err:
-            _LOGGER.warning(f"W0010DA - Websocket call failed: {self._host} : {method} : {err}")
+            _LOGGER.warning(
+                "W0010DA - Websocket call failed: %s : %s : %s", self._host, method, err
+            )
             return {"url": None, "status": "Error"}
-        except Exception as err:
-            _LOGGER.exception(f"X0020DA - Error occurred: {self._host} : {err} : {method}")
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.exception(
+                "X0020DA - Error occurred: %s : %s : %s", self._host, method, err
+            )
             return None
 
-    def callSkySOAPService(self, method):
+    def call_sky_soap_service(self, method):
         """Make a SOAP call to the sky box."""
-        if self._soapControlURL == UNDEFINED:
-            self._soapControlURL = self._getSoapControlURL()
-        if not self._soapControlURL:
-            _LOGGER.warning(f"W0020DA - SOAP Control URL not found: {self._host} : {method}")
+        if self._soap_control_url == UNDEFINED:
+            self._soap_control_url = self._get_soap_control_url()
+        if not self._soap_control_url:
+            _LOGGER.warning(
+                "W0020DA - SOAP Control URL not found: %s : %s ", self._host, method
+            )
             return None
-        _LOGGER.debug(f"SOAP Call - {self._host} - {method}")
+        _LOGGER.debug("SOAP Call - %s : %s", self._host, method)
         try:
             payload = SOAP_PAYLOAD.format(method)
             headers = {
@@ -95,7 +103,7 @@ class DeviceAccess:
                 "SOAPACTION": SOAP_ACTION.format(method),
             }
             resp = requests.post(
-                self._soapControlURL,
+                self._soap_control_url,
                 headers=headers,
                 data=payload,
                 verify=True,
@@ -103,16 +111,18 @@ class DeviceAccess:
             )
             if resp.status_code == HTTPStatus.OK:
                 xml = resp.text
-                return xmltodict.parse(xml)["s:Envelope"]["s:Body"][SOAP_RESPONSE.format(method)]
+                return xmltodict.parse(xml)["s:Envelope"]["s:Body"][
+                    SOAP_RESPONSE.format(method)
+                ]
             return None
         except requests.exceptions.RequestException:
             return None
 
     def http_json(self, path, headers=None) -> str:
         """Make an HTTP get call to the sky box."""
-        _LOGGER.debug(f"HTTP Get Call - {self._host} - {path}")
+        _LOGGER.debug("HTTP Get Call - %s - %s", self._host, path)
         response = requests.get(
-            REST_BASE_URL.format(self._host, self._jsonPort, path),
+            REST_BASE_URL.format(self._host, self._json_port, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
@@ -120,9 +130,9 @@ class DeviceAccess:
 
     def http_json_post(self, path, headers=None) -> str:
         """Make an HTTP post call to the sky box."""
-        _LOGGER.debug(f"HTTP Post Call - {self._host} - {path}")
+        _LOGGER.debug("HTTP Post Call - %s - %s", self._host, path)
         response = requests.post(
-            REST_BASE_URL.format(self._host, self._jsonPort, path),
+            REST_BASE_URL.format(self._host, self._json_port, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
@@ -130,29 +140,39 @@ class DeviceAccess:
 
     def http_json_delete(self, path, headers=None) -> str:
         """Make an HTTP delete call to the sky box."""
-        _LOGGER.debug(f"HTTP Delete Call - {self._host} - {path}")
+        _LOGGER.debug("HTTP Delete Call - %s - %s", self._host, path)
         response = requests.delete(
-            REST_BASE_URL.format(self._host, self._jsonPort, path),
+            REST_BASE_URL.format(self._host, self._json_port, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
         return response.status_code
 
-    def sendCommand(self, port, code):
+    def send_command(self, port, code):
         """Send a command to the sky box."""
-        _LOGGER.debug(f"Socket Call - {self._host} - {code}")
-        commandBytes = bytearray([4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16])
+        _LOGGER.debug("Socket Call - %s - %s", self._host, code)
+        command_bytes = bytearray(
+            [4, 1, 0, 0, 0, 0, int(math.floor(224 + (code / 16))), code % 16]
+        )
 
         try:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error as err:
-            _LOGGER.exception(f"X0030DA - Failed to create socket when sending command: {self._host} : {err}")
+            _LOGGER.exception(
+                "X0030DA - Failed to create socket when sending command: %s : %s ",
+                self._host,
+                err,
+            )
             return
 
         try:
             client.connect((self._host, port))
-        except Exception as err:
-            _LOGGER.exception(f"X0040DA - Failed to connect to client when sending command: {self._host} : {err}")
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.exception(
+                "X0040DA - Failed to connect to client when sending command: %s : %s",
+                self._host,
+                err,
+            )
             return
 
         strlen = 12
@@ -160,20 +180,21 @@ class DeviceAccess:
 
         while 1:
             data = client.recv(1024)
-            data = data
 
             if len(data) < 24:
                 client.sendall(data[0:strlen])
                 strlen = 1
             else:
-                client.sendall(commandBytes)
-                commandBytes[1] = 0
-                client.sendall(commandBytes)
+                client.sendall(command_bytes)
+                command_bytes[1] = 0
+                client.sendall(command_bytes)
                 client.close()
                 break
 
             if time.time() > timeout:
-                _LOGGER.error(f"E0010DA - Timeout error sending command: {self._host} : {code}")
+                _LOGGER.error(
+                    "E0010DA - Timeout error sending command: %s : %s", self._host, code
+                )
                 break
 
     def press(self, sequence):
@@ -181,66 +202,81 @@ class DeviceAccess:
         if isinstance(sequence, list):
             for item in sequence:
                 if item.casefold() not in COMMANDS:
-                    _LOGGER.error(f"E0020DA - Invalid command: {self._host} : {item}")
+                    _LOGGER.error(
+                        "E0020DA - Invalid command: %s : %s", self._host, item
+                    )
                     break
-                self.sendCommand(self._port, COMMANDS[item.casefold()])
+                self.send_command(self._port, COMMANDS[item.casefold()])
                 time.sleep(0.5)
         elif sequence not in COMMANDS:
-            _LOGGER.error(f"E0030DA - Invalid command: {self._host} : {sequence}")
+            _LOGGER.error("E0030DA - Invalid command: %s : %s", self._host, sequence)
         else:
-            self.sendCommand(self._port, COMMANDS[sequence.casefold()])
+            self.send_command(self._port, COMMANDS[sequence.casefold()])
 
-    def _findPlayService(self, description):
+    def _find_play_service(self, description):
         services = description["root"]["device"]["serviceList"]["service"]
         if not isinstance(services, list):
             services = [services]
-        playService = None
-        for s in services:
-            if s["serviceId"] == SKY_PLAY_URN:
-                playService = s
+        play_service = None
+        for service in services:
+            if service["serviceId"] == SKY_PLAY_URN:
+                play_service = service
 
-        return playService
+        return play_service
 
-    def _getSoapControlURL(self):
+    def _get_soap_control_url(self):
         """Get the soapcontrourl for the SkyQ box."""
         url_index = 0
-        soapControlURL = None
-        while soapControlURL is None and url_index < 50:
-            soapControlURL = self._getSoapControlURLItem(url_index)["url"]
+        soap_control_url = None
+        while soap_control_url is None and url_index < 50:
+            soap_control_url = self._get_soap_control_url_item(url_index)["url"]
             url_index += 1
 
-        return soapControlURL
+        return soap_control_url
 
-    def _getSoapControlURLItem(self, descriptionIndex):
+    def _get_soap_control_url_item(self, description_index):
         """Get the sky control url."""
-        _LOGGER.debug(f"SoapControlURL - {self._host} - {descriptionIndex}")
-        descriptionUrl = SOAP_DESCRIPTION_BASE_URL.format(self._host, descriptionIndex)
+        _LOGGER.debug("SoapControlURL - %s - %s", self._host, description_index)
+        description_url = SOAP_DESCRIPTION_BASE_URL.format(
+            self._host, description_index
+        )
         headers = {"User-Agent": SOAP_USER_AGENT}
         empty_return = {"url": None, "status": "Not Found"}
         try:
-            resp = requests.get(descriptionUrl, headers=headers, timeout=SOAP_TIMEOUT)
+            resp = requests.get(description_url, headers=headers, timeout=SOAP_TIMEOUT)
             if resp.status_code == HTTPStatus.OK:
                 description = xmltodict.parse(resp.text)
-                deviceType = description["root"]["device"]["deviceType"]
-                if SKYCONTROL not in deviceType:
+                device_type = description["root"]["device"]["deviceType"]
+                if SKYCONTROL not in device_type:
                     return empty_return
 
-                playService = self._findPlayService(description)
+                play_service = self._find_play_service(description)
 
-                if playService is None:
+                if play_service is None:
                     return empty_return
 
                 return {
-                    "url": SOAP_CONTROL_BASE_URL.format(self._host, playService["controlURL"]),
+                    "url": SOAP_CONTROL_BASE_URL.format(
+                        self._host,
+                        play_service[  # pylint: disable=unsubscriptable-object
+                            "controlURL"
+                        ],
+                    ),
                     "status": "OK",
                 }
             return empty_return
-        except (requests.exceptions.Timeout):
-            _LOGGER.warning(f"W0030DA - Control URL not accessible: {self._host} : {descriptionUrl}")
+        except requests.exceptions.Timeout:
+            _LOGGER.warning(
+                "W0030DA - Control URL not accessible: %s : %s",
+                self._host,
+                description_url,
+            )
             return {"url": None, "status": "Error"}
         except (requests.exceptions.ConnectionError) as err:
-            _LOGGER.exception(f"X0050DA - Connection error: {self._host} : {err}")
+            _LOGGER.exception("X0050DA - Connection error: %s : %s", self._host, err)
             return empty_return
-        except Exception as err:
-            _LOGGER.exception(f"X0060DA - Other error occurred: {self._host} : {err}")
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.exception(
+                "X0060DA - Other error occurred: %s : %s", self._host, err
+            )
             return empty_return

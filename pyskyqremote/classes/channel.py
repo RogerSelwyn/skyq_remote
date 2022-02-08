@@ -11,83 +11,93 @@ from ..const_test import TEST_CHANNEL_LIST
 class ChannelInformation:
     """Channel information retrieval methods."""
 
-    def __init__(self, remoteConfig):
+    def __init__(self, remote_config):
         """Initialise the channel information class."""
-        self._remoteConfig = remoteConfig
-        self._deviceAccess = remoteConfig.deviceAccess
-        self._test_channel = remoteConfig.test_channel
+        self._remote_config = remote_config
+        self._device_access = remote_config.device_access
+        self._test_channel = remote_config.test_channel
         self._channels = []
-        self._bouquet = remoteConfig.deviceInfo.bouquet
-        self._subbouquet = remoteConfig.deviceInfo.subbouquet
+        self._bouquet = remote_config.device_info.bouquet
+        self._subbouquet = remote_config.device_info.subbouquet
 
-    def getChannelList(self):
+    def get_channel_list(self):
         """Get Channel list for Sky Q box."""
-        self._channels = self._getChannels()
+        self._channels = self._get_channels()
         if not self._channels:
             return None
 
         channelitems = set()
 
-        for c in self._channels:
-            channel = Channel(c["c"], c["t"], c["sid"], None, sf=c["sf"])
+        for channel in self._channels:
+            channel = Channel(
+                channel["c"], channel["t"], channel["sid"], None, sf=channel["sf"]
+            )
             channelitems.add(channel)
 
         channelnosorted = sorted(channelitems, key=attrgetter("channelnoint"))
 
-        return ChannelList(sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True))
+        return ChannelList(
+            sorted(channelnosorted, key=attrgetter("channeltype"), reverse=True)
+        )
 
-    def getChannelInfo(self, channelNo):
+    def get_channel_info(self, channel_no):
         """Retrieve channel information for specified channelNo."""
-        if not channelNo.isnumeric():
+        if not channel_no.isnumeric():
             return None
 
         if not self._channels:
-            self._channels = self._getChannels()
+            self._channels = self._get_channels()
 
         try:
-            channel = next(c for c in self._channels if c["c"] == channelNo)
+            channel = next(c for c in self._channels if c["c"] == channel_no)
         except StopIteration:
             return None
 
         channelno = channel["c"]
         channelname = channel["t"]
         channelsid = channel["sid"]
-        channelImageUrl = self._remoteConfig.remoteCountry.buildChannelImageUrl(channelsid, channelname)
-        sf = channel["sf"]
-        return Channel(channelno, channelname, channelsid, channelImageUrl, sf=sf)
+        channel_image_url = self._remote_config.remote_country.build_channel_image_url(
+            channelsid, channelname
+        )
+        sformat = channel["sf"]
+        return Channel(
+            channelno, channelname, channelsid, channel_image_url, sf=sformat
+        )
 
-    def getChannelNode(
+    def get_channel_node(
         self,
         sid,
     ):
         """Retrieve the channel node for the given sid."""
-        channelNode = self._getNodeFromChannels(sid)
+        channel_node = self._get_node_from_channels(sid)
 
-        if not channelNode:
+        if not channel_node:
             # Load the channel list for the first time.
             # It's also possible the channels may have changed since last HA restart, so reload them
-            self._channels = self._getChannels()
-            channelNode = self._getNodeFromChannels(sid)
-        if not channelNode:
+            self._channels = self._get_channels()
+            channel_node = self._get_node_from_channels(sid)
+        if not channel_node:
             return None
 
-        channel = channelNode["t"]
-        channelno = channelNode["c"]
+        channel = channel_node["t"]
+        channelno = channel_node["c"]
         return {"channel": channel, "channelno": channelno}
 
-    def _getChannels(self):
+    def _get_channels(self):
         """Get the list of channels from the Sky Q box."""
         # This is here because otherwise I can never validate code for a foreign device
         if self._test_channel:
             return TEST_CHANNEL_LIST
 
-        channels = self._deviceAccess.retrieveInformation(REST_CHANNEL_LIST.format(self._bouquet, self._subbouquet))
+        channels = self._device_access.retrieve_information(
+            REST_CHANNEL_LIST.format(self._bouquet, self._subbouquet)
+        )
         if channels and "services" in channels:
             return channels["services"]
 
         return []
 
-    def _getNodeFromChannels(self, sid):
+    def _get_node_from_channels(self, sid):
         return next((s for s in self._channels if s["sid"] == str(sid)), None)
 
 
@@ -106,11 +116,13 @@ class ChannelList:
         return json.dumps(self, cls=_ChannelListJSONEncoder)
 
 
-def ChannelListDecoder(obj):
+def channel_list_decoder(obj):
     """Decode the channel list object from json."""
     channellist = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in channellist and channellist["__type__"] == "__channellist__":
-        return ChannelList(channels=channellist["channels"], **channellist["attributes"])
+        return ChannelList(
+            channels=channellist["channels"], **channellist["attributes"]
+        )
     return channellist
 
 
@@ -122,28 +134,28 @@ def _json_decoder_hook(obj):
 
 
 class _ChannelListJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, ChannelList):
+    def default(self, o):
+        if isinstance(o, ChannelList):
             type_ = "__channellist__"
-            channels = obj.channels
-            attributes = {k: v for k, v in vars(obj).items() if k not in {"channels"}}
+            channels = o.channels
+            attributes = {k: v for k, v in vars(o).items() if k not in {"channels"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
                 "channels": channels,
             }
 
-        if isinstance(obj, set):
-            return list(obj)
+        if isinstance(o, set):
+            return list(o)
 
-        if isinstance(obj, Channel):
-            attributes = {k: v for k, v in vars(obj).items()}
+        if isinstance(o, Channel):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__channel__",
                 "attributes": attributes,
             }
 
-        json.JSONEncoder.default(self, obj)  # pragma: no cover
+        json.JSONEncoder.default(self, o)  # pragma: no cover
 
 
 @dataclass(order=True)
@@ -172,7 +184,7 @@ class Channel:
     )
     channeltype: str = None
     channelnoint: int = None
-    sf: str = None
+    sf: str = None  # pylint: disable=invalid-name
 
     def __post_init__(self):
         """Post process the channel setup."""
@@ -189,7 +201,7 @@ class Channel:
         return json.dumps(self, cls=_ChannelJSONEncoder)
 
 
-def ChannelDecoder(obj):
+def channel_decoder(obj):
     """Decode channel object from json."""
     channel = json.loads(obj)
     if "__type__" in channel and channel["__type__"] == "__channel__":
@@ -198,9 +210,9 @@ def ChannelDecoder(obj):
 
 
 class _ChannelJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Channel):
-            attributes = {k: v for k, v in vars(obj).items()}
+    def default(self, o):
+        if isinstance(o, Channel):
+            attributes = {k: v for k, v in vars(o).items()}
             return {
                 "__type__": "__channel__",
                 "attributes": attributes,

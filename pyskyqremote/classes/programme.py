@@ -39,7 +39,7 @@ class Programme:
         repr=True,
         compare=False,
     )
-    imageUrl: str = field(
+    image_url: str = field(
         init=True,
         repr=True,
         compare=False,
@@ -66,7 +66,7 @@ class Programme:
         return json.dumps(self, cls=_ProgrammeJSONEncoder)
 
 
-def ProgrammeDecoder(obj):
+def programmedecoder(obj):
     """Decode programme object from json."""
     programme = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in programme and programme["__type__"] == "__programme__":
@@ -84,13 +84,13 @@ def _json_decoder_hook(obj):
 
 
 class _ProgrammeJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Programme):
+    def default(self, o):
+        if isinstance(o, Programme):
             attributes = {}
-            for k, v in vars(obj).items():
-                if isinstance(v, datetime):
-                    v = v.strftime("%Y-%m-%dT%H:%M:%SZ")
-                attributes[k] = v
+            for k, val in vars(o).items():
+                if isinstance(val, datetime):
+                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                attributes[k] = val
             return {
                 "__type__": "__programme__",
                 "attributes": attributes,
