@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.00 (2022/02/08)
+**Note:** This is a breaking change. I have correctly named all classes, methods and attributes in line with standards. Any code using this module will very likely needs simple name changes made to it.
+
+### Maintenance
+
+- [Create codeql-analysis.yml](https://github.com/RogerSelwyn/skyq_remote/commit/4d3ea1c189398d3263a8bb2ba08b23332d13b038) - @RogerSelwyn
+- [Pylint applied](https://github.com/RogerSelwyn/skyq_remote/commit/6dae25fe774e3e716e5691e52e9f16cff0370abd) - @RogerSelwyn
+- [Bump to 0.3.00](https://github.com/RogerSelwyn/skyq_remote/commit/9cc654b1a63685d89323093e679076678286dfe1) - @RogerSelwyn
+
+
 ## v0.2.59 (2022/02/03)
 ### Fixes
 - [Fix excessive quota errors when in low power mode](https://github.com/RogerSelwyn/skyq_remote/commit/1352ee25fe7aeb80ca5ddb2cf7d08cd13bfbd292) - @RogerSelwyn
