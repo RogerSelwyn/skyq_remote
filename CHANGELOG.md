@@ -1,7 +1,7 @@
 # Changelog
 
 ## v0.3.00 (2022/02/08)
-**Note:** This is a breaking change. I have correctly named all classes, methods and attributes in line with standards. Any code using this module will very likely needs simple name changes made to it.
+**Note:** This version introduces a breaking change. I have correctly named all classes, methods and attributes in line with standards. Any code using this module will very likely needs simple name changes made to it.
 
 ### Maintenance
 
