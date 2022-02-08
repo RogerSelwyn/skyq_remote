@@ -8,6 +8,8 @@
 - [Create codeql-analysis.yml](https://github.com/RogerSelwyn/skyq_remote/commit/4d3ea1c189398d3263a8bb2ba08b23332d13b038) - @RogerSelwyn
 - [Pylint applied](https://github.com/RogerSelwyn/skyq_remote/commit/6dae25fe774e3e716e5691e52e9f16cff0370abd) - @RogerSelwyn
 - [Bump to 0.3.00](https://github.com/RogerSelwyn/skyq_remote/commit/9cc654b1a63685d89323093e679076678286dfe1) - @RogerSelwyn
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/bd03c0884e345fc38e50788bb2e097364e18d8cd) - @RogerSelwyn
+- [Correct release version to 0.3.0](https://github.com/RogerSelwyn/skyq_remote/commit/f61adfe4048830ee6be5372669080bbc8d68609b) - @RogerSelwyn
 
 
 ## v0.2.59 (2022/02/03)
