@@ -19,8 +19,7 @@ class AppInformation:
     def get_active_application(self):
         """Get the active application on Sky Q box."""
         try:
-            apps = self._device_access.callSkyWebSocket(WS_CURRENT_APPS)
-            if apps:
+            if apps := self._device_access.callSkyWebSocket(WS_CURRENT_APPS):
                 self._current_app = next(
                     a for a in apps["apps"] if a["status"] == APP_STATUS_VISIBLE
                 )["appId"]
@@ -71,7 +70,7 @@ def app_decoder(obj):
 class _AppJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, App):
-            attributes = {k: v for k, v in vars(o).items()}
+            attributes = dict(vars(o))
             return {
                 "__type__": "__app__",
                 "attributes": attributes,

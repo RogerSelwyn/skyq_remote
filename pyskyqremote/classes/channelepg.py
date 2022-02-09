@@ -25,7 +25,7 @@ class ChannelEPGInformation:
 
     def get_epg_data(self, sid, epg_date, days=2):
         """Get EPG data for the specified channel/date."""
-        epg = f"{str(sid)} {'{:0>2d}'.format(days)} {epg_date.strftime('%Y%m%d')}"  # pylint: disable=consider-using-f-string
+        epg = f'{sid} {"{:0>2d}".format(days)} {epg_date.strftime("%Y%m%d")}'
 
         if sid in self._epg_cache and self._epg_cache[sid]["epg"] == epg:
             return self._epg_cache[sid]["channel"]
@@ -35,8 +35,7 @@ class ChannelEPGInformation:
         channel_image_url = None
         programmes = set()
 
-        channel_node = self._get_channel_node(sid)
-        if channel_node:
+        if channel_node := self._get_channel_node(sid):
             channel_no = channel_node["channelno"]
             channel_name = channel_node["channel"]
             channel_image_url = self._remote_country.build_channel_image_url(

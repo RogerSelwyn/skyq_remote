@@ -5,29 +5,16 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from ..const import (
-    ALLRECORDINGS,
-    RESPONSE_OK,
-    REST_BOOK_PPVRECORDING,
-    REST_BOOK_RECORDING,
-    REST_BOOK_SERIES_RECORDING,
-    REST_DELETE,
-    REST_POST,
-    REST_QUOTA_DETAILS,
-    REST_RECORDING_DELETE,
-    REST_RECORDING_DETAILS,
-    REST_RECORDING_ERASE,
-    REST_RECORDING_ERASE_ALL,
-    REST_RECORDING_KEEP,
-    REST_RECORDING_LOCK,
-    REST_RECORDING_SET_LAST_PLAYED_POSITION,
-    REST_RECORDING_UNDELETE,
-    REST_RECORDING_UNKEEP,
-    REST_RECORDING_UNLOCK,
-    REST_RECORDINGS_LIST,
-    REST_SERIES_LINK,
-    REST_SERIES_UNLINK,
-)
+from ..const import (ALLRECORDINGS, RESPONSE_OK, REST_BOOK_PPVRECORDING,
+                     REST_BOOK_RECORDING, REST_BOOK_SERIES_RECORDING,
+                     REST_DELETE, REST_POST, REST_QUOTA_DETAILS,
+                     REST_RECORDING_DELETE, REST_RECORDING_DETAILS,
+                     REST_RECORDING_ERASE, REST_RECORDING_ERASE_ALL,
+                     REST_RECORDING_KEEP, REST_RECORDING_LOCK,
+                     REST_RECORDING_SET_LAST_PLAYED_POSITION,
+                     REST_RECORDING_UNDELETE, REST_RECORDING_UNKEEP,
+                     REST_RECORDING_UNLOCK, REST_RECORDINGS_LIST,
+                     REST_SERIES_LINK, REST_SERIES_UNLINK)
 from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
@@ -212,23 +199,17 @@ class RecordingsInformation:
         return True
 
     def _build_recording(self, recording):
-        season = None
-        episode = None
-        starttime = None
-        endtime = None
-        programmeuuid = None
-        channel = None
-        image_url = None
-        title = None
-        status = None
-        pvrid = None
-        eid = None
-
         channel = recording["cn"]
         title = recording["t"]
+
+        season = None
+        episode = None
         if "seasonnumber" in recording and "episodenumber" in recording:
             season = recording["seasonnumber"]
             episode = recording["episodenumber"]
+
+        programmeuuid = None
+        image_url = None
         if "programmeuuid" in recording:
             programmeuuid = recording["programmeuuid"]
             image_url = self._remote_config.remote_country.pvr_image_url.format(
@@ -247,6 +228,7 @@ class RecordingsInformation:
             starttimestamp = recording["st"]
         starttime = datetime.utcfromtimestamp(starttimestamp)
 
+        endtime = None
         if "finald" in recording:
             endtime = datetime.utcfromtimestamp(starttimestamp + recording["finald"])
         elif "schd" in recording:
@@ -255,8 +237,8 @@ class RecordingsInformation:
             endtime = starttime
 
         pvrid = recording["pvrid"]
-        if "oeid" in recording:
-            eid = recording["oeid"]
+
+        eid = recording["oeid"] if "oeid" in recording else None
         status = recording["status"]
 
         return Programme(
@@ -370,7 +352,7 @@ def quota_decoder(obj):
 class _QuotaJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Quota):
-            attributes = {k: v for k, v in vars(o).items()}
+            attributes = dict(vars(o))
             return {
                 "__type__": "__quota__",
                 "attributes": attributes,

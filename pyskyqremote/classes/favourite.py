@@ -92,7 +92,7 @@ class _FavouriteListJSONEncoder(json.JSONEncoder):
             return list(o)
 
         if isinstance(o, Favourite):
-            attributes = {k: v for k, v in vars(o).items()}
+            attributes = dict(vars(o))
             return {
                 "__type__": "__favourite__",
                 "attributes": attributes,
@@ -146,7 +146,7 @@ def favourite_decoder(obj):
 class _favouriteJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Favourite):
-            attributes = {k: v for k, v in vars(o).items()}
+            attributes = dict(vars(o))
             return {
                 "__type__": "__favourite__",
                 "attributes": attributes,
