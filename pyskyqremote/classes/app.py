@@ -3,7 +3,8 @@
 import json
 from dataclasses import dataclass, field
 
-from ..const import APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS, WS_CURRENT_APPS
+from ..const import (APP_EPG, APP_STATUS_VISIBLE, REST_PATH_APPS,
+                     WS_CURRENT_APPS)
 
 
 class AppInformation:

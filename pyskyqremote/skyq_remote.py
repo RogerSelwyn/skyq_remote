@@ -118,8 +118,7 @@ class SkyQRemote:
         if not self._channel_epg_information:
             self._channel_epg_information = ChannelEPGInformation(self._remote_config)
 
-        data = self._channel_epg_information.get_epg_data(sid, epg_date, days)
-        return data
+        return self._channel_epg_information.get_epg_data(sid, epg_date, days)
 
     def get_programme_from_epg(self, sid, epg_date, query_date):
         """Get programme from EPG for specfied time and channel."""
@@ -140,7 +139,7 @@ class SkyQRemote:
 
             self._error = False
 
-        programme_epg = f"{str(sidint)} {epg_date.strftime('%Y%m%d')}"
+        programme_epg = f'{sidint} {epg_date.strftime("%Y%m%d")}'
         if (
             self._last_programme_epg == programme_epg
             and query_date < self._programme.endtime
@@ -360,7 +359,7 @@ class SkyQRemote:
         try:
             country = pycountry.countries.get(alpha_3=country_code).alpha_2.casefold()
             skyq_country = importlib.import_module(
-                "pyskyqremote.country.remote_" + country
+                f"pyskyqremote.country.remote_{country}"
             ).SkyQCountry
 
         except (AttributeError, ModuleNotFoundError) as err:
