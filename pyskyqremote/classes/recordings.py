@@ -212,23 +212,17 @@ class RecordingsInformation:
         return True
 
     def _build_recording(self, recording):
+        channel = None
+        channel = recording["cn"]
+        title = None
+        title = recording["t"]
         season = None
         episode = None
-        starttime = None
-        endtime = None
-        programmeuuid = None
-        channel = None
-        image_url = None
-        title = None
-        status = None
-        pvrid = None
-        eid = None
-
-        channel = recording["cn"]
-        title = recording["t"]
         if "seasonnumber" in recording and "episodenumber" in recording:
             season = recording["seasonnumber"]
             episode = recording["episodenumber"]
+        programmeuuid = None
+        image_url = None
         if "programmeuuid" in recording:
             programmeuuid = recording["programmeuuid"]
             image_url = self._remote_config.remote_country.pvr_image_url.format(
@@ -245,8 +239,10 @@ class RecordingsInformation:
             starttimestamp = recording["ast"]
         elif "st" in recording:
             starttimestamp = recording["st"]
+        starttime = None
         starttime = datetime.utcfromtimestamp(starttimestamp)
 
+        endtime = None
         if "finald" in recording:
             endtime = datetime.utcfromtimestamp(starttimestamp + recording["finald"])
         elif "schd" in recording:
@@ -254,9 +250,10 @@ class RecordingsInformation:
         else:
             endtime = starttime
 
+        pvrid = None
         pvrid = recording["pvrid"]
-        if "oeid" in recording:
-            eid = recording["oeid"]
+        eid = recording["oeid"] if "oeid" in recording else None
+        status = None
         status = recording["status"]
 
         return Programme(
@@ -370,7 +367,7 @@ def quota_decoder(obj):
 class _QuotaJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Quota):
-            attributes = {k: v for k, v in vars(o).items()}
+            attributes = dict(vars(o))
             return {
                 "__type__": "__quota__",
                 "attributes": attributes,

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Test script."""
 
+
 import json
 import sys
 from datetime import datetime
@@ -96,11 +97,15 @@ eid = epgProgrammes[len(epgProgrammes) - 1].eid
 print(eid)
 print(sky.book_recording(eid))
 recordings = sky.get_recordings("SCHEDULED")
-pvrid = None  # pylint: disable=invalid-name
-for recording in recordings.programmes:
-    if recording.eid == eid:
-        pvrid = recording.pvrid
-        break
+pvrid = next(
+    (
+        recording.pvrid
+        for recording in recordings.programmes
+        if recording.eid == eid
+    ),
+    None,
+)
+
 print(pvrid)
 
 print("----------- Book series recording")

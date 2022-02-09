@@ -39,14 +39,13 @@ class MediaInformation:
         if XSI in current_uri:
             sid = self._test_channel or int(current_uri[6:], 16)
             live = True
-            channel_node = self._get_channel_node(sid)
-            if channel_node:
+            if channel_node := self._get_channel_node(sid):
                 channel = channel_node["channel"]
                 channelno = channel_node["channelno"]
                 image_url = self._remote_country.build_channel_image_url(sid, channel)
         elif PVR in current_uri:
             # Recorded content
-            pvrid = "P" + current_uri[11:]
+            pvrid = f'P{current_uri[11:]}'
             live = False
 
         return Media(channel, channelno, image_url, sid, pvrid, live)

@@ -182,7 +182,7 @@ class DeviceAccess:
             data = client.recv(1024)
 
             if len(data) < 24:
-                client.sendall(data[0:strlen])
+                client.sendall(data[:strlen])
                 strlen = 1
             else:
                 client.sendall(command_bytes)
