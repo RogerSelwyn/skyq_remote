@@ -402,8 +402,8 @@ Will return a JSON structure such as below:
 ### Decode programme information (JSON)
 
 ```
-from pyskyqremote.programme import ProgrammeDecoder
-programme = ProgrammeDecoder(programmeJSON)
+from pyskyqremote.programme import programme_decoder
+programme = programme_decoder(programmeJSON)
 ```
 
 ### Get current live TV programme on a channel
@@ -603,8 +603,8 @@ Will return an object such as below:
 ### Decode recording information (JSON)
 
 ```
-from pyskyqremote.programme import RecordedProgrammeDecoder
-recording = RecordedProgrammeDecoder(recordingJSON)
+from pyskyqremote.programme import recorded_programme_decoder
+recording = recorded_programme_decoder(recording_json)
 ```
 
 ### Get quota
@@ -617,8 +617,8 @@ Will return an object such as below:
 
 ```
 {
-   'quotaMax':1604285,
-   'quotaUsed':171083
+   'quotamax':1604285,
+   'quotaused':171083
 }
 ```
 ### Get quota (JSON)
