@@ -1,6 +1,16 @@
 # Changelog
 
-## v0.3.00 (2022/02/08)
+## v0.3.1 (2022/02/11)
+### Maintenance
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/28f86e3df949b0f7d968b86cdd7114130515e041) - @RogerSelwyn
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/71a6a6b8f8dc0b71cb4739af7d05afe0ee91e1b9) - @RogerSelwyn
+- [Sourcery recommendations](https://github.com/RogerSelwyn/skyq_remote/commit/df2e2415d2d051cd15249ff57eedccb5d4842bab) - @RogerSelwyn
+- [Sourcery recommendations](https://github.com/RogerSelwyn/skyq_remote/commit/8ce9c2ba8d63e22ed59fb0abc5e481389b1f211e) - @RogerSelwyn
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/ba6af8f1eaeeb47640206853fb74cef543336653) - @RogerSelwyn
+- [Code simplification](https://github.com/RogerSelwyn/skyq_remote/commit/13fd40c1b73357d256d17d0b40e34b34826893e8) - @RogerSelwyn
+- [Bump to 0.3.1](https://github.com/RogerSelwyn/skyq_remote/commit/f25c80a9c93ce8ea2cfc3b9b832a193b31dce732) - @RogerSelwyn
+
+## v0.3.0 (2022/02/08)
 **Note:** This version introduces a breaking change. I have correctly named all classes, methods and attributes in line with standards. Any code using this module will very likely needs simple name changes made to it.
 
 ### Maintenance
