@@ -6,13 +6,8 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_gb import (
-    CHANNEL_IMAGE_URL,
-    LIVE_IMAGE_URL,
-    PVR_IMAGE_URL,
-    SCHEDULE_URL,
-    TERRITORY,
-)
+from .const_gb import (CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL,
+                       SCHEDULE_URL, TERRITORY)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,18 +31,8 @@ class SkyQCountry:
     def _get_data(
         self, sid, channelno, channel_name, epg_date
     ):  # pylint: disable=unused-argument
-        epg_date_str = epg_date.strftime("%Y%m%d")
-
-        epg_url = SCHEDULE_URL.format(sid, epg_date_str)
-        headers = {
-            "x-skyott-territory": TERRITORY,
-            "x-skyott-provider": "SKY",
-            "x-skyott-proposition": "SKYQ",
-        }
         programmes = set()
-
-        resp = requests.get(epg_url, headers=headers)
-        epg_data = resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
+        epg_data = self._get_epg_data(sid, epg_date)
         if epg_data is None:
             return programmes
 
@@ -87,3 +72,15 @@ class SkyQCountry:
             programmes.add(programme)
 
         return programmes
+
+    def _get_epg_data(self, sid, epg_date):
+        epg_date_str = epg_date.strftime("%Y%m%d")
+
+        epg_url = SCHEDULE_URL.format(sid, epg_date_str)
+        headers = {
+            "x-skyott-territory": TERRITORY,
+            "x-skyott-provider": "SKY",
+            "x-skyott-proposition": "SKYQ",
+        }
+        resp = requests.get(epg_url, headers=headers)
+        return resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None

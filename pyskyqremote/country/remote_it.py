@@ -6,13 +6,8 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_it import (
-    CHANNEL_IMAGE_URL,
-    CHANNEL_URL,
-    LIVE_IMAGE_URL,
-    PVR_IMAGE_URL,
-    SCHEDULE_URL,
-)
+from .const_it import (CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL,
+                       PVR_IMAGE_URL, SCHEDULE_URL)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,20 +43,13 @@ class SkyQCountry:
     def _get_data(
         self, sid, channelno, channel_name, query_date_from, query_date_to
     ):  # pylint: disable=unused-argument
-        cid = None
-        for channel in self._channellist:
-            if str(channel["number"]) == str(channelno):
-                cid = channel["id"]
-
-        epg_url = SCHEDULE_URL.format(cid, query_date_from, query_date_to)
         programmes = set()
 
         try:
-            resp = requests.get(epg_url)
+            epg_data = self._get_epg_data(channelno, query_date_from, query_date_to)
         except requests.exceptions.ConnectionError:
             return programmes
 
-        epg_data = resp.json()["events"] if resp.status_code == RESPONSE_OK else None
         if epg_data is None:
             return programmes
 
@@ -114,3 +102,16 @@ class SkyQCountry:
         resp = requests.get(CHANNEL_URL)
         if resp.status_code == RESPONSE_OK:
             self._channellist = resp.json()["channels"]
+
+    def _get_epg_data(self, channelno, query_date_from, query_date_to):
+
+        cid = None
+        for channel in self._channellist:
+            if str(channel["number"]) == str(channelno):
+                cid = channel["id"]
+
+        epg_url = SCHEDULE_URL.format(cid, query_date_from, query_date_to)
+
+        resp = requests.get(epg_url)
+
+        return resp.json()["events"] if resp.status_code == RESPONSE_OK else None
