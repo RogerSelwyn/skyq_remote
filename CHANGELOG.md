@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.2 (2022/02/20)
+### Fixes
+- [Fix issue with retrieving current app](https://github.com/RogerSelwyn/skyq_remote/commit/4eae217df9d20ccf85379fdb838d31bac5b3f852) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.3.2](https://github.com/RogerSelwyn/skyq_remote/commit/f54a8246223224a3b4a0cb006eaf533431bbc309) - @RogerSelwyn
+
 ## v0.3.1 (2022/02/11)
 ### Maintenance
 - [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/28f86e3df949b0f7d968b86cdd7114130515e041) - @RogerSelwyn
