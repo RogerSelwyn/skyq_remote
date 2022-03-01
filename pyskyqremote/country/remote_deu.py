@@ -8,8 +8,14 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_de import (CHANNEL_IMAGE_URL, CHANNEL_URL, LIVE_IMAGE_URL,
-                       PVR_IMAGE_URL, SCHEDULE_URL, TIMEZONE)
+from .const_deu import (
+    CHANNEL_IMAGE_URL,
+    CHANNEL_URL,
+    LIVE_IMAGE_URL,
+    PVR_IMAGE_URL,
+    SCHEDULE_URL,
+    TIMEZONE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

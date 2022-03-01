@@ -6,8 +6,13 @@ import requests
 
 from ..classes.programme import Programme
 from ..const import RESPONSE_OK, SKY_STATUS_LIVE
-from .const_gb import (CHANNEL_IMAGE_URL, LIVE_IMAGE_URL, PVR_IMAGE_URL,
-                       SCHEDULE_URL, TERRITORY)
+from .const_gbr import (
+    CHANNEL_IMAGE_URL,
+    LIVE_IMAGE_URL,
+    PVR_IMAGE_URL,
+    SCHEDULE_URL,
+    TERRITORY,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

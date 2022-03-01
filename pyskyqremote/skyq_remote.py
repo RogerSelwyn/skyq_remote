@@ -3,8 +3,6 @@ import importlib
 import logging
 from datetime import datetime
 
-import pycountry
-
 from .classes.app import AppInformation
 from .classes.channel import ChannelInformation
 from .classes.channelepg import ChannelEPGInformation
@@ -357,9 +355,8 @@ class SkyQRemote:
     def _import_country(self, country_code):
         """Work out the country for the Country Code."""
         try:
-            country = pycountry.countries.get(alpha_3=country_code).alpha_2.casefold()
             skyq_country = importlib.import_module(
-                f"pyskyqremote.country.remote_{country}"
+                f"pyskyqremote.country.remote_{country_code.lower()}"
             ).SkyQCountry
 
         except (AttributeError, ModuleNotFoundError) as err:
@@ -371,7 +368,7 @@ class SkyQRemote:
             )
 
             skyq_country = importlib.import_module(
-                "pyskyqremote.country.remote_" + "gb"
+                "pyskyqremote.country.remote_" + "gbr"
             ).SkyQCountry
 
         return skyq_country

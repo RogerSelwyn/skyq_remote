@@ -10,11 +10,25 @@ import requests
 import websocket
 import xmltodict
 
-from ..const import (COMMANDS, CONNECT_TIMEOUT, HTTP_TIMEOUT, REST_BASE_URL,
-                     REST_DELETE, REST_GET, REST_POST, SKY_PLAY_URN,
-                     SKYCONTROL, SOAP_ACTION, SOAP_CONTROL_BASE_URL,
-                     SOAP_DESCRIPTION_BASE_URL, SOAP_PAYLOAD, SOAP_RESPONSE,
-                     SOAP_TIMEOUT, SOAP_USER_AGENT, WS_BASE_URL)
+from ..const import (
+    COMMANDS,
+    CONNECT_TIMEOUT,
+    HTTP_TIMEOUT,
+    REST_BASE_URL,
+    REST_DELETE,
+    REST_GET,
+    REST_POST,
+    SKY_PLAY_URN,
+    SKYCONTROL,
+    SOAP_ACTION,
+    SOAP_CONTROL_BASE_URL,
+    SOAP_DESCRIPTION_BASE_URL,
+    SOAP_PAYLOAD,
+    SOAP_RESPONSE,
+    SOAP_TIMEOUT,
+    SOAP_USER_AGENT,
+    WS_BASE_URL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 UNDEFINED = "undefined"
