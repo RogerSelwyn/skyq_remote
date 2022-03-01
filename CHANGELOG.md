@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.5 (2022/03/01)
+### Maintenance
+- [Remove dependency on pycountry](https://github.com/RogerSelwyn/skyq_remote/commit/feb598f1c8b8ea0920f772a63442446946731c36) - @RogerSelwyn
+- [Bump to 0.3.5](https://github.com/RogerSelwyn/skyq_remote/commit/de629d8a75d0587b6128b28d87633203a07d90e7) - @RogerSelwyn
+
 ## v0.3.2 (2022/02/20)
 ### Fixes
 - [Fix issue with retrieving current app](https://github.com/RogerSelwyn/skyq_remote/commit/4eae217df9d20ccf85379fdb838d31bac5b3f852) - @RogerSelwyn
