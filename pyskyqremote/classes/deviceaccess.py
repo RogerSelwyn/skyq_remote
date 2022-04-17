@@ -92,7 +92,9 @@ class DeviceAccess:
             self._soap_control_url = self._get_soap_control_url()
         if not self._soap_control_url:
             _LOGGER.warning(
-                "W0020DA - SOAP Control URL not found: %s : %s ", self._host, method
+                "W0020DA - No Control URL, SOAP call not made: %s : %s ",
+                self._host,
+                method,
             )
             return None
         _LOGGER.debug("SOAP Call - %s : %s", self._host, method)
@@ -232,11 +234,14 @@ class DeviceAccess:
             soap_control_url = self._get_soap_control_url_item(url_index)["url"]
             url_index += 1
 
+        if not soap_control_url:
+            _LOGGER.warning("W0030DA - Soap Control URL not available - %s", self._host)
+
         return soap_control_url
 
     def _get_soap_control_url_item(self, description_index):
         """Get the sky control url."""
-        _LOGGER.debug("SoapControlURL - %s - %s", self._host, description_index)
+        # _LOGGER.debug("SoapControlURL - %s - %s", self._host, description_index)
         description_url = SOAP_DESCRIPTION_BASE_URL.format(
             self._host, description_index
         )
@@ -266,8 +271,8 @@ class DeviceAccess:
                 }
             return empty_return
         except requests.exceptions.Timeout:
-            _LOGGER.warning(
-                "W0030DA - Control URL not accessible: %s : %s",
+            _LOGGER.debug(
+                "D0020DA - Control URL not accessible: %s : %s",
                 self._host,
                 description_url,
             )
