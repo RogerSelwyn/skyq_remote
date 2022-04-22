@@ -5,16 +5,29 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from ..const import (ALLRECORDINGS, RESPONSE_OK, REST_BOOK_PPVRECORDING,
-                     REST_BOOK_RECORDING, REST_BOOK_SERIES_RECORDING,
-                     REST_DELETE, REST_POST, REST_QUOTA_DETAILS,
-                     REST_RECORDING_DELETE, REST_RECORDING_DETAILS,
-                     REST_RECORDING_ERASE, REST_RECORDING_ERASE_ALL,
-                     REST_RECORDING_KEEP, REST_RECORDING_LOCK,
-                     REST_RECORDING_SET_LAST_PLAYED_POSITION,
-                     REST_RECORDING_UNDELETE, REST_RECORDING_UNKEEP,
-                     REST_RECORDING_UNLOCK, REST_RECORDINGS_LIST,
-                     REST_SERIES_LINK, REST_SERIES_UNLINK)
+from ..const import (
+    ALLRECORDINGS,
+    RESPONSE_OK,
+    REST_BOOK_PPVRECORDING,
+    REST_BOOK_RECORDING,
+    REST_BOOK_SERIES_RECORDING,
+    REST_DELETE,
+    REST_POST,
+    REST_QUOTA_DETAILS,
+    REST_RECORDING_DELETE,
+    REST_RECORDING_DETAILS,
+    REST_RECORDING_ERASE,
+    REST_RECORDING_ERASE_ALL,
+    REST_RECORDING_KEEP,
+    REST_RECORDING_LOCK,
+    REST_RECORDING_SET_LAST_PLAYED_POSITION,
+    REST_RECORDING_UNDELETE,
+    REST_RECORDING_UNKEEP,
+    REST_RECORDING_UNLOCK,
+    REST_RECORDINGS_LIST,
+    REST_SERIES_LINK,
+    REST_SERIES_UNLINK,
+)
 from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
@@ -66,7 +79,8 @@ class RecordingsInformation:
         )
         if not resp:
             return None
-        elif "userQuotaMax" not in resp:
+
+        if "userQuotaMax" not in resp:
             _LOGGER.debug("D0010R - Recording data not found for %s", resp)
             return None
         return Quota(resp["userQuotaMax"], resp["userQuotaUsed"])
@@ -74,13 +88,13 @@ class RecordingsInformation:
     def book_recording(self, eid, series):
         """Book recording for specified item."""
         resp = None
-        if not series:
+        if series:
             resp = self._remote_config.device_access.retrieve_information(
-                REST_BOOK_RECORDING.format(eid), REST_POST
+                REST_BOOK_SERIES_RECORDING.format(eid), REST_POST
             )
         else:
             resp = self._remote_config.device_access.retrieve_information(
-                REST_BOOK_SERIES_RECORDING.format(eid), REST_POST
+                REST_BOOK_RECORDING.format(eid), REST_POST
             )
 
         if resp != RESPONSE_OK:
