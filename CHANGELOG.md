@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.6 (2022/04/2)
+### Maintenance
+- [Improve SOAP Control URL processing](https://github.com/RogerSelwyn/skyq_remote/commit/4d58ea4863923bf533530625c0f0667e4a60cb52) - @RogerSelwyn
+- [Add handling for unsupported devices](https://github.com/RogerSelwyn/skyq_remote/commit/99e2d607ff2db16d2363c1543fc15f5a14e0d349) - @RogerSelwyn
+- [Bump to 0.3.6](https://github.com/RogerSelwyn/skyq_remote/commit/53afc6105a5c51d5a65ae00c3e13f44343df5bfe) - @RogerSelwyn
+
 ## v0.3.5 (2022/03/01)
 ### Maintenance
 - [Remove dependency on pycountry](https://github.com/RogerSelwyn/skyq_remote/commit/feb598f1c8b8ea0920f772a63442446946731c36) - @RogerSelwyn
