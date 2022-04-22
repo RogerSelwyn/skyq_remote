@@ -26,6 +26,8 @@ from .const import (
     SKY_STATE_STANDBY,
     SKY_STATE_STOPPED,
     SKY_STATE_TRANSITIONING,
+    SKY_STATE_UNSUPPORTED,
+    UNSUPPORTED_DEVICES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,8 +40,8 @@ class SkyQRemote:
 
     def __init__(self, host, epg_cache_len=20, port=49160, json_port=9006):
         """Stand up a new SkyQ box."""
-        self.device_setup = False
-        self.gateway = False
+        self._device_setup = False
+        self._device_type = None
         self._host = host
         self._remote_country = None
         self._override_country = None
@@ -67,6 +69,16 @@ class SkyQRemote:
 
         self._setup_device()
 
+    @property
+    def device_setup(self):
+        """Get the dev ice setp state."""
+        return self._device_setup
+
+    @property
+    def device_type(self):
+        """Get the device type of the Sky Q box."""
+        return self._device_type
+
     def power_status(self) -> str:
         """Get the power status of the Sky Q box."""
         if not self._remote_country:
@@ -85,6 +97,9 @@ class SkyQRemote:
         """Get current state of the SkyQ box."""
         if not self._remote_country:
             self._setup_remote()
+
+        if self._device_type in UNSUPPORTED_DEVICES:
+            return SKY_STATE_UNSUPPORTED
 
         response = self._device_information.get_transport_information()
         if response is not None:
@@ -337,10 +352,10 @@ class SkyQRemote:
         if not device_info:
             return
 
-        if not self.device_setup:
+        if not self._device_setup:
             self._setup_device()
 
-        if not self._remote_country and self.device_setup:
+        if not self._remote_country and self._device_setup:
             skyq_country = self._import_country(
                 self._remote_config.device_info.used_country_code
             )
@@ -349,8 +364,8 @@ class SkyQRemote:
 
     def _setup_device(self):
 
-        self.device_setup = True
-        self.gateway = self._remote_config.device_info.gateway
+        self._device_setup = True
+        self._device_type = self._remote_config.device_info.deviceType
 
     def _import_country(self, country_code):
         """Work out the country for the Country Code."""
