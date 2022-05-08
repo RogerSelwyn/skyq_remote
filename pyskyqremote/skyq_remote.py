@@ -6,7 +6,7 @@ from datetime import datetime
 from .classes.app import AppInformation
 from .classes.channel import ChannelInformation
 from .classes.channelepg import ChannelEPGInformation
-from .classes.device import DeviceInformation
+from .classes.device import DeviceInformation, TransportInfo
 from .classes.deviceaccess import DeviceAccess
 from .classes.favourite import FavouriteInformation
 from .classes.media import MediaInformation
@@ -15,17 +15,11 @@ from .classes.recordings import RecordingsInformation
 from .const import (
     ALLRECORDINGS,
     COMMANDS,
-    CURRENT_TRANSPORT_STATE,
     EPG_ERROR_NO_DATA,
     EPG_ERROR_PAST_END,
-    SKY_STATE_NOMEDIA,
     SKY_STATE_OFF,
     SKY_STATE_ON,
-    SKY_STATE_PAUSED,
-    SKY_STATE_PLAYING,
     SKY_STATE_STANDBY,
-    SKY_STATE_STOPPED,
-    SKY_STATE_TRANSITIONING,
     SKY_STATE_UNSUPPORTED,
     UNSUPPORTED_DEVICES,
 )
@@ -99,18 +93,9 @@ class SkyQRemote:
             self._setup_remote()
 
         if self._device_type in UNSUPPORTED_DEVICES:
-            return SKY_STATE_UNSUPPORTED
+            return TransportInfo(SKY_STATE_UNSUPPORTED, None, None)
 
-        response = self._device_information.get_transport_information()
-        if response is not None:
-            state = response[CURRENT_TRANSPORT_STATE]
-            if state in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
-                return SKY_STATE_STANDBY
-            if state in [SKY_STATE_PLAYING, SKY_STATE_TRANSITIONING]:
-                return SKY_STATE_PLAYING
-            if state == SKY_STATE_PAUSED:
-                return SKY_STATE_PAUSED
-        return SKY_STATE_OFF
+        return self._device_information.get_transport_information()
 
     def get_active_application(self):
         """Get the active application on Sky Q box."""

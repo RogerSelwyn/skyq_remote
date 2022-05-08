@@ -54,6 +54,10 @@ REST_DELETE = "delete"
 # Sky specific constants
 CURRENT_URI = "CurrentURI"
 CURRENT_TRANSPORT_STATE = "CurrentTransportState"
+CURRENT_TRANSPORT_STATUS = "CurrentTransportStatus"
+CURRENT_SPEED = "CurrentSpeed"
+DEFAULT_TRANSPORT_STATE = "OK"
+DEFAULT_TRANSPORT_SPEED = 1
 APP_STATUS_VISIBLE = "VISIBLE"
 
 PVR = "pvr"

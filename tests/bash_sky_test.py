@@ -43,10 +43,16 @@ if sky.power_status() != SKY_STATE_OFF:
     # print(DeviceDecoder(sky.getDeviceInformation().as_json()))
 
 print("----------- Current status")
-current_state = sky.get_current_state()  # pylint: disable=invalid-name
-print(sky.get_current_state())
+response = sky.get_current_state()  # pylint: disable=invalid-name
+current_state = response.state
+print(current_state)
 if current_state == SKY_STATE_STANDBY:
     exit()
+
+print("----------- TRANSPORT INFO")
+transportInfo = sky.get_current_state()  # pylint: disable=invalid-name
+print(transportInfo)
+
 
 print("----------- Active Application")
 appJSON = sky.get_active_application().as_json()
@@ -75,66 +81,66 @@ if sid:
 print("----------- Get Channel Info - 101")
 print(sky.get_channel_info("101").as_json())
 
-print("----------- Channel list")
-print(sky.get_channel_list().as_json())
+# print("----------- Channel list")
+# print(sky.get_channel_list().as_json())
 
 print("----------- Favourites")
 print(sky.get_favourite_list().as_json())
 
-print("----------- Today's EPG")
-epgJSON = sky.get_epg_data(sid, queryDate).as_json()
-print(epgJSON)
+# print("----------- Today's EPG")
+# epgJSON = sky.get_epg_data(sid, queryDate).as_json()
+# print(epgJSON)
 
-print("----------- Get scheduled recordings")
-print(sky.get_recordings("SCHEDULED").as_json())
+# print("----------- Get scheduled recordings")
+# print(sky.get_recordings("SCHEDULED").as_json())
 
 print("----------- Get quota info")
 print(sky.get_quota().as_json())
 
-print("----------- Book recording")
-epgProgrammes = channel_epg_decoder(epgJSON).programmes
-eid = epgProgrammes[len(epgProgrammes) - 1].eid
-print(eid)
-print(sky.book_recording(eid))
-recordings = sky.get_recordings("SCHEDULED")
-pvrid = next(
-    (
-        recording.pvrid
-        for recording in recordings.programmes
-        if recording.eid == eid
-    ),
-    None,
-)
+# print("----------- Book recording")
+# epgProgrammes = channel_epg_decoder(epgJSON).programmes
+# eid = epgProgrammes[len(epgProgrammes) - 1].eid
+# print(eid)
+# print(sky.book_recording(eid))
+# recordings = sky.get_recordings("SCHEDULED")
+# pvrid = next(
+#     (
+#         recording.pvrid
+#         for recording in recordings.programmes
+#         if recording.eid == eid
+#     ),
+#     None,
+# )
 
-print(pvrid)
+# print(pvrid)
 
-print("----------- Book series recording")
-print(sky.book_recording(eid, series=True))
+# print("----------- Book series recording")
+# print(sky.book_recording(eid, series=True))
 
 
-print("----------- Unlink series")
-print(sky.series_link(pvrid, False))
-print("----------- Link series")
-print(sky.series_link(pvrid, True))
-sky.series_link(pvrid, False)
+# print("----------- Unlink series")
+# print(sky.series_link(pvrid, False))
+# print("----------- Link series")
+# print(sky.series_link(pvrid, True))
+# sky.series_link(pvrid, False)
 
-print("----------- Recording keep")
-print(sky.recording_keep(pvrid, True))
-print("----------- Recording unkeep")
-print(sky.recording_keep(pvrid, False))
+# print("----------- Recording keep")
+# print(sky.recording_keep(pvrid, True))
+# print("----------- Recording unkeep")
+# print(sky.recording_keep(pvrid, False))
 
-print("----------- Recording lock")
-print(sky.recording_lock(pvrid, True))
-print("----------- Recording unlock")
-print(sky.recording_lock(pvrid, False))
+# print("----------- Recording lock")
+# print(sky.recording_lock(pvrid, True))
+# print("----------- Recording unlock")
+# print(sky.recording_lock(pvrid, False))
 
-print("----------- Recording delete")
-print(sky.recording_delete(pvrid, True))
-print("----------- Recording undelete")
-print(sky.recording_delete(pvrid, False))
+# print("----------- Recording delete")
+# print(sky.recording_delete(pvrid, True))
+# print("----------- Recording undelete")
+# print(sky.recording_delete(pvrid, False))
 
-print("----------- Recording erase")
-print(sky.recording_erase(pvrid))
+# print("----------- Recording erase")
+# print(sky.recording_erase(pvrid))
 
-print("----------- Set last played position")
-print(sky.recording_set_last_played_position("P2900dbbf", 20))
+# print("----------- Set last played position")
+# print(sky.recording_set_last_played_position("P2900dbbf", 20))

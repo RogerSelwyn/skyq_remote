@@ -124,7 +124,33 @@ Will return "POWERED OFF", "STANDBY or "ON"
 status = self.client.get_current_state()
 ```
 
-Will return "OFF", "STANDBY", "PLAYING", "PAUSED PLAYBACK"
+Will return an object such as below with current transport status information (`state` is the same as the previously returned single attribute):
+```
+{
+    'CurrentTransportState':'PLAYING',
+    'CurrentTransportStatus':'OK',
+    'CurrentSpeed':'1',
+    'state':'PLAYING'
+}
+```
+
+### Get current state (JSON)
+
+```
+status = self.client.get_current_state().as_json()
+```
+
+Will return an object such as below with current transport status information (`state` is the same as the previously returned single attribute):
+```
+{
+   "__type__":"__transportinfo__",
+   "attributes":{
+      "CurrentTransportState":"PLAYING",
+      "CurrentTransportStatus":"OK",
+      "CurrentSpeed":"1",
+      "state":"PLAYING"
+}
+```
 
 ### Get the active application
 

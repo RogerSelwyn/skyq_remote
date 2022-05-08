@@ -4,8 +4,14 @@ import json
 import logging
 from dataclasses import dataclass, field
 
-from ..const import (KNOWN_COUNTRIES, REST_PATH_DEVICEINFO,
-                     REST_PATH_SYSTEMINFO, UPNP_GET_TRANSPORT_INFO)
+from ..const import (CURRENT_SPEED, CURRENT_TRANSPORT_STATE,
+                     CURRENT_TRANSPORT_STATUS, DEFAULT_TRANSPORT_SPEED,
+                     DEFAULT_TRANSPORT_STATE, KNOWN_COUNTRIES,
+                     REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO,
+                     SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_PAUSED,
+                     SKY_STATE_PLAYING, SKY_STATE_STANDBY, SKY_STATE_STOPPED,
+                     SKY_STATE_TRANSITIONING, SKY_STATE_UNSUPPORTED,
+                     UPNP_GET_TRANSPORT_INFO)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +27,17 @@ class DeviceInformation:
 
     def get_transport_information(self):
         """Get the transport information from the SkyQ box."""
-        return self._device_access.call_sky_soap_service(UPNP_GET_TRANSPORT_INFO)
+        response = self._device_access.call_sky_soap_service(UPNP_GET_TRANSPORT_INFO)
+        if response is not None:
+            return TransportInfo(
+                response[CURRENT_TRANSPORT_STATE],
+                response[CURRENT_TRANSPORT_STATUS],
+                response[CURRENT_SPEED],
+            )
+
+        return TransportInfo(
+            SKY_STATE_OFF, DEFAULT_TRANSPORT_STATE, DEFAULT_TRANSPORT_SPEED
+        )
 
     def get_system_information(self):
         """Get the system information from the SkyQ box."""
@@ -196,5 +212,61 @@ class _DeviceJSONEncoder(json.JSONEncoder):
             attributes = dict(vars(o))
             return {
                 "__type__": "__device__",
+                "attributes": attributes,
+            }
+
+
+@dataclass
+class TransportInfo:
+    """SkyQ TransportInfo Class."""
+
+    CurrentTransportState: str = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    CurrentTransportStatus: str = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    CurrentSpeed: float = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    state: str = None
+
+    def __post_init__(self):
+        """Post process the transport setup."""
+        self.state = self.CurrentTransportState
+        if self.CurrentTransportState in [SKY_STATE_NOMEDIA, SKY_STATE_STOPPED]:
+            self.state = SKY_STATE_STANDBY
+        if self.CurrentTransportState in [SKY_STATE_PLAYING, SKY_STATE_TRANSITIONING]:
+            self.state = SKY_STATE_PLAYING
+        if self.CurrentTransportState == SKY_STATE_PAUSED:
+            self.state = SKY_STATE_PAUSED
+        if self.CurrentTransportState == SKY_STATE_UNSUPPORTED:
+            self.CurrentTransportState = None
+
+    def as_json(self) -> str:
+        """Return a JSON string representing this app info."""
+        return json.dumps(self, cls=_TransportInfoJSONEncoder)
+
+
+def transportinfo_decoder(obj):
+    """Decode programme object from json."""
+    transportinfo = json.loads(obj)
+    if "__type__" in transportinfo and transportinfo["__type__"] == "__transportinfo__":
+        return TransportInfo(**transportinfo["attributes"])
+    return transportinfo
+
+
+class _TransportInfoJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, TransportInfo):
+            attributes = dict(vars(o))
+            return {
+                "__type__": "__transportinfo__",
                 "attributes": attributes,
             }
