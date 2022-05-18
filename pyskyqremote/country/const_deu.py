@@ -1,8 +1,15 @@
-"""Constants for pyskyqremote- DE."""
+"""Constants for pyskyqremote- GB."""
+TERRITORY = "DE"
 
-SCHEDULE_URL = "https://www.sky.de/sgtvg/service/getBroadcasts"
-LIVE_IMAGE_URL = "https://www.sky.de{0}"
-PVR_IMAGE_URL = "https://www.sky.de{0}"
-CHANNEL_IMAGE_URL = "https://www.sky.de{0}"
-TIMEZONE = "Europe/Berlin"
-CHANNEL_URL = "https://raw.githubusercontent.com/RogerSelwyn/skyq_remote/master/pyskyqremote/country/channels-de.json"  # pylint: disable=line-too-long
+SCHEDULE_URL = "http://atlantis.epgsky.com/as/schedule/{1}/{0}"
+LIVE_IMAGE_URL = (
+    "https://de.imageservice.sky.com/pd-image/{0}/16-9/456?territory="
+    + TERRITORY
+    + "&provider=SKY&proposition=SKYQ"
+)
+PVR_IMAGE_URL = LIVE_IMAGE_URL
+CHANNEL_IMAGE_URL = (
+    "https://de.imageservice.sky.com/logo/skychb_{0}{1}/600/600?territory="
+    + TERRITORY
+    + "&provider=SKY&proposition=SKYQ"
+)
