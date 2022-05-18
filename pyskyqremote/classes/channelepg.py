@@ -5,7 +5,15 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from .channel import ChannelInformation
+import requests
+from ..const import (
+    LIVE_IMAGE_URL,
+    RESPONSE_OK,
+    SCHEDULE_URL,
+    SKY_STATUS_LIVE,
+)
+
+from .channel import ChannelInformation, build_channel_image_url
 from .programme import Programme
 
 
@@ -38,13 +46,16 @@ class ChannelEPGInformation:
         if channel_node := self._get_channel_node(sid):
             channel_no = channel_node["channelno"]
             channel_name = channel_node["channel"]
-            channel_image_url = self._remote_country.build_channel_image_url(
-                sid, channel_name
+            channel_image_url = build_channel_image_url(
+                sid,
+                channel_name,
+                self._remote_config.url_prefix,
+                self._remote_config.territory,
             )
 
             for day in range(days):
-                programmes_data = self._remote_country.get_epg_data(
-                    sid, channel_no, channel_name, epg_date + timedelta(days=day)
+                programmes_data = self._get_data(
+                    sid, channel_name, epg_date + timedelta(days=day)
                 )
                 if len(programmes_data) > 0:
                     programmes = programmes.union(programmes_data)
@@ -68,6 +79,65 @@ class ChannelEPGInformation:
             self._epg_cache.popitem(last=True)
 
         return self._channel
+
+    def _get_data(self, sid, channel_name, epg_date):
+        programmes = set()
+        epg_data = self._get_day_epg_data(sid, epg_date)
+        if epg_data is None:
+            return programmes
+
+        if len(epg_data) == 0:
+            return programmes
+
+        for programme in epg_data[0]["events"]:
+            starttime = datetime.utcfromtimestamp(programme["st"])
+            endtime = datetime.utcfromtimestamp(programme["st"] + programme["d"])
+            title = programme["t"]
+            season = None
+            if "seasonnumber" in programme and programme["seasonnumber"] > 0:
+                season = programme["seasonnumber"]
+            episode = None
+            if "episodenumber" in programme and programme["episodenumber"] > 0:
+                episode = programme["episodenumber"]
+            programmeuuid = None
+            image_url = None
+            if "programmeuuid" in programme:
+                programmeuuid = str(programme["programmeuuid"])
+                image_url = LIVE_IMAGE_URL.format(
+                    programmeuuid,
+                    self._remote_config.url_prefix,
+                    self._remote_config.territory,
+                )
+
+            eid = programme["eid"]
+            programme = Programme(
+                programmeuuid,
+                starttime,
+                endtime,
+                title,
+                season,
+                episode,
+                image_url,
+                channel_name,
+                SKY_STATUS_LIVE,
+                "n/a",
+                eid,
+            )
+            programmes.add(programme)
+
+        return programmes
+
+    def _get_day_epg_data(self, sid, epg_date):
+        epg_date_str = epg_date.strftime("%Y%m%d")
+
+        epg_url = SCHEDULE_URL.format(sid, epg_date_str)
+        headers = {
+            "x-skyott-territory": self._remote_config.territory,
+            "x-skyott-provider": "SKY",
+            "x-skyott-proposition": "SKYQ",
+        }
+        resp = requests.get(epg_url, headers=headers)
+        return resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
 
     def _get_channel_node(self, sid):
         if not self._channel_information:

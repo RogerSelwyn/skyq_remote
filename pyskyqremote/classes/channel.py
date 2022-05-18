@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass, field
 from operator import attrgetter
 
-from ..const import AUDIO, REST_CHANNEL_LIST, VIDEO
+from ..const import AUDIO, CHANNEL_IMAGE_URL, REST_CHANNEL_LIST, VIDEO
 from ..const_test import TEST_CHANNEL_LIST
 
 
@@ -56,8 +56,11 @@ class ChannelInformation:
         channelno = channel["c"]
         channelname = channel["t"]
         channelsid = channel["sid"]
-        channel_image_url = self._remote_config.remote_country.build_channel_image_url(
-            channelsid, channelname
+        channel_image_url = build_channel_image_url(
+            channelsid,
+            channelname,
+            self._remote_config.url_prefix,
+            self._remote_config.territory,
         )
         sformat = channel["sf"]
         return Channel(
@@ -217,3 +220,9 @@ class _ChannelJSONEncoder(json.JSONEncoder):
                 "__type__": "__channel__",
                 "attributes": attributes,
             }
+
+
+def build_channel_image_url(sid, channelname, url_prefix, territory):
+    """Build the channel image URL."""
+    chid = "".join(e for e in channelname.casefold() if e.isalnum())
+    return CHANNEL_IMAGE_URL.format(sid, chid, url_prefix, territory)

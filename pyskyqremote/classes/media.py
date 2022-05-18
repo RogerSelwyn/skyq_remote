@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from ..const import CURRENT_URI, PVR, UPNP_GET_MEDIA_INFO, XSI
-from .channel import ChannelInformation
+from .channel import ChannelInformation, build_channel_image_url
 
 
 class MediaInformation:
@@ -42,10 +42,15 @@ class MediaInformation:
             if channel_node := self._get_channel_node(sid):
                 channel = channel_node["channel"]
                 channelno = channel_node["channelno"]
-                image_url = self._remote_country.build_channel_image_url(sid, channel)
+                image_url = build_channel_image_url(
+                    sid,
+                    channel,
+                    self._remote_config.url_prefix,
+                    self._remote_config.territory,
+                )
         elif PVR in current_uri:
             # Recorded content
-            pvrid = f'P{current_uri[11:]}'
+            pvrid = f"P{current_uri[11:]}"
             live = False
 
         return Media(channel, channelno, image_url, sid, pvrid, live)

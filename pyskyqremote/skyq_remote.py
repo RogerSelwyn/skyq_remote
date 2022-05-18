@@ -1,5 +1,4 @@
 """Python module for accessing SkyQ box and EPG, and sending commands."""
-import importlib
 import logging
 from datetime import datetime
 
@@ -21,7 +20,9 @@ from .const import (
     SKY_STATE_ON,
     SKY_STATE_STANDBY,
     SKY_STATE_UNSUPPORTED,
+    TERRITORIES,
     UNSUPPORTED_DEVICES,
+    URL_PREFIX,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -288,7 +289,7 @@ class SkyQRemote:
         device_info = self._device_information.get_device_information(
             self._override_country
         )
-        self._remote_config.device_info = device_info
+        self._remote_config.set_device_info(device_info)
         return device_info
 
     def get_channel_list(self):
@@ -340,38 +341,10 @@ class SkyQRemote:
         if not self._device_setup:
             self._setup_device()
 
-        if not self._remote_country and self._device_setup:
-            skyq_country = self._import_country(
-                self._remote_config.device_info.used_country_code
-            )
-            self._remote_country = skyq_country()
-            self._remote_config.remote_country = self._remote_country
-
     def _setup_device(self):
 
         self._device_setup = True
         self._device_type = self._remote_config.device_info.deviceType
-
-    def _import_country(self, country_code):
-        """Work out the country for the Country Code."""
-        try:
-            skyq_country = importlib.import_module(
-                f"pyskyqremote.country.remote_{country_code.lower()}"
-            ).SkyQCountry
-
-        except (AttributeError, ModuleNotFoundError) as err:
-            _LOGGER.warning(
-                "W0010 - Invalid country, defaulting to GBR: %s : %s : %s",
-                self._host,
-                country_code,
-                err,
-            )
-
-            skyq_country = importlib.import_module(
-                "pyskyqremote.country.remote_" + "gbr"
-            ).SkyQCountry
-
-        return skyq_country
 
 
 class _RemoteConfig:
@@ -401,7 +374,16 @@ class _RemoteConfig:
         self.json_port = json_port
         self.device_access = device_access
         self.remote_country = remote_country
+        self.territory = None
         self.test_channel = test_channel
         self.epg_cache_len = epg_cache_len
         self.device_access = DeviceAccess(host, json_port, port)
         self.device_info = device_info
+        self.territory = None
+        self.url_prefix = None
+
+    def set_device_info(self, device_info):
+        """Initilise the device info for the Sky Q box."""
+        self.device_info = device_info
+        self.territory = TERRITORIES[device_info.used_country_code]
+        self.url_prefix = URL_PREFIX[device_info.used_country_code]

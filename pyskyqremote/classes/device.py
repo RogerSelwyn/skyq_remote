@@ -75,6 +75,13 @@ class DeviceInformation:
 
         if used_country_code in KNOWN_COUNTRIES:
             used_country_code = KNOWN_COUNTRIES[used_country_code]
+        else:
+            _LOGGER.error(
+                "W0010 - Country code %s unknown, defaulting to GBR: %s",
+                used_country_code,
+                self._remote_config.host,
+            )
+            used_country_code = "GBR"
 
         return Device(
             as_version,

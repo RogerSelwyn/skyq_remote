@@ -5,29 +5,19 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from ..const import (
-    ALLRECORDINGS,
-    RESPONSE_OK,
-    REST_BOOK_PPVRECORDING,
-    REST_BOOK_RECORDING,
-    REST_BOOK_SERIES_RECORDING,
-    REST_DELETE,
-    REST_POST,
-    REST_QUOTA_DETAILS,
-    REST_RECORDING_DELETE,
-    REST_RECORDING_DETAILS,
-    REST_RECORDING_ERASE,
-    REST_RECORDING_ERASE_ALL,
-    REST_RECORDING_KEEP,
-    REST_RECORDING_LOCK,
-    REST_RECORDING_SET_LAST_PLAYED_POSITION,
-    REST_RECORDING_UNDELETE,
-    REST_RECORDING_UNKEEP,
-    REST_RECORDING_UNLOCK,
-    REST_RECORDINGS_LIST,
-    REST_SERIES_LINK,
-    REST_SERIES_UNLINK,
-)
+from pyskyqremote.classes.channel import build_channel_image_url
+
+from ..const import (ALLRECORDINGS, PVR_IMAGE_URL, RESPONSE_OK,
+                     REST_BOOK_PPVRECORDING, REST_BOOK_RECORDING,
+                     REST_BOOK_SERIES_RECORDING, REST_DELETE, REST_POST,
+                     REST_QUOTA_DETAILS, REST_RECORDING_DELETE,
+                     REST_RECORDING_DETAILS, REST_RECORDING_ERASE,
+                     REST_RECORDING_ERASE_ALL, REST_RECORDING_KEEP,
+                     REST_RECORDING_LOCK,
+                     REST_RECORDING_SET_LAST_PLAYED_POSITION,
+                     REST_RECORDING_UNDELETE, REST_RECORDING_UNKEEP,
+                     REST_RECORDING_UNLOCK, REST_RECORDINGS_LIST,
+                     REST_SERIES_LINK, REST_SERIES_UNLINK)
 from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
@@ -226,13 +216,18 @@ class RecordingsInformation:
         image_url = None
         if "programmeuuid" in recording:
             programmeuuid = recording["programmeuuid"]
-            image_url = self._remote_config.remote_country.pvr_image_url.format(
-                str(programmeuuid)
+            image_url = PVR_IMAGE_URL.format(
+                programmeuuid,
+                self._remote_config.url_prefix,
+                self._remote_config.territory,
             )
         elif "osid" in recording:
             sid = str(recording["osid"])
-            image_url = self._remote_config.remote_country.build_channel_image_url(
-                sid, channel
+            image_url = build_channel_image_url(
+                sid,
+                channel,
+                self._remote_config.url_prefix,
+                self._remote_config.territory,
             )
 
         starttimestamp = 0

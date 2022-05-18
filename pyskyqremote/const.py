@@ -126,6 +126,8 @@ KNOWN_COUNTRIES = {
     "IRL": "GBR",
     "ITA": "ITA",
 }
+TERRITORIES = {"DEU": "DE", "GBR": "GB", "ITA": "IT"}
+URL_PREFIX = {"DEU": "de.", "GBR": "", "ITA": "it."}
 
 # Random set of other constants
 EPG_ERROR_PAST_END = "past end of epg"
@@ -150,3 +152,14 @@ DEVICE_IPSETTOPBOX = "IPSETTOPBOX"
 DEVICE_MULTIROOMSTB = "MULTIROOMSTB"
 DEVICE_TV = "TV"
 UNSUPPORTED_DEVICES = [DEVICE_IPSETTOPBOX, DEVICE_TV]
+
+SCHEDULE_URL = "http://atlantis.epgsky.com/as/schedule/{1}/{0}"
+LIVE_IMAGE_URL = (
+    "https://{1}imageservice.sky.com/pd-image/{0}/16-9/456?territory={2}"
+    + "&provider=SKY&proposition=SKYQ"
+)
+PVR_IMAGE_URL = LIVE_IMAGE_URL
+CHANNEL_IMAGE_URL = (
+    "https://{2}imageservice.sky.com/logo/skychb_{0}{1}/600/600?territory={3}"
+    + "&provider=SKY&proposition=SKYQ"
+)
