@@ -1,6 +1,24 @@
 # Changelog
 
-## v0.3.6 (2022/04/2)
+## v0.3.8 (2022/05/18)
+### Enhancements
+- [Standardise DEU channel info retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/0461d8bba955458ba6560a0adcf68c97dda434d6) - @RogerSelwyn
+- [Standardise ITA channel info retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/bd6288ce026d2b7e344fb6290a9630dcbaf005a7) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.8](https://github.com/RogerSelwyn/skyq_remote/commit/1ed64a42e909666e69b0ce2fa9617e35d3fbbf51) - @RogerSelwyn
+- [Bump to 0.3.9](https://github.com/RogerSelwyn/skyq_remote/commit/0f3fff16093281090741d68add1549342f15279b) - @RogerSelwyn
+
+## v0.3.7 (2022/05/08)
+### Enhancements
+- [Return full transport info from get_current_state()](https://github.com/RogerSelwyn/skyq_remote/commit/913eccee1fffcfb75817d30677d932453cd2d615) - @RogerSelwyn
+
+### Maintenance
+- [Update CHANGELOG.md](https://github.com/RogerSelwyn/skyq_remote/commit/fe746c6e60d3dfcd6eba6bb3ebb5a84c16fa683d) - @RogerSelwyn
+- [Recommendations from codefactor and sourcery](https://github.com/RogerSelwyn/skyq_remote/commit/5c9f629a0bcb234897a290b4fd62cdc2bc62c68f) - @RogerSelwyn
+- [Bump to 0.3.7](https://github.com/RogerSelwyn/skyq_remote/commit/e3bd11617b7529aa0920ad789ba7699169424c05) - @RogerSelwyn
+
+## v0.3.6 (2022/04/02)
 ### Maintenance
 - [Improve SOAP Control URL processing](https://github.com/RogerSelwyn/skyq_remote/commit/4d58ea4863923bf533530625c0f0667e4a60cb52) - @RogerSelwyn
 - [Add handling for unsupported devices](https://github.com/RogerSelwyn/skyq_remote/commit/99e2d607ff2db16d2363c1543fc15f5a14e0d349) - @RogerSelwyn
