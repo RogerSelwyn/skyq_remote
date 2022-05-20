@@ -1,6 +1,15 @@
 # Changelog
 
-## v0.3.8 (2022/05/18)
+## v0.3.11 (2022/05/20)
+### Fixes
+- [Fix errors displayed during ECO mode](https://github.com/RogerSelwyn/skyq_remote/commit/4926f431c553ff979d6f296e9c043d2ca2408c26) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.10](https://github.com/RogerSelwyn/skyq_remote/commit/ee66584ff67abb3a590dea3c373650a3deaf8dd2) - @RogerSelwyn
+- [Code tidy up](https://github.com/RogerSelwyn/skyq_remote/commit/82d70e57643fab5ed48e46084d81c857d9135159) - @RogerSelwyn
+- [Bump to 0.3.11](https://github.com/RogerSelwyn/skyq_remote/commit/a6ebbf8345554cb93f4800311352f04593c6455c) - @RogerSelwyn
+
+## v0.3.9 (2022/05/18)
 ### Enhancements
 - [Standardise DEU channel info retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/0461d8bba955458ba6560a0adcf68c97dda434d6) - @RogerSelwyn
 - [Standardise ITA channel info retrieval](https://github.com/RogerSelwyn/skyq_remote/commit/bd6288ce026d2b7e344fb6290a9630dcbaf005a7) - @RogerSelwyn
