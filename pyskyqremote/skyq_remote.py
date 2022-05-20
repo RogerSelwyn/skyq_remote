@@ -35,10 +35,9 @@ class SkyQRemote:
 
     def __init__(self, host, epg_cache_len=20, port=49160, json_port=9006):
         """Stand up a new SkyQ box."""
-        self._device_setup = False
+        self._remote_setup = False
         self._device_type = None
         self._host = host
-        self._deviceinfo_setup = False
         self._override_country = None
         self._channel = None
         self._programme = None
@@ -58,16 +57,12 @@ class SkyQRemote:
 
         self._remote_config = _RemoteConfig(host, port, json_port, epg_cache_len)
 
-        device_info = self.get_device_information()
-        if not device_info:
-            return None
-
-        self._setup_device()
+        self._setup_remote()
 
     @property
     def device_setup(self):
         """Get the dev ice setp state."""
-        return self._device_setup
+        return self._remote_setup
 
     @property
     def device_type(self):
@@ -76,7 +71,7 @@ class SkyQRemote:
 
     def power_status(self) -> str:
         """Get the power status of the Sky Q box."""
-        if not self._deviceinfo_setup:
+        if not self._remote_setup:
             self._setup_remote()
 
         system_info = self._device_information.get_system_information()
@@ -90,7 +85,7 @@ class SkyQRemote:
 
     def get_current_state(self):
         """Get current state of the SkyQ box."""
-        if not self._deviceinfo_setup:
+        if not self._remote_setup:
             self._setup_remote()
 
         if self._device_type in UNSUPPORTED_DEVICES:
@@ -338,14 +333,7 @@ class SkyQRemote:
         if not device_info:
             return
 
-        if not self._device_setup:
-            self._setup_device()
-
-        self._deviceinfo_setup = True
-
-    def _setup_device(self):
-
-        self._device_setup = True
+        self._remote_setup = True
         self._device_type = self._remote_config.device_info.deviceType
 
 
