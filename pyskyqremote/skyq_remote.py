@@ -38,7 +38,7 @@ class SkyQRemote:
         self._device_setup = False
         self._device_type = None
         self._host = host
-        self._remote_country = None
+        self._deviceinfo_setup = False
         self._override_country = None
         self._channel = None
         self._programme = None
@@ -76,7 +76,7 @@ class SkyQRemote:
 
     def power_status(self) -> str:
         """Get the power status of the Sky Q box."""
-        if not self._remote_country:
+        if not self._deviceinfo_setup:
             self._setup_remote()
 
         system_info = self._device_information.get_system_information()
@@ -90,7 +90,7 @@ class SkyQRemote:
 
     def get_current_state(self):
         """Get current state of the SkyQ box."""
-        if not self._remote_country:
+        if not self._deviceinfo_setup:
             self._setup_remote()
 
         if self._device_type in UNSUPPORTED_DEVICES:
@@ -340,6 +340,8 @@ class SkyQRemote:
 
         if not self._device_setup:
             self._setup_device()
+
+        self._deviceinfo_setup = True
 
     def _setup_device(self):
 
