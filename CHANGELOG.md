@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.12 (2022/05/21)
+### Fixes
+- [Fix issue with restart during eco mode](https://github.com/RogerSelwyn/skyq_remote/commit/367c25791d2026267ffe100c789a9f15779673fa) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.12](https://github.com/RogerSelwyn/skyq_remote/commit/a571c5eb3c5e86c50159282532a9731e3276eea8) - @RogerSelwyn
+
 ## v0.3.11 (2022/05/20)
 ### Fixes
 - [Fix errors displayed during ECO mode](https://github.com/RogerSelwyn/skyq_remote/commit/4926f431c553ff979d6f296e9c043d2ca2408c26) - @RogerSelwyn
