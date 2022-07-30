@@ -6,7 +6,7 @@
 - [Fix transport info](https://github.com/RogerSelwyn/skyq_remote/commit/23d14d5485020395e1f194d5c1ab74fdc583a444) - @RogerSelwyn
 
 ### Maintenance
-- [Bump to 0.3.12](https://github.com/RogerSelwyn/skyq_remote/commit/79a3ab2d185d8650000b814dc6d0ae1b79f57daf) - @RogerSelwyn
+- [Bump to 0.3.13](https://github.com/RogerSelwyn/skyq_remote/commit/79a3ab2d185d8650000b814dc6d0ae1b79f57daf) - @RogerSelwyn
 - [Bump to 0.3.14](https://github.com/RogerSelwyn/skyq_remote/commit/47d662f9939ffb2d35905c1e2fa4d34b97042cd4) - @RogerSelwyn
 
 ## v0.3.12 (2022/05/21)
