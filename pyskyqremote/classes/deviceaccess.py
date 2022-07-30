@@ -263,7 +263,7 @@ class DeviceAccess:
 
                 return {
                     "url": SOAP_CONTROL_BASE_URL.format(
-                        self._host,
+                        self.ipaddress,
                         play_service[  # pylint: disable=unsubscriptable-object
                             "controlURL"
                         ],
