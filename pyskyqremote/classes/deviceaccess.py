@@ -42,6 +42,7 @@ class DeviceAccess:
         self._host = host
         self._json_port = json_port
         self._port = port
+        self.ipaddress = None
         # _LOGGER.debug(f"Init device access - {self._host}")
         self._soap_control_url = UNDEFINED
 
@@ -241,9 +242,9 @@ class DeviceAccess:
 
     def _get_soap_control_url_item(self, description_index):
         """Get the sky control url."""
-        # _LOGGER.debug("SoapControlURL - %s - %s", self._host, description_index)
+        # _LOGGER.debug("SoapControlURL - %s - %s", self.ipaddress, description_index)
         description_url = SOAP_DESCRIPTION_BASE_URL.format(
-            self._host, description_index
+            self.ipaddress, description_index
         )
         headers = {"User-Agent": SOAP_USER_AGENT}
         empty_return = {"url": None, "status": "Not Found"}

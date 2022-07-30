@@ -380,3 +380,4 @@ class _RemoteConfig:
         self.device_info = device_info
         self.territory = TERRITORIES[device_info.used_country_code]
         self.url_prefix = URL_PREFIX[device_info.used_country_code]
+        self.device_access.ipaddress = device_info.IPAddress
