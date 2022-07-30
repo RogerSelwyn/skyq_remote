@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.14 (2022/07/30)
+### Fixes
+- [Fix issue with hostname in SOAP calls](https://github.com/RogerSelwyn/skyq_remote/commit/30a9e2eff3a715c16d51c11717ebde11544777b9) - @RogerSelwyn
+- [Fix transport info](https://github.com/RogerSelwyn/skyq_remote/commit/23d14d5485020395e1f194d5c1ab74fdc583a444) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.12](https://github.com/RogerSelwyn/skyq_remote/commit/79a3ab2d185d8650000b814dc6d0ae1b79f57daf) - @RogerSelwyn
+- [Bump to 0.3.14](https://github.com/RogerSelwyn/skyq_remote/commit/47d662f9939ffb2d35905c1e2fa4d34b97042cd4) - @RogerSelwyn
+
 ## v0.3.12 (2022/05/21)
 ### Fixes
 - [Fix issue with restart during eco mode](https://github.com/RogerSelwyn/skyq_remote/commit/367c25791d2026267ffe100c789a9f15779673fa) - @RogerSelwyn
