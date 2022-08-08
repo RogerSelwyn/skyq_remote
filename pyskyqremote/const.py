@@ -155,7 +155,7 @@ UNSUPPORTED_DEVICES = [DEVICE_IPSETTOPBOX, DEVICE_TV]
 
 SCHEDULE_URL = "http://atlantis.epgsky.com/as/schedule/{1}/{0}"
 LIVE_IMAGE_URL = (
-    "https://{1}imageservice.sky.com/pd-image/{0}/16-9/456?territory={2}"
+    "https://{1}imageservice.sky.com/pd-image/{0}/16-9/1024?territory={2}"
     + "&provider=SKY&proposition=SKYQ"
 )
 PVR_IMAGE_URL = LIVE_IMAGE_URL
