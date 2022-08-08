@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.15 (2022/08/08)
+### Enhancements
+- [Increase size of image](https://github.com/RogerSelwyn/skyq_remote/commit/4799df3245a653306fdd8a1945ca4070e63d95a7) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.15](https://github.com/RogerSelwyn/skyq_remote/commit/71245b94f93e937e848dae8d68a5bdba25d989f2) - @RogerSelwyn
+
 ## v0.3.14 (2022/07/30)
 ### Fixes
 - [Fix issue with hostname in SOAP calls](https://github.com/RogerSelwyn/skyq_remote/commit/30a9e2eff3a715c16d51c11717ebde11544777b9) - @RogerSelwyn
