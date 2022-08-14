@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.16 (2022/08/14)
+### Enhancements
+- [Add Time info to device information](https://github.com/RogerSelwyn/skyq_remote/commit/9d729bf63e7bcb332c30877eea7b7917b3507eb4) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.3.16](https://github.com/RogerSelwyn/skyq_remote/commit/18de4a34f2c7d4aab2e9f68e44bbfdeeff23b77c) - @RogerSelwyn
+
 ## v0.3.15 (2022/08/08)
 ### Enhancements
 - [Increase size of image](https://github.com/RogerSelwyn/skyq_remote/commit/4799df3245a653306fdd8a1945ca4070e63d95a7) - @RogerSelwyn
