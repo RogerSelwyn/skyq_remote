@@ -4,14 +4,26 @@ import json
 import logging
 from dataclasses import dataclass, field
 
-from ..const import (CURRENT_SPEED, CURRENT_TRANSPORT_STATE,
-                     CURRENT_TRANSPORT_STATUS, DEFAULT_TRANSPORT_SPEED,
-                     DEFAULT_TRANSPORT_STATE, KNOWN_COUNTRIES,
-                     REST_PATH_DEVICEINFO, REST_PATH_SYSTEMINFO,
-                     SKY_STATE_NOMEDIA, SKY_STATE_OFF, SKY_STATE_PAUSED,
-                     SKY_STATE_PLAYING, SKY_STATE_STANDBY, SKY_STATE_STOPPED,
-                     SKY_STATE_TRANSITIONING, SKY_STATE_UNSUPPORTED,
-                     UPNP_GET_TRANSPORT_INFO)
+from ..const import (
+    CURRENT_SPEED,
+    CURRENT_TRANSPORT_STATE,
+    CURRENT_TRANSPORT_STATUS,
+    DEFAULT_TRANSPORT_SPEED,
+    DEFAULT_TRANSPORT_STATE,
+    KNOWN_COUNTRIES,
+    REST_PATH_DEVICEINFO,
+    REST_PATH_SYSTEMINFO,
+    REST_SYSTEM_TIME,
+    SKY_STATE_NOMEDIA,
+    SKY_STATE_OFF,
+    SKY_STATE_PAUSED,
+    SKY_STATE_PLAYING,
+    SKY_STATE_STANDBY,
+    SKY_STATE_STOPPED,
+    SKY_STATE_TRANSITIONING,
+    SKY_STATE_UNSUPPORTED,
+    UPNP_GET_TRANSPORT_INFO,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +55,10 @@ class DeviceInformation:
         """Get the system information from the SkyQ box."""
         return self._device_access.retrieve_information(REST_PATH_SYSTEMINFO)
 
+    def get_system_time(self):
+        """Get the system information from the SkyQ box."""
+        return self._device_access.retrieve_information(REST_SYSTEM_TIME)
+
     def get_device_information(self, override_country):
         """Get the device information from the SkyQ box."""
         device_info = self._device_access.retrieve_information(REST_PATH_DEVICEINFO)
@@ -50,6 +66,7 @@ class DeviceInformation:
             return None
 
         system_info = self.get_system_information()
+        time_info = self.get_system_time()
         as_version = device_info["ASVersion"]
         ip_address = device_info["IPAddress"]
         country_code = device_info["countryCode"]
@@ -67,6 +84,10 @@ class DeviceInformation:
         system_uptime = system_info["systemUptime"]
         hdr_capable = system_info["hdrCapable"]
         uhd_capable = system_info["uhdCapable"]
+        presentlocaltimeoffset = time_info["presentLocalTimeOffset"]
+        utc = time_info["utc"]
+        futurelocaltimeoffset = time_info["futureLocalTimeOffset"]
+        futuretransitionutc = time_info["futureTransitionUtc"]
 
         used_country_code = override_country or country_code.upper()
         if not used_country_code:
@@ -102,6 +123,10 @@ class DeviceInformation:
             system_uptime,
             hdr_capable,
             uhd_capable,
+            presentlocaltimeoffset,
+            utc,
+            futurelocaltimeoffset,
+            futuretransitionutc,
         )
 
 
@@ -195,6 +220,26 @@ class Device:
         compare=False,
     )
     uhdCapable: str = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    presentLocalTimeOffset: int = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    utc: int = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    futureLocalTimeOffset: int = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    futureTransitionUtc: int = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,

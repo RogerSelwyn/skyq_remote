@@ -60,8 +60,11 @@ Will return an object such as below for device informatiom:
    'wakeReason': 'ECO',
    'systemUptime': 28346,
    'hdrCapable': true,
-   'uhdCapable': true
-
+   'uhdCapable': true,
+   'presentLocalTimeOffset': 3600,
+   'utc': 1660486276,
+   'futureLocalTimeOffset': 0,
+   'futureTransitionUtc': 1667091599
 }
 ```
 
@@ -94,7 +97,11 @@ Will return a JSON structure such as below for device information:
       "wakeReason": "ECO",
       "systemUptime": 28346,
       "hdrCapable": true,
-      "uhdCapable": true
+      "uhdCapable": true,
+      "presentLocalTimeOffset": 3600,
+      "utc": 1660486276,
+      "futureLocalTimeOffset": 0,
+      "futureTransitionUtc": 1667091599
    }
 }
 
