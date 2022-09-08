@@ -281,6 +281,9 @@ class SkyQRemote:
         if not self._device_information:
             self._device_information = DeviceInformation(self._remote_config)
 
+        if self._remote_config.device_info and not self._override_country:
+            return self._remote_config.device_info
+
         device_info = self._device_information.get_device_information(
             self._override_country
         )
