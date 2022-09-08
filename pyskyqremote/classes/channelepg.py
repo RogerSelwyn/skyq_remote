@@ -1,20 +1,18 @@
 """Structure of a standard EPG programme."""
 
 import json
+import logging
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 import requests
-from ..const import (
-    LIVE_IMAGE_URL,
-    RESPONSE_OK,
-    SCHEDULE_URL,
-    SKY_STATUS_LIVE,
-)
 
+from ..const import LIVE_IMAGE_URL, RESPONSE_OK, SCHEDULE_URL, SKY_STATUS_LIVE
 from .channel import ChannelInformation, build_channel_image_url
 from .programme import Programme
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class ChannelEPGInformation:
@@ -136,6 +134,7 @@ class ChannelEPGInformation:
             "x-skyott-provider": "SKY",
             "x-skyott-proposition": "SKYQ",
         }
+        _LOGGER.debug("Channel Call - %s - %s", self._remote_config.host, epg_url)
         resp = requests.get(epg_url, headers=headers)
         return resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
 
