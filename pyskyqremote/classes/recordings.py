@@ -4,20 +4,34 @@ import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
+from operator import attrgetter
 
 from pyskyqremote.classes.channel import build_channel_image_url
 
-from ..const import (ALLRECORDINGS, PVR_IMAGE_URL, RESPONSE_OK,
-                     REST_BOOK_PPVRECORDING, REST_BOOK_RECORDING,
-                     REST_BOOK_SERIES_RECORDING, REST_DELETE, REST_POST,
-                     REST_QUOTA_DETAILS, REST_RECORDING_DELETE,
-                     REST_RECORDING_DETAILS, REST_RECORDING_ERASE,
-                     REST_RECORDING_ERASE_ALL, REST_RECORDING_KEEP,
-                     REST_RECORDING_LOCK,
-                     REST_RECORDING_SET_LAST_PLAYED_POSITION,
-                     REST_RECORDING_UNDELETE, REST_RECORDING_UNKEEP,
-                     REST_RECORDING_UNLOCK, REST_RECORDINGS_LIST,
-                     REST_SERIES_LINK, REST_SERIES_UNLINK)
+from ..const import (
+    ALLRECORDINGS,
+    PVR_IMAGE_URL,
+    RESPONSE_OK,
+    REST_BOOK_PPVRECORDING,
+    REST_BOOK_RECORDING,
+    REST_BOOK_SERIES_RECORDING,
+    REST_DELETE,
+    REST_POST,
+    REST_QUOTA_DETAILS,
+    REST_RECORDING_DELETE,
+    REST_RECORDING_DETAILS,
+    REST_RECORDING_ERASE,
+    REST_RECORDING_ERASE_ALL,
+    REST_RECORDING_KEEP,
+    REST_RECORDING_LOCK,
+    REST_RECORDING_SET_LAST_PLAYED_POSITION,
+    REST_RECORDING_UNDELETE,
+    REST_RECORDING_UNKEEP,
+    REST_RECORDING_UNLOCK,
+    REST_RECORDINGS_LIST,
+    REST_SERIES_LINK,
+    REST_SERIES_UNLINK,
+)
 from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,17 +51,15 @@ class RecordingsInformation:
             REST_RECORDINGS_LIST.format(limit, offset)
         )
         if not resp or "pvrItems" not in resp:
-            _LOGGER.error(
-                "E0010R - Timeout retrieving recordings: %s", self._remote_config.host
-            )
-            return Recordings(recordings)
+            return None
         rec_data = resp["pvrItems"]
         for recording in rec_data:
             if recording["status"] == status or status == ALLRECORDINGS:
                 built = self._build_recording(recording)
                 recordings.add(built)
 
-        return Recordings(recordings)
+        recordingssorted = sorted(recordings, key=attrgetter("starttime"))
+        return Recordings(recordingssorted)
 
     def get_recording(self, pvrid):
         """Get the recording details."""

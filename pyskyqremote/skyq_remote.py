@@ -175,10 +175,7 @@ class SkyQRemote:
         try:
             query_date = datetime.utcnow()
             programme = self.get_programme_from_epg(sid, query_date, query_date)
-            if not isinstance(programme, Programme):
-                return None
-
-            return programme
+            return programme if isinstance(programme, Programme) else None
         except Exception as err:  # pylint: disable=broad-except
             _LOGGER.exception(
                 "X0010 - Error occurred: %s : %s : %s", self._host, sid, err
