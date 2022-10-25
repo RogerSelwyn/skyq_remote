@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.17 (2022/10/25)
+### Maintenance
+- [Add logging](https://github.com/RogerSelwyn/skyq_remote/commit/a19f2c9453949e61bdfc5a1fd26a8c12b7bd246e) - @RogerSelwyn
+- [Reduce calls](https://github.com/RogerSelwyn/skyq_remote/commit/42bb7620c07527266ae3d70964c99f0edcfa1150) - @RogerSelwyn
+- [Tweaks to support recording info in HA](https://github.com/RogerSelwyn/skyq_remote/commit/9fc7742bdc68af4f5ebe814233d1c37a1c85215c) - @RogerSelwyn
+- [Bump to 0.3.17](https://github.com/RogerSelwyn/skyq_remote/commit/ba081ce476c354955301db8865faab6a5114a256) - @RogerSelwyn
+
 ## v0.3.16 (2022/08/14)
 ### Enhancements
 - [Add Time info to device information](https://github.com/RogerSelwyn/skyq_remote/commit/9d729bf63e7bcb332c30877eea7b7917b3507eb4) - @RogerSelwyn
