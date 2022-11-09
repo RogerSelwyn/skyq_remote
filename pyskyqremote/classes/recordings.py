@@ -287,7 +287,7 @@ class RecordingsInformation:
             )
         elif status == "RECORDING":
             starttimestamp = recording["ast"]
-            if recording["fr"] == "N/A":
+            if "fr" not in recording or recording["fr"] == "N/A":
                 usedtimestamp = (
                     recording["ast"]
                     if recording["ast"] > recording["st"]
