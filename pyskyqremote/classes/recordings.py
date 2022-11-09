@@ -223,61 +223,10 @@ class RecordingsInformation:
             season = recording["seasonnumber"]
             episode = recording["episodenumber"]
 
-        programmeuuid = None
-        image_url = None
-        if "programmeuuid" in recording:
-            programmeuuid = recording["programmeuuid"]
-            image_url = PVR_IMAGE_URL.format(
-                programmeuuid,
-                self._remote_config.url_prefix,
-                self._remote_config.territory,
-            )
-        elif "osid" in recording:
-            sid = str(recording["osid"])
-            image_url = build_channel_image_url(
-                sid,
-                channel,
-                self._remote_config.url_prefix,
-                self._remote_config.territory,
-            )
+        programmeuuid, image_url = self._build_image_url(channel, recording)
 
         status = recording["status"]
-
-        starttimestamp = 0
-        endtimestamp = 0
-        if status == "SCHEDULED":
-            if "st" in recording:
-                starttimestamp = recording["st"]
-            endtimestamp = (
-                starttimestamp + recording["schd"]
-                if "schd" in recording
-                else starttimestamp
-            )
-        elif status == "RECORDING":
-            starttimestamp = recording["ast"]
-            if recording["fr"] == "N/A":
-                usedtimestamp = (
-                    recording["ast"]
-                    if recording["ast"] > recording["st"]
-                    else recording["st"]
-                )
-                endtimestamp = usedtimestamp + recording["schd"]
-            else:
-                endtimestamp = recording["st"] + recording["schd"]
-        # elif status == "RECORDED" or status == "PART REC":
-        #     starttimestamp = recording["ast"]
-        #     endtimestamp = starttimestamp + recording["finald"]
-        else:
-            starttimestamp = recording["ast"] if "ast" in recording else recording["st"]
-            if "finald" in recording:
-                endtimestamp = starttimestamp + recording["finald"]
-            elif "schd" in recording:
-                endtimestamp = starttimestamp + recording["schd"]
-            else:
-                endtimestamp = starttimestamp
-
-        starttime = datetime.utcfromtimestamp(starttimestamp)
-        endtime = datetime.utcfromtimestamp(endtimestamp)
+        starttime, endtime = self._build_recording_times(status, recording)
 
         pvrid = recording["pvrid"]
 
@@ -302,6 +251,62 @@ class RecordingsInformation:
             failurereason,
             pvrid,
             eid,
+        )
+
+    def _build_image_url(self, channel, recording):
+        programmeuuid = None
+        image_url = None
+        if "programmeuuid" in recording:
+            programmeuuid = recording["programmeuuid"]
+            image_url = PVR_IMAGE_URL.format(
+                programmeuuid,
+                self._remote_config.url_prefix,
+                self._remote_config.territory,
+            )
+        elif "osid" in recording:
+            sid = str(recording["osid"])
+            image_url = build_channel_image_url(
+                sid,
+                channel,
+                self._remote_config.url_prefix,
+                self._remote_config.territory,
+            )
+
+        return programmeuuid, image_url
+
+    def _build_recording_times(self, status, recording):
+        starttimestamp = 0
+        endtimestamp = 0
+        if status == "SCHEDULED":
+            if "st" in recording:
+                starttimestamp = recording["st"]
+            endtimestamp = (
+                starttimestamp + recording["schd"]
+                if "schd" in recording
+                else starttimestamp
+            )
+        elif status == "RECORDING":
+            starttimestamp = recording["ast"]
+            if recording["fr"] == "N/A":
+                usedtimestamp = (
+                    recording["ast"]
+                    if recording["ast"] > recording["st"]
+                    else recording["st"]
+                )
+                endtimestamp = usedtimestamp + recording["schd"]
+            else:
+                endtimestamp = recording["st"] + recording["schd"]
+        else:
+            starttimestamp = recording["ast"] if "ast" in recording else recording["st"]
+            if "finald" in recording:
+                endtimestamp = starttimestamp + recording["finald"]
+            elif "schd" in recording:
+                endtimestamp = starttimestamp + recording["schd"]
+            else:
+                endtimestamp = starttimestamp
+
+        return datetime.utcfromtimestamp(starttimestamp), datetime.utcfromtimestamp(
+            endtimestamp
         )
 
 
