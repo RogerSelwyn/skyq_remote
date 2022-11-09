@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.18 (2022/11/09)
+### Enhancements
+- [Make start/end time more accurate and break recordings class our from programmes. Also add delete time and failure reason.](https://github.com/RogerSelwyn/skyq_remote/commit/3994991e01da8e8b4ed169438f5f5b8c8dbe8480) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.18](https://github.com/RogerSelwyn/skyq_remote/commit/c373c3825cdced62e84ff3ea6121396a853fa1ed) - @RogerSelwyn
+
 ## v0.3.17 (2022/10/25)
 ### Maintenance
 - [Add logging](https://github.com/RogerSelwyn/skyq_remote/commit/a19f2c9453949e61bdfc5a1fd26a8c12b7bd246e) - @RogerSelwyn
