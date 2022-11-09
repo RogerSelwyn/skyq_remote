@@ -8,7 +8,13 @@ from datetime import datetime, timedelta
 
 import requests
 
-from ..const import LIVE_IMAGE_URL, RESPONSE_OK, SCHEDULE_URL, SKY_STATUS_LIVE
+from ..const import (
+    EPG_TIMEOUT,
+    LIVE_IMAGE_URL,
+    RESPONSE_OK,
+    SCHEDULE_URL,
+    SKY_STATUS_LIVE,
+)
 from .channel import ChannelInformation, build_channel_image_url
 from .programme import Programme
 
@@ -118,7 +124,6 @@ class ChannelEPGInformation:
                 image_url,
                 channel_name,
                 SKY_STATUS_LIVE,
-                "n/a",
                 eid,
             )
             programmes.add(programme)
@@ -135,7 +140,7 @@ class ChannelEPGInformation:
             "x-skyott-proposition": "SKYQ",
         }
         _LOGGER.debug("Channel Call - %s - %s", self._remote_config.host, epg_url)
-        resp = requests.get(epg_url, headers=headers)
+        resp = requests.get(epg_url, headers=headers, timeout=EPG_TIMEOUT)
         return resp.json()["schedule"] if resp.status_code == RESPONSE_OK else None
 
     def _get_channel_node(self, sid):

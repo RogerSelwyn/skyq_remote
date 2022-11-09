@@ -32,7 +32,6 @@ from ..const import (
     REST_SERIES_LINK,
     REST_SERIES_UNLINK,
 )
-from .programme import Programme
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -242,27 +241,54 @@ class RecordingsInformation:
                 self._remote_config.territory,
             )
 
-        starttimestamp = 0
-        if "ast" in recording:
-            starttimestamp = recording["ast"]
-        elif "st" in recording:
-            starttimestamp = recording["st"]
-        starttime = datetime.utcfromtimestamp(starttimestamp)
+        status = recording["status"]
 
-        endtime = None
-        if "finald" in recording:
-            endtime = datetime.utcfromtimestamp(starttimestamp + recording["finald"])
-        elif "schd" in recording:
-            endtime = datetime.utcfromtimestamp(starttimestamp + recording["schd"])
+        starttimestamp = 0
+        endtimestamp = 0
+        if status == "SCHEDULED":
+            if "st" in recording:
+                starttimestamp = recording["st"]
+            endtimestamp = (
+                starttimestamp + recording["schd"]
+                if "schd" in recording
+                else starttimestamp
+            )
+        elif status == "RECORDING":
+            starttimestamp = recording["ast"]
+            if recording["fr"] == "N/A":
+                usedtimestamp = (
+                    recording["ast"]
+                    if recording["ast"] > recording["st"]
+                    else recording["st"]
+                )
+                endtimestamp = usedtimestamp + recording["schd"]
+            else:
+                endtimestamp = recording["st"] + recording["schd"]
+        # elif status == "RECORDED" or status == "PART REC":
+        #     starttimestamp = recording["ast"]
+        #     endtimestamp = starttimestamp + recording["finald"]
         else:
-            endtime = starttime
+            starttimestamp = recording["ast"] if "ast" in recording else recording["st"]
+            if "finald" in recording:
+                endtimestamp = starttimestamp + recording["finald"]
+            elif "schd" in recording:
+                endtimestamp = starttimestamp + recording["schd"]
+            else:
+                endtimestamp = starttimestamp
+
+        starttime = datetime.utcfromtimestamp(starttimestamp)
+        endtime = datetime.utcfromtimestamp(endtimestamp)
 
         pvrid = recording["pvrid"]
 
         eid = recording["oeid"] if "oeid" in recording else None
-        status = recording["status"]
 
-        return Programme(
+        deletetime = (
+            datetime.utcfromtimestamp(recording["del"]) if "del" in recording else None
+        )
+        failurereason = recording["fr"] if "fr" in recording else None
+
+        return Recording(
             programmeuuid,
             starttime,
             endtime,
@@ -272,6 +298,8 @@ class RecordingsInformation:
             image_url,
             channel,
             status,
+            deletetime,
+            failurereason,
             pvrid,
             eid,
         )
@@ -281,7 +309,7 @@ class RecordingsInformation:
 class Recordings:
     """SkyQ Channel EPG Class."""
 
-    programmes: set = field(
+    recordings: set = field(
         init=True,
         repr=True,
         compare=False,
@@ -297,7 +325,7 @@ def recordings_decoder(obj):
     recordings = json.loads(obj, object_hook=_json_decoder_hook)
     if "__type__" in recordings and recordings["__type__"] == "__recordings__":
         return Recordings(
-            programmes=recordings["programmes"], **recordings["attributes"]
+            recordings=recordings["recordings"], **recordings["attributes"]
         )
     return recordings
 
@@ -308,8 +336,10 @@ def _json_decoder_hook(obj):
         obj["starttime"] = datetime.strptime(obj["starttime"], "%Y-%m-%dT%H:%M:%SZ")
     if "endtime" in obj:
         obj["endtime"] = datetime.strptime(obj["endtime"], "%Y-%m-%dT%H:%M:%SZ")
-    if "__type__" in obj and obj["__type__"] == "__programme__":
-        obj = Programme(**obj["attributes"])
+    if "deletetime" in obj:
+        obj["deletetime"] = datetime.strptime(obj["deletetime"], "%Y-%m-%dT%H:%M:%SZ")
+    if "__type__" in obj and obj["__type__"] == "__recording__":
+        obj = Recording(**obj["attributes"])
     return obj
 
 
@@ -317,29 +347,118 @@ class _RecordingsJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, Recordings):
             type_ = "__recordings__"
-            programmes = o.programmes
-            attributes = {k: v for k, v in vars(o).items() if k not in {"programmes"}}
+            recordings = o.recordings
+            attributes = {k: v for k, v in vars(o).items() if k not in {"recordings"}}
             return {
                 "__type__": type_,
                 "attributes": attributes,
-                "programmes": programmes,
+                "recordings": recordings,
             }
 
         if isinstance(o, set):
             return list(o)
 
-        if isinstance(o, Programme):
+        if isinstance(o, Recording):
             attributes = {}
             for k, val in vars(o).items():
                 if isinstance(val, datetime):
                     val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
                 attributes[k] = val
             return {
-                "__type__": "__programme__",
+                "__type__": "__recording__",
                 "attributes": attributes,
             }
 
         json.JSONEncoder.default(self, o)  # pragma: no cover
+
+
+@dataclass(order=True)
+class Recording:
+    """SkyQ Recording Class."""
+
+    programmeuuid: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    starttime: datetime = field(
+        init=True,
+        repr=True,
+        compare=True,
+    )
+    endtime: datetime = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    title: str = field(
+        init=True,
+        repr=True,
+        compare=True,
+    )
+    season: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    episode: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    image_url: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    channelname: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    status: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    deletetime: datetime = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    failurereason: str = field(init=True, repr=True, compare=False)
+    pvrid: str = "n/a"
+    eid: str = "n/a"
+
+    def __hash__(self):
+        """Calculate the hash of this object."""
+        return hash(self.starttime)
+
+    def as_json(self) -> str:
+        """Return a JSON string representing this Recording."""
+        return json.dumps(self, cls=_RecordingJSONEncoder)
+
+
+def recordingdecoder(obj):
+    """Decode recording object from json."""
+    recording = json.loads(obj, object_hook=_json_decoder_hook)
+    if "__type__" in recording and recording["__type__"] == "__recording__":
+        return Recording(**recording["attributes"])
+    return recording
+
+
+class _RecordingJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Recording):
+            attributes = {}
+            for k, val in vars(o).items():
+                if isinstance(val, datetime):
+                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                attributes[k] = val
+            return {
+                "__type__": "__recording__",
+                "attributes": attributes,
+            }
 
 
 @dataclass

@@ -295,7 +295,6 @@ Will return an object with an array of events including the specified number of 
          'image_url':'https://images.metadata.sky.com/pd-image/57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0/16-9',
          'channelname':'BBC One South',
          'status':'LIVE',
-         'pvrid':'n/a',
          'eid':'E4b8-19b'
       },
       {
@@ -308,7 +307,6 @@ Will return an object with an array of events including the specified number of 
          'image_url':'https://images.metadata.sky.com/pd-image/d2d67048-673a-4ea8-8a32-3ad386e306d2/16-9',
          'channelname':'BBC One South',
          'status':'LIVE',
-         'pvrid':'n/a',
          'eid':'E4b8-19b'
       },
       {...}
@@ -345,7 +343,6 @@ Will return a JSON structure with an array of events including the specified num
             "image_url":"https://images.metadata.sky.com/pd-image/62ad0457-1a6a-4b45-9ef7-6e144639d734/16-9",
             "channelname":"BBC One South",
             "status":"LIVE",
-            "pvrid":"n/a",
             "eid":"E4b8-19b"
         }
       },
@@ -361,7 +358,6 @@ Will return a JSON structure with an array of events including the specified num
             "image_url":"https://images.metadata.sky.com/pd-image/a975bdeb-c19b-4de2-9557-c6d2757bdae7/16-9",
             "channelname":"BBC One South"
             "status":"LIVE",
-            "pvrid":"n/a",
             "eid":"E4b8-19b"
          }
       },
@@ -400,7 +396,6 @@ Will return an object such as below:
    'image_url':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
    'channelname':'Channel 5 HD',
    'status':'LIVE',
-   'pvrid':'n/a',
    'eid':'E4b8-19b'
 }
 ```
@@ -427,7 +422,6 @@ Will return a JSON structure such as below:
       "image_url":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "channelname":"BBC ONE HD",
       "status":"LIVE",
-      "pvrid":"n/a",
       "eid':"E4b8-19b"
    }
 }
@@ -458,7 +452,6 @@ Will return an object such as below:
    'image_url':'https://images.metadata.sky.com/pd-image/9fbdcefe-312c-4681-b996-00637e85313a/16-9',
    'channelname':'Channel 5 HD',
    'status':'LIVE',
-   'pvrid':'n/a',
    'eid':'E4b8-19b'
 }
 ```
@@ -483,7 +476,6 @@ Will return a JSON structure such as below:
       "image_url":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "channelname":"BBC ONE HD",
       "status":"LIVE",
-      "pvrid":"n/a",
       "eid":"E4b8-19b"
   }
 }
@@ -510,8 +502,10 @@ Will return an object such as below for the number of recordings specified by li
         'image_url':'https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9',
         'channelname':'E4 HD',
         'status':'RECORDED',
+        'deletetime': '2020-09-02T20:00:59Z',
+        'failurereason': None,
         'pvrid':'P29014192',
-        'eid':'E869-67b1'
+        'eid':'E869-67b1',
       },
       {
         'programmeuuid':'af9ecd2c-5026-4050-9c15-37598fe26713',
@@ -523,6 +517,23 @@ Will return an object such as below for the number of recordings specified by li
         'image_url':'https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9',
         'channelname':'Channel 5 HD',
         'status':'SCHEDULED',
+        'deletetime': None,
+        'failurereason': None,
+        'pvrid':'P29014192',
+        'eid':'E869-67b1'
+      },
+      {
+        'programmeuuid':'575736fd-0719-4249-88cc-babd6e232bfa',
+        'starttime':'2020-08-02T19:58:00Z',
+        'endtime':'2020-08-02T21:01:59Z',
+        'title':'Lorraine',
+        'season':35,
+        'episode':4,
+        'image_url':'https://images.metadata.sky.com/pd-image/575736fd-0719-4249-88cc-babd6e232bfa/16-9',
+        'channelname':'ITV HD',
+        'status':'PART REC',
+        'deletetime': None,
+        'failurereason': 'Start Missed',
         'pvrid':'P29014192',
         'eid':'E869-67b1'
       },
@@ -546,9 +557,9 @@ Will return an object such as below for the number of recordings specified by li
    "attributes":{
 
    },
-   "programmes":[
+   "recordings":[
       {
-         "__type__":"__programme__",
+         "__type__":"__recording__",
          "attributes":{
             "programmeuuid":"54bfc205-c56e-4583-b03f-59c31f97f8c7",
             "starttime":"2020-08-02T19:58:00Z",
@@ -559,12 +570,14 @@ Will return an object such as below for the number of recordings specified by li
             "image_url":"https://images.metadata.sky.com/pd-image/54bfc205-c56e-4583-b03f-59c31f97f8c7/16-9",
             "channelname":"E4 HD",
             "status":"RECORDED",
+            "deletetime": "2020-09-02T20:00:59Z",
+            "failurereason": null,
             "pvrid":"P29014192",
             "eid":"E869-67b1"
         }
       },
       {
-         "__type__":"__programme__",
+         "__type__":"__recording__",
          "attributes":{
             "programmeuuid":"af9ecd2c-5026-4050-9c15-37598fe26713",
             "starttime":"null",
@@ -575,9 +588,28 @@ Will return an object such as below for the number of recordings specified by li
             "image_url":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
             "channelname":"Channel 5 HD",
             "status":"SCHEDULED",
+            "deletetime": null,
+            "failurereason": null,
             "pvrid":"P29014192",
             "eid":"E869-67b1"
      },
+     {
+        "__type__":"__recording__",
+        "attributes":{
+           "programmeuuid":"af9ecd2c-5026-4050-9c15-37598fe26713",
+           "starttime":"2020-08-02T19:58:00Z",
+           "endtime":"2020-08-02T21:01:59Z",
+           "title":"Home and Away",
+           "season":35,
+           "episode":4,
+           "image_url":"https://images.metadata.sky.com/pd-image/af9ecd2c-5026-4050-9c15-37598fe26713/16-9",
+           "channelname":"Channel 5 HD",
+           "status":"PART REC",
+           "deletetime": null,
+           "failurereason": "Start Missed",
+           "pvrid":"P29014192",
+           "eid":"E869-67b1"
+    },
       {...}
       }
    ]
@@ -603,6 +635,8 @@ Will return an object such as below:
    'episode':5,
    'image_url':'https://images.metadata.sky.com/pd-image/ddcd727f-487f-4558-8365-7bed4fe41c87/16-9',
    'status':'RECORDED',
+   'deletetime': None,
+   'failurereason': None,
    'pvrid':'P29014192',
    'eid':'E869-67b1'
 }
@@ -628,6 +662,8 @@ Will return an object such as below:
       "episode":null,
       "image_url":"https://images.metadata.sky.com/pd-image/e11d9e93-0eec-4855-88f5-6ade9946d5dd/16-9",
       "status":"RECORDED",
+      "deletetime": null,
+      "failurereason": null,
       "pvrid":"P29014192",
       "eid":"E869-67b1"
    }

@@ -91,8 +91,8 @@ print(sky.get_favourite_list().as_json())
 # epgJSON = sky.get_epg_data(sid, queryDate).as_json()
 # print(epgJSON)
 
-# print("----------- Get scheduled recordings")
-# print(sky.get_recordings("SCHEDULED").as_json())
+print("----------- Get scheduled recordings")
+print(sky.get_recordings("PART REC").as_json())
 
 print("----------- Get quota info")
 print(sky.get_quota().as_json())
@@ -106,7 +106,7 @@ print(sky.get_quota().as_json())
 # pvrid = next(
 #     (
 #         recording.pvrid
-#         for recording in recordings.programmes
+#         for recording in recordings.recordings
 #         if recording.eid == eid
 #     ),
 #     None,

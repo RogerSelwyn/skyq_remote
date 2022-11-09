@@ -54,7 +54,6 @@ class Programme:
         repr=True,
         compare=False,
     )
-    pvrid: str = "n/a"
     eid: str = "n/a"
 
     def __hash__(self):
