@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.19 (2022/11/09)
+### Fixes
+- [Fix issue with live recording](https://github.com/RogerSelwyn/skyq_remote/commit/54b605b3713c0b278deae80987d22a7095aa521e) - @RogerSelwyn
+
+### Maintenance
+- [Simplify methods](https://github.com/RogerSelwyn/skyq_remote/commit/7cd383b606d2cf3300f998f8e3b6e75690ba7d30) - @RogerSelwyn
+- [Bump to 0.3.19](https://github.com/RogerSelwyn/skyq_remote/commit/780e50c87b4464d1b6dd5d3d752c2befc57fe2b9) - @RogerSelwyn
+
 ## v0.3.18 (2022/11/09)
 ### Enhancements
 - [Make start/end time more accurate and break recordings class our from programmes. Also add delete time and failure reason](https://github.com/RogerSelwyn/skyq_remote/commit/3994991e01da8e8b4ed169438f5f5b8c8dbe8480) - @RogerSelwyn
