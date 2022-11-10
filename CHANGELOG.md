@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.20 (2022/11/10)
+### Enhancements
+- [Add summary and source to recording](https://github.com/RogerSelwyn/skyq_remote/commit/f528bb65e743909562ed51c1d73d1dd1ef108a26) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.20](https://github.com/RogerSelwyn/skyq_remote/commit/cc88abae21fa337e09cefacb9a58e4fc17272f5d) - @RogerSelwyn
+
 ## v0.3.19 (2022/11/09)
 ### Fixes
 - [Fix issue with live recording](https://github.com/RogerSelwyn/skyq_remote/commit/54b605b3713c0b278deae80987d22a7095aa521e) - @RogerSelwyn
