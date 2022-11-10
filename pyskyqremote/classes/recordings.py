@@ -236,12 +236,15 @@ class RecordingsInformation:
             datetime.utcfromtimestamp(recording["del"]) if "del" in recording else None
         )
         failurereason = recording["fr"] if "fr" in recording else None
+        source = recording["src"] if "src" in recording else None
+        summary = recording["sy"] if "sy" in recording else None
 
         return Recording(
             programmeuuid,
             starttime,
             endtime,
             title,
+            summary,
             season,
             episode,
             image_url,
@@ -249,6 +252,7 @@ class RecordingsInformation:
             status,
             deletetime,
             failurereason,
+            source,
             pvrid,
             eid,
         )
@@ -401,6 +405,11 @@ class Recording:
         repr=True,
         compare=True,
     )
+    summary: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
     season: str = field(
         init=True,
         repr=True,
@@ -432,6 +441,7 @@ class Recording:
         compare=False,
     )
     failurereason: str = field(init=True, repr=True, compare=False)
+    source: str = field(init=True, repr=True, compare=False)
     pvrid: str = "n/a"
     eid: str = "n/a"
 
