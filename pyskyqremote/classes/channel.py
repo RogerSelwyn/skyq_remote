@@ -79,12 +79,11 @@ class ChannelInformation:
             # It's also possible the channels may have changed since last HA restart, so reload them
             self._channels = self._get_channels()
             channel_node = self._get_node_from_channels(sid)
-        if not channel_node:
-            return None
-
-        channel = channel_node["t"]
-        channelno = channel_node["c"]
-        return {"channel": channel, "channelno": channelno}
+        return (
+            {"channel": channel_node["t"], "channelno": channel_node["c"]}
+            if channel_node
+            else None
+        )
 
     def _get_channels(self):
         """Get the list of channels from the Sky Q box."""
@@ -95,10 +94,7 @@ class ChannelInformation:
         channels = self._device_access.retrieve_information(
             REST_CHANNEL_LIST.format(self._bouquet, self._subbouquet)
         )
-        if channels and "services" in channels:
-            return channels["services"]
-
-        return []
+        return channels["services"] if channels and "services" in channels else []
 
     def _get_node_from_channels(self, sid):
         return next((s for s in self._channels if s["sid"] == str(sid)), None)

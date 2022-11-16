@@ -88,98 +88,54 @@ class RecordingsInformation:
 
     def book_recording(self, eid, series):
         """Book recording for specified item."""
-        resp = None
-        if series:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_BOOK_SERIES_RECORDING.format(eid), REST_POST
-            )
-        else:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_BOOK_RECORDING.format(eid), REST_POST
-            )
-
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return self._perform_api_function(
+            series, eid, REST_BOOK_SERIES_RECORDING, REST_BOOK_RECORDING
+        )
 
     def book_ppv_recording(self, eid, offerref):
         """Book PPV recording for specified item."""
         resp = self._remote_config.device_access.retrieve_information(
             REST_BOOK_PPVRECORDING.format(eid, offerref), REST_POST
         )
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return resp == RESPONSE_OK
 
     def series_link(self, pvrid, linkon):
         """Series link the specified item."""
-        resp = None
-        if linkon:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_SERIES_LINK.format(pvrid), REST_POST
-            )
-        else:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_SERIES_UNLINK.format(pvrid), REST_POST
-            )
-
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return self._perform_api_function(
+            linkon, pvrid, REST_SERIES_LINK, REST_SERIES_UNLINK
+        )
 
     def recording_keep(self, pvrid, keepon):
         """Keep the specified item."""
-        resp = None
-        if keepon:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_RECORDING_KEEP.format(pvrid), REST_POST
-            )
-        else:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_RECORDING_UNKEEP.format(pvrid), REST_POST
-            )
-
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return self._perform_api_function(
+            keepon, pvrid, REST_RECORDING_KEEP, REST_RECORDING_UNKEEP
+        )
 
     def recording_lock(self, pvrid, lockon):
         """Lock the specified item."""
-        resp = None
-        if lockon:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_RECORDING_LOCK.format(pvrid), REST_POST
-            )
-        else:
-            resp = self._remote_config.device_access.retrieve_information(
-                REST_RECORDING_UNLOCK.format(pvrid), REST_POST
-            )
-
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return self._perform_api_function(
+            lockon, pvrid, REST_RECORDING_LOCK, REST_RECORDING_UNLOCK
+        )
 
     def recording_delete(self, pvrid, deleteon):
         """Delete the specified item."""
+        return self._perform_api_function(
+            deleteon, pvrid, REST_RECORDING_DELETE, REST_RECORDING_UNDELETE
+        )
+
+    def _perform_api_function(self, function_on, item_id, on_function, off_function):
         resp = None
-        if deleteon:
+        if function_on:
             resp = self._remote_config.device_access.retrieve_information(
-                REST_RECORDING_DELETE.format(pvrid), REST_POST
+                on_function.format(item_id), REST_POST
             )
+
         else:
             resp = self._remote_config.device_access.retrieve_information(
-                REST_RECORDING_UNDELETE.format(pvrid), REST_POST
+                off_function.format(item_id), REST_POST
             )
 
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return resp == RESPONSE_OK
 
     def recording_erase(self, pvrid):
         """Permanently erase the specified item."""
@@ -187,10 +143,7 @@ class RecordingsInformation:
             REST_RECORDING_ERASE.format(pvrid), REST_POST
         )
 
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return resp == RESPONSE_OK
 
     def recording_erase_all(self):
         """Permanently erase the specified item."""
@@ -198,20 +151,14 @@ class RecordingsInformation:
             REST_RECORDING_ERASE_ALL, REST_DELETE
         )
 
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return resp == RESPONSE_OK
 
     def recording_set_last_played_position(self, pvrid, pos):
         """Set the last played position for specified item."""
         resp = self._remote_config.device_access.retrieve_information(
             REST_RECORDING_SET_LAST_PLAYED_POSITION.format(pos, pvrid), REST_POST
         )
-        if resp != RESPONSE_OK:
-            return False
-
-        return True
+        return resp == RESPONSE_OK
 
     def _build_recording(self, recording):
         channel = recording["cn"]
@@ -301,7 +248,11 @@ class RecordingsInformation:
             else:
                 endtimestamp = recording["st"] + recording["schd"]
         else:
-            starttimestamp = recording["ast"] if "ast" in recording else recording["st"]
+            starttimestamp = 0
+            if "ast" in recording:
+                starttimestamp = recording["ast"]
+            elif "st" in recording:
+                starttimestamp = recording["st"]
             if "finald" in recording:
                 endtimestamp = starttimestamp + recording["finald"]
             elif "schd" in recording:
