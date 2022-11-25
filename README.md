@@ -1,6 +1,6 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/rogerselwyn/skyq_remote/badge)](https://www.codefactor.io/repository/github/rogerselwyn/skyq_remote)
 
-[![maintained](https://img.shields.io/maintenance/yes/2022.svg)](#)
+![GitHub release](https://img.shields.io/github/v/release/RogerSelwyn/skyq_remote) [![maintained](https://img.shields.io/maintenance/yes/2022.svg)](#)
 [![maintainer](https://img.shields.io/badge/maintainer-%20%40RogerSelwyn-blue.svg)](https://github.com/RogerSelwyn)
 [![Community Forum](https://img.shields.io/badge/community-forum-brightgreen.svg)](https://community.home-assistant.io/t/custom-component-skyq-media-player/140306)
 
