@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.21 (2022/11/25)
+### Maintenance
+- [Sourcery recommended code improvements](https://github.com/RogerSelwyn/skyq_remote/commit/a4bd5600a29a443bed27b1e9aaa1587be939dff9) - @RogerSelwyn
+- [Bump to 0.3.21](https://github.com/RogerSelwyn/skyq_remote/commit/4e8dadf361c698e3ca3005d223c723939d47bb31) - @RogerSelwyn
+
 ## v0.3.20 (2022/11/10)
 ### Enhancements
 - [Add summary and source to recording](https://github.com/RogerSelwyn/skyq_remote/commit/f528bb65e743909562ed51c1d73d1dd1ef108a26) - @RogerSelwyn
