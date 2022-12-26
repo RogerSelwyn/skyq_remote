@@ -40,8 +40,8 @@ class DeviceAccess:
     def __init__(self, host, json_port, port):
         """Initialise the utility setup."""
         self._host = host
-        self._json_port = json_port
-        self._port = port
+        self.json_port = json_port
+        self.port = port
         self.ipaddress = None
         # _LOGGER.debug(f"Init device access - {self._host}")
         self._soap_control_url = UNDEFINED
@@ -125,7 +125,7 @@ class DeviceAccess:
         """Make an HTTP get call to the sky box."""
         _LOGGER.debug("HTTP Get Call - %s - %s", self._host, path)
         response = requests.get(
-            REST_BASE_URL.format(self._host, self._json_port, path),
+            REST_BASE_URL.format(self._host, self.json_port, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
@@ -135,7 +135,7 @@ class DeviceAccess:
         """Make an HTTP post call to the sky box."""
         _LOGGER.debug("HTTP Post Call - %s - %s", self._host, path)
         response = requests.post(
-            REST_BASE_URL.format(self._host, self._json_port, path),
+            REST_BASE_URL.format(self._host, self.json_port, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
@@ -145,7 +145,7 @@ class DeviceAccess:
         """Make an HTTP delete call to the sky box."""
         _LOGGER.debug("HTTP Delete Call - %s - %s", self._host, path)
         response = requests.delete(
-            REST_BASE_URL.format(self._host, self._json_port, path),
+            REST_BASE_URL.format(self._host, self.json_port, path),
             timeout=HTTP_TIMEOUT,
             headers=headers,
         )
@@ -209,12 +209,12 @@ class DeviceAccess:
                         "E0020DA - Invalid command: %s : %s", self._host, item
                     )
                     break
-                self.send_command(self._port, COMMANDS[item.casefold()])
+                self.send_command(self.port, COMMANDS[item.casefold()])
                 time.sleep(0.5)
         elif sequence not in COMMANDS:
             _LOGGER.error("E0030DA - Invalid command: %s : %s", self._host, sequence)
         else:
-            self.send_command(self._port, COMMANDS[sequence.casefold()])
+            self.send_command(self.port, COMMANDS[sequence.casefold()])
 
     def _find_play_service(self, description):
         services = description["root"]["device"]["serviceList"]["service"]
@@ -251,25 +251,7 @@ class DeviceAccess:
         try:
             resp = requests.get(description_url, headers=headers, timeout=SOAP_TIMEOUT)
             if resp.status_code == HTTPStatus.OK:
-                description = xmltodict.parse(resp.text)
-                device_type = description["root"]["device"]["deviceType"]
-                if SKYCONTROL not in device_type:
-                    return empty_return
-
-                play_service = self._find_play_service(description)
-
-                if play_service is None:
-                    return empty_return
-
-                return {
-                    "url": SOAP_CONTROL_BASE_URL.format(
-                        self.ipaddress,
-                        play_service[  # pylint: disable=unsubscriptable-object
-                            "controlURL"
-                        ],
-                    ),
-                    "status": "OK",
-                }
+                return self._build_soap_control_url_if_present(resp, empty_return)
             return empty_return
         except requests.exceptions.Timeout:
             _LOGGER.debug(
@@ -286,3 +268,22 @@ class DeviceAccess:
                 "X0060DA - Other error occurred: %s : %s", self._host, err
             )
             return empty_return
+
+    def _build_soap_control_url_if_present(self, resp, empty_return):
+        description = xmltodict.parse(resp.text)
+        device_type = description["root"]["device"]["deviceType"]
+        if SKYCONTROL not in device_type:
+            return empty_return
+
+        play_service = self._find_play_service(description)
+
+        if play_service is None:
+            return empty_return
+
+        return {
+            "url": SOAP_CONTROL_BASE_URL.format(
+                self.ipaddress,
+                play_service["controlURL"],  # pylint: disable=unsubscriptable-object
+            ),
+            "status": "OK",
+        }

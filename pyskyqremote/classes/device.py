@@ -1,7 +1,9 @@
 """Methods for retrieving device information."""
 
+import ipaddress
 import json
 import logging
+import re
 from dataclasses import dataclass, field
 
 from ..const import (
@@ -24,6 +26,7 @@ from ..const import (
     SKY_STATE_UNSUPPORTED,
     UPNP_GET_TRANSPORT_INFO,
 )
+from .deviceaccess import DeviceAccess
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -71,6 +74,7 @@ class DeviceInformation:
         ip_address = device_info["IPAddress"]
         country_code = device_info["countryCode"]
         gateway = device_info["gateway"]
+        gateway_ip_address = system_info["gatewayIPAddress"]
         hardware_model = system_info["hardwareModel"]
         device_type = system_info["deviceType"]
         hardware_name = device_info["hardwareName"]
@@ -104,6 +108,18 @@ class DeviceInformation:
             )
             used_country_code = "GBR"
 
+        gateway_wake_reason = None
+        if _host_valid(gateway_ip_address):
+            gateway_device_access = DeviceAccess(
+                gateway_ip_address,
+                self._device_access.json_port,
+                self._device_access.port,
+            )
+            if gateway_system_information := gateway_device_access.retrieve_information(
+                REST_PATH_SYSTEMINFO
+            ):
+                gateway_wake_reason = gateway_system_information["wakeReason"]
+
         return Device(
             as_version,
             ip_address,
@@ -113,6 +129,8 @@ class DeviceInformation:
             hardware_name,
             device_type,
             gateway,
+            gateway_ip_address,
+            gateway_wake_reason,
             manufacturer,
             model_number,
             serial_number,
@@ -128,6 +146,15 @@ class DeviceInformation:
             futurelocaltimeoffset,
             futuretransitionutc,
         )
+
+
+def _host_valid(host):
+    """Return True if hostname or IP address is valid."""
+    try:
+        return ipaddress.ip_address(host).version == ((4 or 6))
+    except ValueError:
+        disallowed = re.compile(r"[^a-zA-Z\d\-]")
+        return all(x and not disallowed.search(x) for x in host.split("."))
 
 
 @dataclass
@@ -170,6 +197,16 @@ class Device:
         compare=False,
     )
     gateway: str = field(
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    gatewayIPAddress: str = field(  # pylint: disable=invalid-name
+        init=True,
+        repr=True,
+        compare=False,
+    )
+    gatewayWakeReason: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
