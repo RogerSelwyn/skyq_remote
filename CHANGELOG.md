@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.22 (2022/12/26)
+### Enhancements
+- [Add gatewayIP and gatewayWakeReason](https://github.com/RogerSelwyn/skyq_remote/commit/d9981a865036576c57387886923e686968f4c42c) - @RogerSelwyn
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/862ec801063a1708a39e438514fa35ff42e67880) - @RogerSelwyn
+- [Bump to 0.3.22](https://github.com/RogerSelwyn/skyq_remote/commit/fab7f4d3bf3208034233a37db669a93bad15bed3) - @RogerSelwyn
+
 ## v0.3.21 (2022/11/25)
 ### Maintenance
 - [Sourcery recommended code improvements](https://github.com/RogerSelwyn/skyq_remote/commit/a4bd5600a29a443bed27b1e9aaa1587be939dff9) - @RogerSelwyn
