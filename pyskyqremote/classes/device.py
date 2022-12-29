@@ -26,7 +26,6 @@ from ..const import (
     SKY_STATE_UNSUPPORTED,
     UPNP_GET_TRANSPORT_INFO,
 )
-from .deviceaccess import DeviceAccess
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -108,18 +107,6 @@ class DeviceInformation:
             )
             used_country_code = "GBR"
 
-        gateway_wake_reason = None
-        if _host_valid(gateway_ip_address):
-            gateway_device_access = DeviceAccess(
-                gateway_ip_address,
-                self._device_access.json_port,
-                self._device_access.port,
-            )
-            if gateway_system_information := gateway_device_access.retrieve_information(
-                REST_PATH_SYSTEMINFO
-            ):
-                gateway_wake_reason = gateway_system_information["wakeReason"]
-
         return Device(
             as_version,
             ip_address,
@@ -130,7 +117,6 @@ class DeviceInformation:
             device_type,
             gateway,
             gateway_ip_address,
-            gateway_wake_reason,
             manufacturer,
             model_number,
             serial_number,
@@ -202,11 +188,6 @@ class Device:
         compare=False,
     )
     gatewayIPAddress: str = field(  # pylint: disable=invalid-name
-        init=True,
-        repr=True,
-        compare=False,
-    )
-    gatewayWakeReason: str = field(  # pylint: disable=invalid-name
         init=True,
         repr=True,
         compare=False,
