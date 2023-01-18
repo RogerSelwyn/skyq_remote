@@ -57,7 +57,10 @@ class RecordingsInformation:
                 built = self._build_recording(recording)
                 recordings.add(built)
 
-        recordingssorted = sorted(recordings, key=attrgetter("starttime"))
+        recordingssorted = sorted(
+            recordings,
+            key=_none_aware_attrgetter("starttime"),
+        )
         return Recordings(recordingssorted)
 
     def get_recording(self, pvrid):
@@ -248,7 +251,6 @@ class RecordingsInformation:
             else:
                 endtimestamp = recording["st"] + recording["schd"]
         else:
-            starttimestamp = 0
             if "ast" in recording:
                 starttimestamp = recording["ast"]
             elif "st" in recording:
@@ -259,10 +261,11 @@ class RecordingsInformation:
                 endtimestamp = starttimestamp + recording["schd"]
             else:
                 endtimestamp = starttimestamp
-
-        return datetime.utcfromtimestamp(starttimestamp), datetime.utcfromtimestamp(
-            endtimestamp
+        starttime = (
+            datetime.utcfromtimestamp(starttimestamp) if starttimestamp > 0 else None
         )
+        endtime = datetime.utcfromtimestamp(endtimestamp) if endtimestamp > 0 else None
+        return starttime, endtime
 
 
 @dataclass
@@ -463,3 +466,13 @@ class _QuotaJSONEncoder(json.JSONEncoder):
                 "__type__": "__quota__",
                 "attributes": attributes,
             }
+
+
+def _none_aware_attrgetter(attr):
+    getter = attrgetter(attr)
+
+    def key_func(item):
+        value = getter(item)
+        return (value is not None, value)
+
+    return key_func
