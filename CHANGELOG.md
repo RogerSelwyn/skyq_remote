@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.24 (2023/01/18)
+### Fixes
+- [Fix start/end time being returned as 0 when not present](https://github.com/RogerSelwyn/skyq_remote/commit/9cfe70c7afb402682098a0a83cf815ac14924422) - @RogerSelwyn
+
+### Maintenance
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/6212deb092a3d836287d2c2a515df2791a15183f) - @RogerSelwyn
+- [Bump to 0.3.24](https://github.com/RogerSelwyn/skyq_remote/commit/993f23a5b63d4d7311d4c786ae5106549e726ea5) - @RogerSelwyn
+
 ## v0.3.23 (2022/12/29)
 ### Maintenance
 - [Remove gatewayWakeReason](https://github.com/RogerSelwyn/skyq_remote/commit/331b5d88fff97eee3e1c9277d3ba27a1a8416f9f) - @RogerSelwyn
