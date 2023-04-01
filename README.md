@@ -289,8 +289,8 @@ Will return an object with an array of events including the specified number of 
    'programmes':[
       {
          'progammeuuid':'57a11caf-1ebd-4c01-a40b-7fdfe5c5fad0',
-         'starttime':datetime.datetime(2020,4,16,21,50),
-         'endtime':datetime.datetime(2020,4,16,22,50),
+         'starttime':datetime.datetime(2020,4,16,21,50,tzinfo=datetime.timezone.utc),
+         'endtime':datetime.datetime(2020,4,16,22,50,tzinfo=datetime.timezone.utc),
          'title':'New: Tonight Show Starring. Jimmy Fallon',
          'season':7,
          'episode':119,
@@ -301,8 +301,8 @@ Will return an object with an array of events including the specified number of 
       },
       {
          'progammeuuid':'d2d67048-673a-4ea8-8a32-3ad386e306d2',
-         'starttime':datetime.datetime(2020,4,16,22,50),
-         'endtime':datetime.datetime(2020,4,16,23,50),
+         'starttime':datetime.datetime(2020,4,16,22,50,tzinfo=datetime.timezone.utc),
+         'endtime':datetime.datetime(2020,4,16,23,50,tzinfo=datetime.timezone.utc),
          'title':'New: Late Late Show With...',
          'season':2020,
          'episode':89,
@@ -390,8 +390,8 @@ Will return an object such as below:
 ```
 {
    'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
-   'starttime':datetime.datetime(2020,4,17,8,30),
-   'endtime':datetime.datetime(2020,4,17,9,0),
+   'starttime':datetime.datetime(2020,4,17,8,30,tzinfo=datetime.timezone.utc),
+   'endtime':datetime.datetime(2020,4,17,9,0,tzinfo=datetime.timezone.utc),
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
@@ -446,8 +446,8 @@ Will return an object such as below:
 ```
 {
    'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
-   'starttime':datetime.datetime(2020,4,17,8,30),
-   'endtime':datetime.datetime(2020,4,17,9,0),
+   'starttime':datetime.datetime(2020,4,17,8,30,tzinfo=datetime.timezone.utc),
+   'endtime':datetime.datetime(2020,4,17,9,0,tzinfo=datetime.timezone.utc),
    'title':'Parks And Recreation',
    'season':4,
    'episode':5,
@@ -496,8 +496,8 @@ Will return an object such as below for the number of recordings specified by li
    'programmes':[
       {
         'programmeuuid':'54bfc205-c56e-4583-b03f-59c31f97f8c7',
-        'starttime':'2020-08-02T19:58:00Z',
-        'endtime':'2020-08-02T21:01:59Z',
+        'starttime':datetime.datetime(2020,4,17,8,30,tzinfo=datetime.timezone.utc),
+        'endtime':datetime.datetime(2020,4,17,9,30,tzinfo=datetime.timezone.utc),
         'title':'New: Batwoman',
         'summary': 'Lorum ipsum...',
         'season':1,
@@ -530,8 +530,8 @@ Will return an object such as below for the number of recordings specified by li
       },
       {
         'programmeuuid':'575736fd-0719-4249-88cc-babd6e232bfa',
-        'starttime':'2020-08-02T19:58:00Z',
-        'endtime':'2020-08-02T21:01:59Z',
+        'starttime':datetime.datetime(2020,4,17,8,30,tzinfo=datetime.timezone.utc),
+        'endtime':datetime.datetime(2020,4,17,9,30,tzinfo=datetime.timezone.utc),
         'title':'Lorraine',
         'summary': 'Lorum ipsum...',
         'season':35,
@@ -641,8 +641,8 @@ Will return an object such as below:
 ```
 {
    'progammeuuid':'9fbdcefe-312c-4681-b996-00637e85313a',
-   'starttime':datetime.datetime(2020,4,17,8,30),
-   'endtime':datetime.datetime(2020,4,17,9,0),
+   'starttime':datetime.datetime(2020,4,17,8,30,tzinfo=datetime.timezone.utc),
+   'endtime':datetime.datetime(2020,4,17,9,0,tzinfo=datetime.timezone.utc),
    'channelname':'ITV HD',
    'title':'Van Der Valk',
    'season':4,

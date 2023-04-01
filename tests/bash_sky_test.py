@@ -4,7 +4,7 @@
 
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 from pyskyqremote.classes.channelepg import channel_epg_decoder
 from pyskyqremote.classes.media import media_decoder
@@ -21,7 +21,7 @@ from pyskyqremote.skyq_remote import SkyQRemote
 # Note: you may need to modify top line change python3 to python,
 # depending on OS/setup. this is works for me on my mac
 country = None  # pylint: disable=invalid-name
-queryDate = datetime.utcnow()
+queryDate = datetime.now(timezone.utc)
 if len(sys.argv) > 2 and sys.argv[2] != "None":
     country = sys.argv[2]
 test_channel = (  # pylint: disable=invalid-name
@@ -30,7 +30,10 @@ test_channel = (  # pylint: disable=invalid-name
 if len(sys.argv) > 4:
     queryDate = datetime.utcfromtimestamp(int(sys.argv[4]))
 
-sky = SkyQRemote(sys.argv[1])
+if len(sys.argv) < 2:
+    sky = SkyQRemote("192.168.1.120")
+else:
+    sky = SkyQRemote(sys.argv[1])
 sky.set_overrides(override_country=country, test_channel=test_channel)
 
 print("----------- Power status")
@@ -88,8 +91,8 @@ print("----------- Favourites")
 print(sky.get_favourite_list().as_json())
 
 # print("----------- Today's EPG")
-# epgJSON = sky.get_epg_data(sid, queryDate).as_json()
-# print(epgJSON)
+epgJSON = sky.get_epg_data(sid, queryDate).as_json()
+print(epgJSON)
 
 print("----------- Get scheduled recordings")
 print(sky.get_recordings("PART REC").as_json())
@@ -97,8 +100,10 @@ print(sky.get_recordings("PART REC").as_json())
 print("----------- Get quota info")
 print(sky.get_quota().as_json())
 
+print("-----------Decode epg json")
+epgProgrammes = channel_epg_decoder(epgJSON).programmes
+print(epgProgrammes)
 # print("----------- Book recording")
-# epgProgrammes = channel_epg_decoder(epgJSON).programmes
 # eid = epgProgrammes[len(epgProgrammes) - 1].eid
 # print(eid)
 # print(sky.book_recording(eid))

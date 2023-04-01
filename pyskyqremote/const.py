@@ -1,4 +1,5 @@
 """Constants for pyskyqremote."""
+CONST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 # SOAP/UPnP Constants
 SKY_PLAY_URN = "urn:nds-com:serviceId:SkyPlay"
 SKYCONTROL = "SkyControl"

@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from ..const import CURRENT_URI, PVR, UPNP_GET_MEDIA_INFO, XSI
+from ..const import CONST_DATE_FORMAT, CURRENT_URI, PVR, UPNP_GET_MEDIA_INFO, XSI
 from .channel import ChannelInformation, build_channel_image_url
 
 
@@ -116,7 +116,7 @@ class _MediaJSONEncoder(json.JSONEncoder):
             attributes = {}
             for k, val in vars(o).items():
                 if isinstance(val, datetime):
-                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    val = val.strftime(CONST_DATE_FORMAT)
                 attributes[k] = val
             return {
                 "__type__": "__media__",

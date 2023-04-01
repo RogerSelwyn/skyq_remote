@@ -3,13 +3,14 @@
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from operator import attrgetter
 
 from pyskyqremote.classes.channel import build_channel_image_url
 
 from ..const import (
     ALLRECORDINGS,
+    CONST_DATE_FORMAT,
     PVR_IMAGE_URL,
     RESPONSE_OK,
     REST_BOOK_PPVRECORDING,
@@ -183,7 +184,9 @@ class RecordingsInformation:
         eid = recording["oeid"] if "oeid" in recording else None
 
         deletetime = (
-            datetime.utcfromtimestamp(recording["del"]) if "del" in recording else None
+            datetime.fromtimestamp(recording["del"], tz=timezone.utc)
+            if "del" in recording
+            else None
         )
         failurereason = recording["fr"] if "fr" in recording else None
         source = recording["src"] if "src" in recording else None
@@ -231,7 +234,14 @@ class RecordingsInformation:
     def _build_recording_times(self, status, recording):
         starttimestamp = 0
         endtimestamp = 0
-        if status == "SCHEDULED":
+        if status == "RECORDING":
+            starttimestamp = recording["ast"]
+            if "fr" not in recording or recording["fr"] == "N/A":
+                usedtimestamp = max(recording["ast"], recording["st"])
+                endtimestamp = usedtimestamp + recording["schd"]
+            else:
+                endtimestamp = recording["st"] + recording["schd"]
+        elif status == "SCHEDULED":
             if "st" in recording:
                 starttimestamp = recording["st"]
             endtimestamp = (
@@ -239,17 +249,6 @@ class RecordingsInformation:
                 if "schd" in recording
                 else starttimestamp
             )
-        elif status == "RECORDING":
-            starttimestamp = recording["ast"]
-            if "fr" not in recording or recording["fr"] == "N/A":
-                usedtimestamp = (
-                    recording["ast"]
-                    if recording["ast"] > recording["st"]
-                    else recording["st"]
-                )
-                endtimestamp = usedtimestamp + recording["schd"]
-            else:
-                endtimestamp = recording["st"] + recording["schd"]
         else:
             if "ast" in recording:
                 starttimestamp = recording["ast"]
@@ -262,15 +261,21 @@ class RecordingsInformation:
             else:
                 endtimestamp = starttimestamp
         starttime = (
-            datetime.utcfromtimestamp(starttimestamp) if starttimestamp > 0 else None
+            datetime.fromtimestamp(starttimestamp, tz=timezone.utc)
+            if starttimestamp > 0
+            else None
         )
-        endtime = datetime.utcfromtimestamp(endtimestamp) if endtimestamp > 0 else None
+        endtime = (
+            datetime.fromtimestamp(endtimestamp, tz=timezone.utc)
+            if endtimestamp > 0
+            else None
+        )
         return starttime, endtime
 
 
 @dataclass
 class Recordings:
-    """SkyQ Channel EPG Class."""
+    """SkyQ Recordings Class."""
 
     recordings: set = field(
         init=True,
@@ -296,11 +301,11 @@ def recordings_decoder(obj):
 def _json_decoder_hook(obj):
     """Decode JSON into appropriate types used in this library."""
     if "starttime" in obj:
-        obj["starttime"] = datetime.strptime(obj["starttime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["starttime"] = datetime.strptime(obj["starttime"], CONST_DATE_FORMAT)
     if "endtime" in obj:
-        obj["endtime"] = datetime.strptime(obj["endtime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["endtime"] = datetime.strptime(obj["endtime"], CONST_DATE_FORMAT)
     if "deletetime" in obj:
-        obj["deletetime"] = datetime.strptime(obj["deletetime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["deletetime"] = datetime.strptime(obj["deletetime"], CONST_DATE_FORMAT)
     if "__type__" in obj and obj["__type__"] == "__recording__":
         obj = Recording(**obj["attributes"])
     return obj
@@ -325,7 +330,7 @@ class _RecordingsJSONEncoder(json.JSONEncoder):
             attributes = {}
             for k, val in vars(o).items():
                 if isinstance(val, datetime):
-                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    val = val.strftime(CONST_DATE_FORMAT)
                 attributes[k] = val
             return {
                 "__type__": "__recording__",
@@ -422,7 +427,7 @@ class _RecordingJSONEncoder(json.JSONEncoder):
             attributes = {}
             for k, val in vars(o).items():
                 if isinstance(val, datetime):
-                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    val = val.strftime(CONST_DATE_FORMAT)
                 attributes[k] = val
             return {
                 "__type__": "__recording__",

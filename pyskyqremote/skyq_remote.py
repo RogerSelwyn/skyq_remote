@@ -1,6 +1,7 @@
 """Python module for accessing SkyQ box and EPG, and sending commands."""
+
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .classes.app import AppInformation
 from .classes.channel import ChannelInformation
@@ -173,7 +174,7 @@ class SkyQRemote:
     def get_current_live_tv_programme(self, sid):
         """Get current live programme on the specified channel."""
         try:
-            query_date = datetime.utcnow()
+            query_date = datetime.now(timezone.utc)
             programme = self.get_programme_from_epg(sid, query_date, query_date)
             return programme if isinstance(programme, Programme) else None
         except Exception as err:  # pylint: disable=broad-except

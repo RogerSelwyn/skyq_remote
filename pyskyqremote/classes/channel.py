@@ -76,7 +76,8 @@ class ChannelInformation:
 
         if not channel_node:
             # Load the channel list for the first time.
-            # It's also possible the channels may have changed since last HA restart, so reload them
+            # It's also possible the channels may have changed since last HA restart,
+            # so reload them
             self._channels = self._get_channels()
             channel_node = self._get_node_from_channels(sid)
         return (

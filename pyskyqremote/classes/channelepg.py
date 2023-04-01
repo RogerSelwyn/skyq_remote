@@ -4,11 +4,12 @@ import json
 import logging
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import requests
 
 from ..const import (
+    CONST_DATE_FORMAT,
     EPG_TIMEOUT,
     LIVE_IMAGE_URL,
     RESPONSE_OK,
@@ -37,7 +38,7 @@ class ChannelEPGInformation:
 
     def get_epg_data(self, sid, epg_date, days=2):
         """Get EPG data for the specified channel/date."""
-        epg = f'{sid} {"{:0>2d}".format(days)} {epg_date.strftime("%Y%m%d")}'
+        epg = f'{sid} {days:0>2d} {epg_date.strftime("%Y%m%d")}'
 
         if sid in self._epg_cache and self._epg_cache[sid]["epg"] == epg:
             return self._epg_cache[sid]["channel"]
@@ -72,7 +73,7 @@ class ChannelEPGInformation:
         self._epg_cache[sid] = {
             "epg": epg,
             "channel": self._channel,
-            "updatetime": datetime.utcnow(),
+            "updatetime": datetime.now(timezone.utc),
         }
         self._epg_cache = OrderedDict(
             sorted(
@@ -94,8 +95,10 @@ class ChannelEPGInformation:
             return programmes
 
         for programme in epg_data[0]["events"]:
-            starttime = datetime.utcfromtimestamp(programme["st"])
-            endtime = datetime.utcfromtimestamp(programme["st"] + programme["d"])
+            starttime = datetime.fromtimestamp(programme["st"], tz=timezone.utc)
+            endtime = datetime.fromtimestamp(
+                programme["st"] + programme["d"], tz=timezone.utc
+            )
             title = programme["t"]
             season = None
             if "seasonnumber" in programme and programme["seasonnumber"] > 0:
@@ -198,9 +201,9 @@ def channel_epg_decoder(obj):
 def _json_decoder_hook(obj):
     """Decode JSON into appropriate types used in this library."""
     if "starttime" in obj:
-        obj["starttime"] = datetime.strptime(obj["starttime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["starttime"] = datetime.strptime(obj["starttime"], CONST_DATE_FORMAT)
     if "endtime" in obj:
-        obj["endtime"] = datetime.strptime(obj["endtime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["endtime"] = datetime.strptime(obj["endtime"], CONST_DATE_FORMAT)
     if "__type__" in obj and obj["__type__"] == "__programme__":
         obj = Programme(**obj["attributes"])
     return obj
@@ -225,7 +228,7 @@ class _ChannelEPGJSONEncoder(json.JSONEncoder):
             attributes = {}
             for k, val in vars(o).items():
                 if isinstance(val, datetime):
-                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    val = val.strftime(CONST_DATE_FORMAT)
                 attributes[k] = val
             return {
                 "__type__": "__programme__",

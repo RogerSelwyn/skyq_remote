@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from ..const import CONST_DATE_FORMAT
+
 
 @dataclass(order=True)
 class Programme:
@@ -76,9 +78,9 @@ def programmedecoder(obj):
 def _json_decoder_hook(obj):
     """Decode JSON into appropriate types used in this library."""
     if "starttime" in obj:
-        obj["starttime"] = datetime.strptime(obj["starttime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["starttime"] = datetime.strptime(obj["starttime"], CONST_DATE_FORMAT)
     if "endtime" in obj:
-        obj["endtime"] = datetime.strptime(obj["endtime"], "%Y-%m-%dT%H:%M:%SZ")
+        obj["endtime"] = datetime.strptime(obj["endtime"], CONST_DATE_FORMAT)
     return obj
 
 
@@ -88,7 +90,7 @@ class _ProgrammeJSONEncoder(json.JSONEncoder):
             attributes = {}
             for k, val in vars(o).items():
                 if isinstance(val, datetime):
-                    val = val.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    val = val.strftime(CONST_DATE_FORMAT)
                 attributes[k] = val
             return {
                 "__type__": "__programme__",
