@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.3.26 (2023/08/29)
+### Enhancements
+- [Add synopsis to programme/recording information](https://github.com/RogerSelwyn/skyq_remote/commit/a42e64c196d7b22d0a9168f05c9692562327e60b) - @RogerSelwyn
+
+### Maintenance
+- [Bump to 0.3.26](https://github.com/RogerSelwyn/skyq_remote/commit/1e219dfaebb7a930861ee79b8a49745659f7817a) - @RogerSelwyn
+
+### Documentation
+- [Update README.md](https://github.com/RogerSelwyn/skyq_remote/commit/c0dd51a4528f4175fbfe079b33d790620398c6fc) - @RogerSelwyn
+
+## v0.3.25 (2023/04/01)
+### Enhancements
+- [Make datetimes timezone aware (UTC)](https://github.com/RogerSelwyn/skyq_remote/commit/e48fe78d88eab857cedd8ddc83edaa52010e1879) - @RogerSelwyn
+### Maintenance
+- [Bump to 0.3.25](https://github.com/RogerSelwyn/skyq_remote/commit/e8ab8934cc6640df9926ecfde59af0b3ebc92526) - @RogerSelwyn
+
 ## v0.3.24 (2023/01/18)
 ### Fixes
 - [Fix start/end time being returned as 0 when not present](https://github.com/RogerSelwyn/skyq_remote/commit/9cfe70c7afb402682098a0a83cf815ac14924422) - @RogerSelwyn
