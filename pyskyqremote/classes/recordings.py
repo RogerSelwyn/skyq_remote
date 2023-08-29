@@ -167,6 +167,7 @@ class RecordingsInformation:
     def _build_recording(self, recording):
         channel = recording["cn"]
         title = recording["t"]
+        synopsis = recording["sy"]
 
         season = None
         episode = None
@@ -197,6 +198,7 @@ class RecordingsInformation:
             starttime,
             endtime,
             title,
+            synopsis,
             summary,
             season,
             episode,
@@ -369,6 +371,7 @@ class Recording:
         repr=True,
         compare=False,
     )
+    synopsis: str = field(init=True, repr=True, compare=True)
     season: str = field(
         init=True,
         repr=True,

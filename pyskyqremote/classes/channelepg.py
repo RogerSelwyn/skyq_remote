@@ -100,6 +100,7 @@ class ChannelEPGInformation:
                 programme["st"] + programme["d"], tz=timezone.utc
             )
             title = programme["t"]
+            synopsis = programme["sy"]
             season = None
             if "seasonnumber" in programme and programme["seasonnumber"] > 0:
                 season = programme["seasonnumber"]
@@ -122,6 +123,7 @@ class ChannelEPGInformation:
                 starttime,
                 endtime,
                 title,
+                synopsis,
                 season,
                 episode,
                 image_url,
